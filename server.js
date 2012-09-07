@@ -142,8 +142,29 @@ db.open(function(err, db) {
     }
 });
 
+app.param('database', function(req, res, next, id){
+    if (!_.include(databases, id)) {
+        req.session.error = "Database not found!";
+        return res.redirect('/');
+    }
+    
+    req.dbName = id;
+    res.locals.dbName = id;
+    //dbName:databases,
+    
+    if (connections[id] != undefined) {
+        req.db = connections[id];
+    } else {
+        connections[id] = mainConn.db(id);
+        req.db = connections[id];
+    }
+    
+    next();
+});
+
 var middleware = function(req, res, next) {
     req.databases = databases;
+    req.collections = collections;
     next();
 };
 
@@ -155,6 +176,7 @@ app.locals({
 
 
 app.get('/', middleware, routes.index);
+app.get('/db/:database', middleware, routes.viewDatabase);
 
 app.listen(config.site.port || 3000);
 

@@ -1,0 +1,34 @@
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <a class="brand" href="#">{{ dbName }}</a>
+    <ul class="nav">
+      <li class="active"><a href="{{../this}}">Home</a></li>
+    </ul>
+  </div>
+</div>
+
+
+<h2>Create Collection</h2>
+<form class="well form-inline" method="POST">
+    <div class="input-prepend">
+        <span class="add-on">{{ dbName }} . </span>
+        <input class="input-medium" type="text" id="collection" name="collection" placeholder="Collection Name" title="Collection Name">
+    </div>
+    <button type="submit" class="btn btn-primary">
+    <i class="icon-folder-open icon-white"></i>
+        Create collection
+    </button>
+</form>
+
+<script>
+  $('#collection').popover({content: "Collection names must begin with a letter or underscore, and can contain only letters, numbers, underscores and dots."});
+</script>
+
+
+<h2>Collections</h2>
+
+
+
+
+
