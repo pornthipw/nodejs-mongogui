@@ -2,6 +2,7 @@ var express = require("express");
 var fs = require('fs');
 var handlebars = require('hbs');
 var mongodb = require('mongodb');
+var _ = require('underscore');
 
 var routes = require('./routes');
 var config = require('./config');

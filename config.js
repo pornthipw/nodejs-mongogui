@@ -37,7 +37,7 @@ module.exports = {
     //whitelist: hide all databases except the ones in this list  (empty list for no whitelist)
     whitelist: [],
     //blacklist: hide databases listed in the blacklist (empty list for no blacklist)
-    blacklist: []
+    blacklist: ['admin']
   },
   site: {
     //baseUrl: the URL that mongo express will be located at
