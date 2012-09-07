@@ -5,6 +5,40 @@ var mongodb = require('mongodb');
 
 var routes = require('./routes');
 var config = require('./config');
+var utils = require('./utils');
+
+
+
+handlebars.registerHelper('compare', function(lvalue, rvalue, options) {
+    if (arguments.length < 3)
+        throw new Error("Handlerbars Helper 'compare' needs 2 parameters");
+    operator = options.hash.operator || "==";
+
+    var operators = {
+        '==':       function(l,r) { return l == r; },
+        '===':      function(l,r) { return l === r; },
+        '!=':       function(l,r) { return l != r; },
+        '<':        function(l,r) { return l < r; },
+        '>':        function(l,r) { return l > r; },
+        '<=':       function(l,r) { return l <= r; },
+        '>=':       function(l,r) { return l >= r; },
+        'typeof':   function(l,r) { return typeof l == r; }
+    }
+
+    if (!operators[operator])
+        throw new Error("Handlerbars Helper 'compare' doesn't know the operator "+operator);
+
+    var result = operators[operator](lvalue,rvalue);
+
+    if( result ) {
+        return options.fn(this);
+    } else {
+        return options.inverse(this);
+    }
+
+});
+
+
 
 var app = express();
 
@@ -25,10 +59,30 @@ var dbOptions = {
 };
 
 var connections = {};
+var collections = [];
 var databases = [];
 var mainConn;
 
 var db = new mongodb.Db('local', new mongodb.Server(host, port, dbOptions));
+
+var updateCollections = function(db, dbName, callback){
+    db.collectionNames(function(err, result) {
+        var names = [];
+        
+        for (var r in result) {
+            var coll = utils.parseCollectionName(result[r].name);
+            names.push(coll.name);
+            console.log(coll.name);
+        }
+        collections.push({'db_name':dbName, 'collections': names.sort()});
+        
+        
+        if (callback) {
+            callback(err);
+        }        
+        console.log(collections);
+    });
+};
 
 
 var updateDatabases = function(admin) {
@@ -52,7 +106,9 @@ var updateDatabases = function(admin) {
                 }
             }
             connections[dbName] = mainConn.db(dbName);
-            databases.push(dbName);            
+            databases.push(dbName); 
+            
+            updateCollections(connections[dbName], dbName);           
         }
         databases = databases.sort();
     });
@@ -92,6 +148,7 @@ var middleware = function(req, res, next) {
 
 app.locals({
     databases:databases,
+    collections:collections,
     baseHref:config.site.baseUrl
 });
 
