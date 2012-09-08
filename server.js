@@ -174,8 +174,18 @@ app.locals({
     baseHref:config.site.baseUrl
 });
 
-
 app.get('/', middleware, routes.index);
+
+app.get('/db', middleware, function(req, res) {
+    console.log(databases);
+    var db_name_list = [];
+    for(var key in databases) {
+        db_name_list.push({'name':databases[key]});
+    }
+    console.log(db_name_list);
+    res.json(db_name_list);
+});
+
 app.get('/db/:database', middleware, routes.viewDatabase);
 
 app.listen(config.site.port || 3000);

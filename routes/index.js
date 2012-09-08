@@ -7,5 +7,6 @@ exports.index = function(req, res) {
     var ctx = {
        title : 'Mongo Express', 
     };
+    console.log('request index.js');
     res.render('index', ctx);
 }
