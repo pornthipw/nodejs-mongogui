@@ -27,34 +27,8 @@
 
 <div class="container-fluid">
     <div class="row-fluid">
-        <div class="span2">
-            <!--Sidebar content-->
-            <div class="well sidebar-nav">
-                <ul class="nav nav-list">
-                {{#each databases}}
-                    <li class="nav-header" onclick="$('#toggle_{{ this }}').collapse('toggle')">
-                        {{ this }}
-                        <i class="icon-chevron-down pull-right"></i>
-                    </li>
-                    <li><a href="db/{{this}}"><i class="icon-folder-open"></i> View Database</a></li>
-                    <ul class="unstyled collapse nav nav-list  {%- if db == dbName %} in{% endif -%}" id="toggle_{{this}}">                            
-                            {{#each ../collections }}                                    
-                                {{#compare  db_name ../this operator="=="}}
-                                    {{# each collections }}
-                                        <li><a href="db/{{ db_name }}/{{ this }}"><i class="icon-list-alt"></i> {{ this }}</a></li>
-                                    {{/each}}
-                                {{/compare}}                                    
-                            {{/each}}                                                               
-                    </ul>
-                    <li class="divider"></li>
-                {{/each}}
-                </ul>
-            </div> 
-            <!---->
-        </div>
         <div class="span10" ng-app="mongogui">
-            <div ng-view></div>
-            {{{body}}} 
+            <div ng-view>{{{body}}}</div>
         </div>
     </div>
 </div>

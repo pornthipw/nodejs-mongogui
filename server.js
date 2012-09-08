@@ -183,7 +183,8 @@ app.get('/db', middleware, function(req, res) {
         db_name_list.push({'name':databases[key]});
     }
     console.log(db_name_list);
-    res.json(db_name_list);
+    console.log(collections);
+    res.json(collections);
 });
 
 app.get('/db/:database', middleware, routes.viewDatabase);

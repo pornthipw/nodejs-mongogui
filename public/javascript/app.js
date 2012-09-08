@@ -6,5 +6,5 @@ angular.module('mongogui', ['mongo_service']).
 
 
 function MongoController($scope, MongoDB) {
-    $scope.db_list = MongoDB.query();    
+    $scope.db_list = MongoDB.query();         
 }

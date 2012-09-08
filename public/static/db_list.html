@@ -1,7 +1,16 @@
-hello db_list.html
-
-<ul>
-    <li ng-repeat="db in db_list">
-        {{db.name}}
-    </li>
-</ul>
+<div class="span3">
+    <div class="well sidebar-nav">
+        <ul class="nav nav-list">
+            <li ng-repeat="db in db_list">
+                <div class="nav-header">
+                    {{db.db_name}}
+                    <i class="icon-chevron-down pull-right" onclick="$('#toggle_{{db.db_name}}').collapse('toggle')"></i>
+                </div>
+                <a href="db/{{db.db_name}}"><i class="icon-folder-open"></i> View Database</a>                
+                <ul class="unstyled collapse nav nav-list {%- if db == dbName %} in{% endif -%}" id="toggle_{{db.db_name}}">
+                    <li ng-repeat="collection in db.collections"> {{collection}} </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
