@@ -9,7 +9,7 @@
                 <a ng-src="{{db.db_name}}" ng-click="test(db.db_name)"><i class="icon-folder-open"></i> View Database</a>                
                 <ul class="unstyled collapse nav nav-list {%- if db == dbName %} in{% endif -%}" id="toggle_{{db.db_name}}">
                     <li ng-repeat="collection in db.collections">
-                        <a  ng-src="{{collection}}" ng-click="delete_collection(collection)"><i class="icon-list-alt"></i> {{ collection }}</a>
+                        <a  ng-src="{{collection}}" ng-click="get_collection(collection)"><i class="icon-list-alt"></i> {{ collection }}</a>
                     </li>
                 </ul>
             </li>
@@ -40,3 +40,6 @@
 
 </div>
 
+<div>
+{{selected_colls}}
+</div>

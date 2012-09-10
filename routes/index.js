@@ -5,6 +5,7 @@ var coll = require('./collection');
 exports.viewDatabase = db.viewDatabase;
 exports.addCollection = coll.addCollection;
 exports.deleteCollection = coll.deleteCollection;
+exports.viewCollection = coll.viewCollection;
 
 exports.index = function(req, res) {
     var ctx = {

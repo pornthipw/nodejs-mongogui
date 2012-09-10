@@ -23,6 +23,14 @@ function MongoController($scope,MongoDB) {
         
     };
     
+    $scope.get_collection = function(collection) {
+	console.log('get collection :'+collection+'  on '+$scope.selected_db); 
+	MongoDB.get({database: $scope.selected_db,collection:collection}, function(db) {
+	    //get
+	    $scope.selected_colls = db.collections.collections;
+	});
+    };
+    
     $scope.delete_collection = function(collection) {
         console.log('delete collection :'+collection+'  on '+$scope.selected_db); 
         //del

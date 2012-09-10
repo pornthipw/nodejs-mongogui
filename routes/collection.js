@@ -1,34 +1,21 @@
 var config = require('../config');
 
 
-export.viewCollection = function(req, res, next) {
-    var limit = config.options.documentsPerpage;
-    var skip = parseInt(req, query, skip, 10) || 0;
+exports.viewCollection = function(req, res, next) {
+    //var limit = config.options.documentsPerpage;
+    //var skip = parseInt(req, query, skip, 10) || 0;
     
     var query_option = {
-        limit: limit,
-        skip: skip
+        //limit: limit,
+        //skip: skip
     };
-    
-    req.collection.find({}, query_option).toArray(function(err, items){
-        req.collection.stats(function(err, stats) {
-            var docs = [];
-            
-            for (var i in items) {
-                docs[i] = item[i];
-                item[i] = bson.toString(items[i]);
-            }
-            
-            var ctx = {
-                title: 'Viewing Collection:' + req.collectionName,
-                documents: items,
-                docs: docs,
-                starts: starts
-            };
-            
-            res.render('collection', ctx);
-        });
+
+
+    req.params.collection.find({}, query_option).toArray(function(err, items){
+   // req.params.collection.find({}, query_option).toArray(function(err, items){
+           // res.render('collection', ctx);
     });
+    //});
 };
 
 
@@ -53,12 +40,7 @@ exports.addCollection = function(req, res, next) {
       console.error(err);
       return res.redirect('back');
     }
-    //
-    //req.updateCollections(req.db, req.dbName, function() {
-      //req.session.success = 'Collection created!';
-      //res.redirect('/db/' + req.dbName + '/' + name);
 
-    //});
     
     req.updateCollections(req.db, req.dbName, function() {
         // req.session.success = 'Collection created!';
@@ -68,7 +50,7 @@ exports.addCollection = function(req, res, next) {
 };
 
 exports.deleteCollection = function(req, res, next) {
-  req.collection.drop(function(err, result) {
+  req.params.collection.drop(function(err, result) {
     if (err) {
       req.session.error = "Something went wrong: " + err;
       console.error(err);
@@ -84,7 +66,7 @@ exports.deleteCollection = function(req, res, next) {
         return res.redirect('back');
       }
 
-      req.session.success = "Collection  '" + req.collectionName + "' deleted!";
+      //req.session.success = "Collection  '" + req.collectionName + "' deleted!";
       res.redirect('/db/' + req.dbName);
     });
   });
