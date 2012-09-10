@@ -10,11 +10,34 @@ exports.viewCollection = function(req, res, next) {
         //skip: skip
     };
 
-
-    req.params.collection.find({}, query_option).toArray(function(err, items){
+    req.collection.find({}, query_option).toArray(function(err, items){
+	req.collection.stats(function(err,stats) {
+	    var docs = [];
+	    //for (var i in items){
+		//docs[i] = items[i];
+		//console.log("-->"+ docs[i]);
+		//items[i] =
+	    //}
+	    //req.collections =items
+	    for(var obj in items) {      
+		  console.log("dbname-->"+items[obj]);  
+		  
+		  
+		}
+	    
+	    var ctx = {
+		title: req.collectionName,
+		docs: docs,
+		stats: stats,
+		document: items
+	    };
+	    res.json(ctx);
+	});
+    });
+    //req.params.collection.find({}, query_option).toArray(function(err, items){
    // req.params.collection.find({}, query_option).toArray(function(err, items){
            // res.render('collection', ctx);
-    });
+   // });
     //});
 };
 
