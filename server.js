@@ -73,7 +73,7 @@ var updateCollections = function(db, dbName, callback){
         for (var r in result) {
             var coll = utils.parseCollectionName(result[r].name);
             names.push(coll.name);
-            console.log(coll.name);
+            // console.log(coll.name);
         }
         collections.push({'db_name':dbName, 'collections': names.sort()});
         
@@ -81,7 +81,7 @@ var updateCollections = function(db, dbName, callback){
         if (callback) {
             callback(err);
         }        
-        console.log(collections);
+        // console.log(collections);
     });
 };
 
@@ -162,9 +162,43 @@ app.param('database', function(req, res, next, id){
     next();
 });
 
+app.param('collection', function(req,res,next,id) {
+    
+    console.log(req.dbName);
+    var colls = null;
+    
+    for(var obj in req.collections) {      
+      console.log(req.collections[obj].db_name);  
+      if(req.collections[obj].db_name == req.dbName) {          
+          if (!_.include(req.collections[obj].collections, id)) {                
+             return res.redirect('/db/'+req.dbName);
+         }
+      }
+    }
+    
+    
+    req.collectionName = id;
+    res.locals.collectionName = id;
+    
+    connections[req.dbName].collection(id, function(err, coll){
+        if (err || coll == null) {
+            console.log('Collection not found!');
+            return res.redirect('/db/' + req.dbName);
+        }        
+        req.collection = coll;        
+        next();        
+    });
+    
+});
+
 var middleware = function(req, res, next) {
     req.databases = databases;
     req.collections = collections;
+    
+        
+    req.updateCollections = updateCollections;
+    
+    
     next();
 };
 
@@ -174,20 +208,27 @@ app.locals({
     baseHref:config.site.baseUrl
 });
 
-app.get('/', middleware, routes.index);
+app.del('/db/:database/:collection', middleware, routes.deleteCollection);
+app.get('/db/:database/:collection', middleware, routes.viewCollection);
+app.post('/db/:database/:collection', middleware, routes.addCollection);
+
+app.get('/db/:database', middleware, routes.viewDatabase);
 
 app.get('/db', middleware, function(req, res) {
-    console.log(databases);
+    //console.log(databases);
     var db_name_list = [];
     for(var key in databases) {
         db_name_list.push({'name':databases[key]});
     }
-    console.log(db_name_list);
-    console.log(collections);
+    //console.log(db_name_list);
+    //console.log(collections);
     res.json(collections);
 });
 
-app.get('/db/:database', middleware, routes.viewDatabase);
+app.get('/', middleware, routes.index);
+
+
+
 
 app.listen(config.site.port || 3000);
 

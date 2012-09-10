@@ -1,7 +1,14 @@
 exports.viewDatabase = function(req, res) {
-  var ctx = {
-    title: 'Viewing Database: ' + req.dbName,
-    colls: req.collections[req.dbName]
+  var colls = null;
+  for(var obj in req.collections) {
+      // console.log('viewDatabase '+ req.collections[obj]);      
+      if(req.collections[obj].db_name == req.dbName) {
+        colls = req.collections[obj];
+        break;
+      } 
+  }
+  var ctx = {    
+    collections: colls
   };
-  res.render('database', ctx);
+  res.json(ctx);
 }

@@ -1,4 +1,4 @@
-<div class="span3">
+<div class="span2">
     <div class="well sidebar-nav">
         <ul class="nav nav-list">
             <li ng-repeat="db in db_list">
@@ -6,11 +6,37 @@
                     {{db.db_name}}
                     <i class="icon-chevron-down pull-right" onclick="$('#toggle_{{db.db_name}}').collapse('toggle')"></i>
                 </div>
-                <a href="db/{{db.db_name}}"><i class="icon-folder-open"></i> View Database</a>                
+                <a ng-src="{{db.db_name}}" ng-click="test(db.db_name)"><i class="icon-folder-open"></i> View Database</a>                
                 <ul class="unstyled collapse nav nav-list {%- if db == dbName %} in{% endif -%}" id="toggle_{{db.db_name}}">
-                    <li ng-repeat="collection in db.collections"> {{collection}} </li>
+                    <li ng-repeat="collection in db.collections">
+                        <a  ng-src="{{collection}}" ng-click="delete_collection(collection)"><i class="icon-list-alt"></i> {{ collection }}</a>
+                    </li>
                 </ul>
             </li>
         </ul>
-    </div>
+    </div>   
 </div>
+
+<div class="navbar span10" >
+  <div class="navbar-inner">
+    <a class="brand" href="#">{{ selected_db }}</a>
+    <ul class="nav">
+      <li class="active"><a href="">Home</a></li>
+    </ul>
+  </div>
+  
+  <h2>Create Collection</h2>
+  
+  
+    <form class="well form-inline" ng-submit="create_collection()">
+        <div class="input-prepend">
+            <span class="add-on">{{ selected_db }} . </span>
+            <input class="input-medium" type="text" id="collection" ng-model="collection_name" name="collection" placeholder="Collection Name" title="Collection Name">
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="icon-folder-open icon-white"></i> Create collection
+        </button>
+    </form>
+
+</div>
+
