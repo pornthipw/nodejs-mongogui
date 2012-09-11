@@ -70,5 +70,29 @@ exports.addCollection = function(req, res, next) {
 };
 
 exports.deleteCollection = function(req, res, next) {
-    console.log(req.collection);
+    var name = req.params.collection;
+    //console.log(req.collection);
+    req.collection.drop(function(err, result) {
+    if (err) {
+      //req.session.error = "Something went wrong: " + err;
+      console.error(err);
+      return res.redirect('back');
+    }
+
+    //If delete was successful, result === true
+
+    req.updateCollections(req.db, req.dbName, function(err) {
+      if (err) {
+        //req.session.error = "Something went wrong: " + err;
+        console.error(err);
+        return res.redirect('back');
+      }
+
+      //req.session.success = "Collection  '" + req.collectionName + "' deleted!";
+      console.log("Collection  '" + req.collectionName + "' deleted!");
+      res.redirect('/db/' + req.dbName);
+      //res.redirect('/');
+      //res.redirect('/db/' + req.dbName + '/' + name);
+    });
+  });
 };

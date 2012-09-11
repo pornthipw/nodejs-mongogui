@@ -39,9 +39,12 @@ function MongoController($scope,MongoDB) {
     $scope.delete_collection = function(selected_db, title) {
         console.log('delete collection :'+title+'  on '+selected_db); 
         //del
-        MongoDB.get({database: selected_db,collection:title}, function(db) {
-            //console.log();
-        });
+        MongoDB.delete({database: selected_db,collection:title});//, function(){
+	//console.log(delCollection.collection);
+	
+	//});
+	
+        $scope.db_list = MongoDB.query();
     };
     
 }
