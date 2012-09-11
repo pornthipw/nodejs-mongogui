@@ -10,6 +10,7 @@ exports.viewCollection = coll.viewCollection;
 exports.index = function(req, res) {
     var ctx = {
        title : 'Mongo Express', 
+       //info: false
     };
     console.log('request index.js');
     res.render('index', ctx);

@@ -11,34 +11,31 @@ exports.viewCollection = function(req, res, next) {
     };
 
     req.collection.find({}, query_option).toArray(function(err, items){
-	req.collection.stats(function(err,stats) {
-	    var docs = [];
-	    //for (var i in items){
-		//docs[i] = items[i];
-		//console.log("-->"+ docs[i]);
-		//items[i] =
-	    //}
-	    //req.collections =items
-	    for(var obj in items) {      
-		  console.log("dbname-->"+items[obj]);  
-		  
-		  
-		}
-	    
-	    var ctx = {
-		title: req.collectionName,
-		docs: docs,
-		stats: stats,
-		document: items
-	    };
-	    res.json(ctx);
-	});
+        req.collection.stats(function(err,stats) {
+            var docs = [];
+            //for (var i in items){
+            //docs[i] = items[i];
+            //console.log("-->"+ docs[i]);
+            //items[i] =
+            //}
+            //req.collections =items
+            //for(var obj in items) {      
+            //  console.log("dbname-->"+items[obj]);  
+              
+            //}
+            
+            var ctx = {
+                title: req.collectionName,
+                docs: docs,
+                stats: stats,
+                document: items
+                //editorTheme: editorTheme
+                //info: false
+            };
+            res.json(ctx);
+        });
     });
-    //req.params.collection.find({}, query_option).toArray(function(err, items){
-   // req.params.collection.find({}, query_option).toArray(function(err, items){
-           // res.render('collection', ctx);
-   // });
-    //});
+
 };
 
 
@@ -73,24 +70,5 @@ exports.addCollection = function(req, res, next) {
 };
 
 exports.deleteCollection = function(req, res, next) {
-  req.params.collection.drop(function(err, result) {
-    if (err) {
-      req.session.error = "Something went wrong: " + err;
-      console.error(err);
-      return res.redirect('back');
-    }
-
-    //If delete was successful, result === true
-
-    req.updateCollections(req.db, req.dbName, function(err) {
-      if (err) {
-        req.session.error = "Something went wrong: " + err;
-        console.error(err);
-        return res.redirect('back');
-      }
-
-      //req.session.success = "Collection  '" + req.collectionName + "' deleted!";
-      res.redirect('/db/' + req.dbName);
-    });
-  });
+    console.log(req.collection);
 };
