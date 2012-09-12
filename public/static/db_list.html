@@ -8,7 +8,7 @@
                         <i class="icon-chevron-down pull-right" onclick="$('#toggle_{{db.db_name}}').collapse('toggle')"></i>
                     </div>
                     <a ng-src="{{db.db_name}}" ng-click="test(db.db_name)"><i class="icon-folder-open"></i> View Database</a>                
-                    <ul class="unstyled collapse nav nav-list {%- if db == dbName %} in{% endif -%}" id="toggle_{{db.db_name}}">
+                    <ul class="unstyled collapse nav nav-list" ng-class="show_db_detail_class(db.db_name)" id="toggle_{{db.db_name}}">
                         <li ng-repeat="collection in db.collections">
                             <a  ng-src="{{collection}}" ng-click="get_collection(db.db_name, collection)"><i class="icon-list-alt"></i> {{ collection }}</a>
                         </li>
@@ -21,41 +21,39 @@
             <div ng-hide="!collection_stats">                                                             
                 <div class="sidebar-nav">
                     
-                    <ul class="nav nav-list">
-                        <li class="nav-header">Collection Stats</li>
-                        <li>
+                    <ul class="nav nav-list" >
+                        <li class="nav-header"  ng-hide="!collection_stats">Collection Stats</li>
+                        <li  ng-hide="!collection_stats.count">
                             <strong>Documents</strong>
                             <span class="pull-right">{{collection_stats.count}}</span>
                         </li>
-                        <li>
+                        <li ng-hide="!collection_stats.size">
                             <strong>Total doc size</strong>
-                            <span class="pull-right"></span>
+                            <span class="pull-right">{{collection_stats.size}}</span>
                         </li>
-                        <li>
+                        <li ng-hide="!collection_stats.avgObjSize">
                             <strong>Average doc size</strong>
-                            <span class="pull-right"></span>
+                            <span class="pull-right">{{collection_stats.avgObjSize}}</span>
                         </li>
-                        <li>
+                        <li ng-hide="!collection_stats.storageSize">
                             <strong>Pre-allocated size</strong>
-                            <span class="pull-right"></span>
+                            <span class="pull-right">{{collection_stats.storageSize}}</span>
                         </li>
-                        <li>&nbsp;</li>
-                        <li>
+                        <li ng-hide="!collection_stats.nindexes">
                             <strong>Indexes</strong>
-                            <span class="pull-right"></span>
+                            <span class="pull-right">{{collection_stats.nindexes}}</span>
                         </li>
-                        <li>
+                        <li ng-hide="!collection_stats.totalIndexSize">
                             <strong>Total index size</strong>
-                            <span class="pull-right"></span>
+                            <span class="pull-right">{{collection_stats.totalIndexSize}}</span>
                         </li>
-                        <li>&nbsp;</li>
-                        <li>
+                        <li ng-hide="!collection_stats.paddingFactor">
                             <strong>Padding factor</strong>
-                            <span class="pull-right"></span>
+                            <span class="pull-right">{{collection_stats.paddingFactor}}</span>
                         </li>
-                        <li>
+                        <li ng-hide="!collection_stats.paddingFactor">
                             <strong>Extents</strong>
-                            <span class="pull-right"></span>
+                            <span class="pull-right">{{collection_stats.numExtents}}</span>
                         </li>
                     </ul>
                     
@@ -92,33 +90,33 @@
     <div class="navbar span9" ng-show="showInput">
         <div class="navbar-inner">
             <ul class="nav">
-                <li><a href="">Home>></a></li>
-                <li><a href="" ng-click="test(selected_db)">{{ selected_db }}>></a></li>
-                <li class="active"><a href="">{{ title  }}</a></li>
+                <li><a href="">Home</a></li>
+                <li><a href="" ng-click="test(selected_db)">{{ selected_db }}</a></li>
+                <li class="active"><a href="">{{ selected_collection   }}</a></li>
             </ul>
         </div>
         <!----->
 
         <div >
             <div class="span5">
-                <!--
+                
                 <h2>Rename Collection</h2>
-                <form method="POST" action="db/{{ dbName }}/{{ collectionName }}" class="well form-inline">
+                <form method="POST"  class="well form-inline" ng-submit="rename_collection()">
                     <input type="hidden" name="_method" value="put">
                     <div class="input-prepend">
-                        <span class="add-on">{{ dbName }} . </span>
+                        <span class="add-on">{{ selected_db }} . </span>
                         <input class="input-medium" type="text" id="collection" name="collection" placeholder="{{ collectionName }}">
                     </div>
                     <button type="submit" class="btn btn-primary">
                         <i class="icon-tag icon-white"></i>Rename
                     </button>
                 </form>
-                -->
+                
             </div>
             <div class="span4">
                 
                 <h2>Delete Collection</h2>
-                <form  class="well" ng-submit="delete_collection(selected_db,title)" >
+                <form  class="well" ng-submit="delete_collection(selected_db,selected_collection)" >
                     <input type="hidden" name="_method" value="delete">
                     <button id="deleteButton" type="submit" class="btn btn-danger" title="Warning">
                         <i class="icon-trash icon-white"></i>Delete

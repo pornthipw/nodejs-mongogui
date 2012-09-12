@@ -49,6 +49,7 @@ app.configure(function() {
   app.set('views', __dirname + '/views');
   app.engine('html', handlebars.__express);  
   app.set('view engine', 'html');      
+  app.use(express.methodOverride());
 });
 
 //Set up database stuff
@@ -66,8 +67,8 @@ var mainConn;
 
 var db = new mongodb.Db('local', new mongodb.Server(host, port, dbOptions));
 
-var updateCollections = function(db, dbName, callback){
-    db.collectionNames(function(err, result) {
+var updateCollections = function(db, dbName, callback){    
+    db.collectionNames(function(err, result) {        
         var names = [];
         
         for (var r in result) {
@@ -75,8 +76,19 @@ var updateCollections = function(db, dbName, callback){
             names.push(coll.name);
             // console.log(coll.name);
         }
-        collections.push({'db_name':dbName, 'collections': names.sort()});
         
+        var found = false;
+        for(var idx in collections) {
+            if(collections[idx].db_name == dbName) {
+                collections[idx].collections = names.sort();
+                found = true;
+                break;
+            }
+        }
+        
+        if(!found) {
+            collections.push({'db_name':dbName, 'collections': names.sort()});        
+        }
         
         if (callback) {
             callback(err);
@@ -87,6 +99,7 @@ var updateCollections = function(db, dbName, callback){
 
 
 var updateDatabases = function(admin) {
+    databases = [];
     admin.listDatabases(function(err, dbs) {
         if(err) {
             console.error(err);
@@ -150,6 +163,7 @@ app.param('database', function(req, res, next, id){
     
     req.dbName = id;
     res.locals.dbName = id;
+    console.log('Found Database Params :'+id);
     //dbName:databases,
     
     if (connections[id] != undefined) {
@@ -164,7 +178,7 @@ app.param('database', function(req, res, next, id){
 
 app.param('collection', function(req,res,next,id) {
     
-    console.log(req.dbName);
+    console.log(' Collection Param :: collection" ' +id +' " from '+req.dbName);
     var colls = null;
     
     for(var obj in req.collections) {      
@@ -193,12 +207,8 @@ app.param('collection', function(req,res,next,id) {
 
 var middleware = function(req, res, next) {
     req.databases = databases;
-    req.collections = collections;
-    
-        
-    req.updateCollections = updateCollections;
-    
-    
+    req.collections = collections;            
+    req.updateCollections = updateCollections;        
     next();
 };
 
@@ -208,9 +218,17 @@ app.locals({
     baseHref:config.site.baseUrl
 });
 
-app.del('/db/:database/:collection', middleware, routes.deleteCollection);
+//document
+
+
+
+
+// collection
 app.get('/db/:database/:collection', middleware, routes.viewCollection);
+app.put('/db/:database/:collection',middleware, routes.renameCollection);
+app.del('/db/:database/:collection', middleware, routes.deleteCollection);
 app.post('/db/:database/:collection', middleware, routes.addCollection);
+
 
 app.get('/db/:database', middleware, routes.viewDatabase);
 

@@ -6,12 +6,13 @@ exports.viewDatabase = db.viewDatabase;
 exports.addCollection = coll.addCollection;
 exports.deleteCollection = coll.deleteCollection;
 exports.viewCollection = coll.viewCollection;
+exports.renameCollection = coll.renameCollection;
+
 
 exports.index = function(req, res) {
     var ctx = {
        title : 'Mongo Express', 
-       //info: false
     };
-    console.log('request index.js');
+    //console.log('request index.js');
     res.render('index', ctx);
 }
