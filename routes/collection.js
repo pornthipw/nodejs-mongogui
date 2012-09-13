@@ -18,7 +18,7 @@ exports.viewCollection = function(req, res, next) {
                 title: req.collectionName,
                 docs: docs,
                 stats: stats,
-                document: items
+                documents: items
             };
             res.json(ctx);
         });
@@ -82,7 +82,8 @@ exports.deleteCollection = function(req, res, next) {
 };
 
 exports.renameCollection = function (req, res, next) {
-    var name = req.params.collection;
+    var name = req.body.rename_collection;
+    console.log(name);
     
     if (name == undefined || name.length ==0 ) {
         res.json({success:false});

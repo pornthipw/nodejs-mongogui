@@ -9,6 +9,8 @@ exports.viewCollection = coll.viewCollection;
 exports.renameCollection = coll.renameCollection;
 
 
+exports.viewDocument = doc.viewDocument;
+
 exports.index = function(req, res) {
     var ctx = {
        title : 'Mongo Express', 

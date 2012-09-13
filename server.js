@@ -205,9 +205,35 @@ app.param('collection', function(req,res,next,id) {
     
 });
 
+//
+app.param('document', function(req, res, next, id){
+    if (id.length == 24) {
+        try {
+            id = new mongdb.ObjectID.createFromHexString(id);
+        } catch (err) {
+            
+        }
+    }
+    
+    req.cpllection.findOne({_id:id}, function(err, doc) {
+        if (err || doc == null) {
+            return res.redirect('/db/' + req.dbName + '/' + req.collectionName);
+        }
+        
+        req.document = doc;
+        res.locals.document = doc;
+        
+        next();
+    });
+    
+    
+});
+
+
+
 var middleware = function(req, res, next) {
     req.databases = databases;
-    req.collections = collections;            
+    req.collections = collections;           
     req.updateCollections = updateCollections;        
     next();
 };
@@ -218,17 +244,21 @@ app.locals({
     baseHref:config.site.baseUrl
 });
 
-//document
 
+//Routes ......
+
+//upload
+
+// document
+app.get('/db/:database/:collection/:document', middleware, routes.viewDocument);
 
 
 
 // collection
+app.post('/db/:database/:collection', middleware, routes.addCollection);
 app.get('/db/:database/:collection', middleware, routes.viewCollection);
 app.put('/db/:database/:collection',middleware, routes.renameCollection);
 app.del('/db/:database/:collection', middleware, routes.deleteCollection);
-app.post('/db/:database/:collection', middleware, routes.addCollection);
-
 
 app.get('/db/:database', middleware, routes.viewDatabase);
 

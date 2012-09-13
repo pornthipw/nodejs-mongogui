@@ -62,76 +62,101 @@
         </div>
     </div>
     
-    <!--database-->
-    <div class="navbar span9" ng-hide="showInput">
-      <div class="navbar-inner">
-        <a class="brand" href="#">{{ selected_db }}</a>
-        <ul class="nav">
-          <li class="active"><a href="">Home</a></li>
-        </ul>
-      </div>
-      
-      <h2>Create Collection </h2>
-      
-      
-        <form class="well form-inline" ng-submit="create_collection()" >
-            <div class="input-prepend">
-                <span class="add-on">{{ selected_db }} . </span>
-                <input class="input-medium" type="text" id="collection" ng-model="collection_name" name="collection" placeholder="Collection Name" title="Collection Name">
-            </div>
-            <button type="submit" class="btn btn-primary">
-                <i class="icon-folder-open icon-white"></i> Create collection
-            </button>
-        </form>
-
-    </div>
-    
-    <!--collection-->
-    <div class="navbar span9" ng-show="showInput">
-        <div class="navbar-inner">
-            <ul class="nav">
-                <li><a href="">Home</a></li>
-                <li><a href="" ng-click="test(selected_db)">{{ selected_db }}</a></li>
-                <li class="active"><a href="">{{ selected_collection   }}</a></li>
-            </ul>
+    <div class="navbar span9" >
+        <div class="row-fluid">            
+            <div class="navbar-inner span12">
+                <ul class="nav">
+                    <li><a href="">Home</a></li>
+                    <li><a href="" ng-click="test(selected_db)">{{ selected_db }}</a></li>
+                    <li ng-show="showCollectionPage" class="active"><a href="">{{ selected_collection }}</a></li>
+                </ul>
+            </div>    
         </div>
-        <!----->
-
-        <div >
-            <div class="span5">
-                
+        
+        <!---Database--->
+        <div class="row-fluid" ng-show="showDatabasePage">            
+            <div class="span12">                
+                <h2>Create Collection </h2>            
+                <form class="well form-inline" ng-submit="create_collection()" >
+                <div class="input-prepend">
+                    <span class="add-on">{{ selected_db }} . </span>
+                    <input class="input-medium" type="text" id="collection" ng-model="collection_name" name="collection" placeholder="Collection Name" title="Collection Name">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="icon-folder-open icon-white"></i> Create collection
+                </button>
+                </form>
+            </div>   
+        </div>  
+              
+         <!---Collection--->
+        <div class="row-fluid" ng-show="showCollectionPage">                                    
+            <div class="span7">                
                 <h2>Rename Collection</h2>
                 <form method="POST"  class="well form-inline" ng-submit="rename_collection()">
                     <input type="hidden" name="_method" value="put">
                     <div class="input-prepend">
                         <span class="add-on">{{ selected_db }} . </span>
-                        <input class="input-medium" type="text" id="collection" name="collection" placeholder="{{ collectionName }}">
+                        <input class="input-medium" type="text" id="collection" ng-model="new_collection" name="collection" placeholder="{{ collectionName }}">
                     </div>
                     <button type="submit" class="btn btn-primary">
                         <i class="icon-tag icon-white"></i>Rename
                     </button>
-                </form>
-                
+                </form>                
             </div>
-            <div class="span4">
-                
+            
+            <div class="span5">                
                 <h2>Delete Collection</h2>
                 <form  class="well" ng-submit="delete_collection(selected_db,selected_collection)" >
                     <input type="hidden" name="_method" value="delete">
-                    <button id="deleteButton" type="submit" class="btn btn-danger" title="Warning">
+                    <button id="deleteButton" rel="tooltip" type="submit" class="btn btn-danger" 
+                            title="Are you sure you want to delete this collection? All documents will be deleted.">
                         <i class="icon-trash icon-white"></i>Delete
                     </button>
                 </form>
                 
                 <script>
-                    $('#deleteButton').popover({content: "Are you sure you want to delete this collection? All documents will be deleted."});
-                </script>
-                
+                    $('#deleteButton').tooltip({placement:'right'});
+                </script>                
+            </div>
+            
+            <!---Document--->
+
+            
+            <!--edit Document-->
+            <div class="row-fluid">
+                <div class="span8" ng-repeat="document in document_list">
+                    <textarea readonly="readonly" id="doc_{{ loop.index }}" name="doc_{{ loop.index }}">
+                        {{ document }}
+                    </textarea>
+                    
+
+  
                 </div>
-        </div>
-        <!---->
-    </div>
-    
-    
+                <div class="span1">
+                    <br /><br />
+                    <form method="POST" action="db/{{ dbName }}/{{ collectionName }}/{{ docs[loop.index0]._id }}">
+                        <input type="hidden" name="_method" value="delete">
+                        <button type="submit" class="btn btn-danger btn-mini">
+                        <i class="icon-remove icon-white"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+
+            <!--list of Document-->
+            <!--<div class="row-fluid">
+                <table class="table table-striped">
+                    <tr ng-repeat="document in document_list">
+                        <td>{{document.filename}}</td>
+                    </tr>
+                </table>
+            </div>
+            -->
+            
+            
+        </div>                
+    </div>                
 </div>
 
