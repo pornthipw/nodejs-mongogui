@@ -248,10 +248,26 @@ app.locals({
 //Routes ......
 
 //upload
+//app.post('/csv/giveAnUploadUrl', express.bodyParser(), function(req, res) {
+//    res.send(typeof(req.body), {'Content-Type': 'text/plain'});
+//});
+
+
+
+app.post('/csv/giveAnUploadUrl', express.bodyParser(),function(req, res, next) {
+    console.log("body-->"+req.body);
+    console.log("file-->"+req.files.file);
+    //get the temporary location of the file
+    //var tmp_path = req.files.thumbnail.path;
+    res.send(typeof(req.files.file), {'Content-Type': 'text/plain'});
+
+});
+
+
+//app.post('/csv/giveAnUploadUrl', csv_mongo.save_file.bind(csv_mongo));
 
 // document
-app.get('/db/:database/:collection/:document', middleware, routes.viewDocument);
-
+//app.get('/db/:database/:collection/:document', middleware, routes.viewDocument);
 
 
 // collection
