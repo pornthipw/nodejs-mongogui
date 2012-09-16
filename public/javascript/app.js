@@ -1,5 +1,5 @@
 
-var app = angular.module('mongogui', ['mongo_service']);
+var app = angular.module('mongogui', ['mongo_service','gridstore_service']);
 
 app.config(function($routeProvider) {
   $routeProvider.
@@ -8,7 +8,9 @@ app.config(function($routeProvider) {
 });
 
 
-function UploadController($scope) {
+function UploadController($scope,GridStore) {
+  $scope.file_list = GridStore.query({database:'mydb'});
+  console.log($scope.file_list);
 
   $('iframe#upload_target').load(function() {
     var data = $.parseJSON($('iframe#upload_target').contents().find("body")[0].innerHTML);
