@@ -3,7 +3,8 @@ angular.module('mongo_service', ['ngResource']).
         var MongoDB  = $resource('/db/:database/:collection/:document', 
             {database:'@database',collection:'@collection',document:'@document'},
             { rename_collection: {method: 'PUT'}
-        });   
-        
+        });           
         return MongoDB;
 });
+
+

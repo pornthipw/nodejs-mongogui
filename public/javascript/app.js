@@ -1,3 +1,4 @@
+
 var app = angular.module('mongogui', ['mongo_service']);
 
 app.config(function($routeProvider) {
