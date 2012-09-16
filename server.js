@@ -224,11 +224,8 @@ app.param('document', function(req, res, next, id){
         res.locals.document = doc;
         
         next();
-    });
-    
-    
+    });    
 });
-
 
 
 var middleware = function(req, res, next) {
@@ -248,11 +245,31 @@ app.locals({
 //Routes ......
 
 //upload
+app.post('/gridstore/:database', function(req, res) {  
+  var gridStore = new mongodb.GridStore(req.db, new mongodb.ObjectID(), 'w', {root:'csv'});
+    console.log(req.files.file);
+    gridStore.open(function(err, gridStore) {
+      gridStore.writeFile(req.files.file.path, function(err, doc) {                
+        if(err) {
+          console.log(err);
+          res.send(JSON.stringify({success:false}));              
+        }
+
+        gridStore.close(function(err, result) {
+          if(err) {
+            console.log(err);
+            res.send(JSON.stringify({success:false}));              
+          }
+          console.log("Success!");
+          res.send(JSON.stringify({success:true}));  
+        });
+
+      });
+    });
+});
 
 // document
 app.get('/db/:database/:collection/:document', middleware, routes.viewDocument);
-
-
 
 // collection
 app.post('/db/:database/:collection', middleware, routes.addCollection);

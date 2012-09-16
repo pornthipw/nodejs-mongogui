@@ -1,6 +1,5 @@
 function MongoController($scope,MongoDB) {    
     $scope.db_list = MongoDB.query();
-    console.log($scope.db_list.length);
     
     $scope.test = function(dbname) {    
         console.log('run test');
@@ -21,7 +20,6 @@ function MongoController($scope,MongoDB) {
     };
     
     $scope.show_db_detail_class = function(dbName) {
-        console.log(dbName + ' vs ' +$scope.selected_db);
         if(dbName == $scope.selected_db) {
             return "in";
         }
