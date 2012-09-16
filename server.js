@@ -205,6 +205,25 @@ app.param('collection', function(req,res,next,id) {
     
 });
 
+app.param('file', function(req, res, next, id) {
+  if (id.length == 24) {
+    try {
+      id = new mongdb.ObjectID.createFromHexString(id);
+    } catch (err) {
+          
+    }
+  }        
+  var gridStore = new mongodb.GridStore(req.db, id, 'r', {root:'csv'});
+  gridStore.open(function(err, gridStore) {
+    if(err) {
+    } else {
+      console.log('found gridStrore');
+      req.gridfile = gridStore;
+      next();
+    }
+  });  
+});
+
 //
 app.param('document', function(req, res, next, id){
     if (id.length == 24) {
@@ -213,16 +232,13 @@ app.param('document', function(req, res, next, id){
         } catch (err) {
             
         }
-    }
-    
+    }        
     req.cpllection.findOne({_id:id}, function(err, doc) {
         if (err || doc == null) {
             return res.redirect('/db/' + req.dbName + '/' + req.collectionName);
-        }
-        
+        }        
         req.document = doc;
-        res.locals.document = doc;
-        
+        res.locals.document = doc;        
         next();
     });    
 });
@@ -244,7 +260,9 @@ app.locals({
 
 //Routes ......
 
+
 //upload
+app.get('/gridstore/:database/:file', middleware, routes.getFile);
 app.get('/gridstore/:database', middleware, routes.listFile);
 app.post('/gridstore/:database', middleware, routes.storeFile);
 

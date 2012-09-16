@@ -11,6 +11,7 @@ exports.renameCollection = coll.renameCollection;
 
 exports.storeFile = gridstore.storeFile;
 exports.listFile = gridstore.listFile;
+exports.getFile = gridstore.getFile;
 
 // exports.viewDocument = doc.viewDocument;
 

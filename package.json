@@ -5,6 +5,7 @@
     "express" : "*",    
     "mongodb" : "*",
     "hbs" : "*",
-    "underscore" : "*"
+    "underscore" : "*",
+    "ya-csv" :"*"
   }
 }

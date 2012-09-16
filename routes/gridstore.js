@@ -10,8 +10,23 @@ exports.listFile = function(req, res, next) {
     });
     res.json(file_list);
   });
+};
 
+exports.getFile = function(req, res, next) {
 
+  var stream = req.gridfile.stream(true);
+
+  // Register events
+  stream.on("data", function(chunk) {
+    // Record the length of the file    
+    console.log("read data "+chunk.length);
+  });
+
+  stream.on("end", function() {
+    // Record the end was called
+    console.log("end");
+  });
+  res.end();
 };
 
 exports.storeFile = function(req, res, next) {
