@@ -28,11 +28,20 @@ exports.getFile = function(req, res, next) {
       console.log(err);
     }
     var stream = gs.stream(true);
-    
+    var content = [];
     var reader = csv.createCsvStreamReader(); 
     reader.addListener('data', function(data) {
-        console.log('reader data');
+      var row = {};
+      for(var idx in data) {
+        row['col'+idx]=data[idx];
+      }
+      // console.log('reader data '+JSON.stringify(row));
+      content.push(row);
     });
+    
+    reader.addListener('end', function() {
+      res.json(content);
+    });    
     
     reader.addListener('error', function(data) {
         console.log('error data' + data);
@@ -41,22 +50,22 @@ exports.getFile = function(req, res, next) {
     // Register events
     stream.on("data", function(chunk) {
       // Record the length of the file
-      console.log('data');      
-      //console.log(chunk.toString());
-      reader.parse(chunk.toString());
+      // console.log('data');      
+      // console.log(chunk.toString());
+      var str = chunk.toString('utf8')
+      console.log(str);
+      reader.parse(str);
     });
 
     stream.on("end", function() {
       // Record the end was called
-      console.log('end');
+      // console.log('end');
       reader.end();
     });
   });
-    
-  
-  
-  //var reader = csv.createCsvStreamReader(stream);  
-  res.end();
+      
+  // var reader = csv.createCsvStreamReader(stream);  
+  // res.end();
   
 };
 
