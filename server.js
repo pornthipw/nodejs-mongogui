@@ -206,22 +206,15 @@ app.param('collection', function(req,res,next,id) {
 });
 
 app.param('file', function(req, res, next, id) {
+  mongodb.GridStore.DEFAULT_ROOT_COLLECTION = 'csv';
   if (id.length == 24) {
-    try {
-      id = new mongdb.ObjectID.createFromHexString(id);
+    try {      
+      req._id = new mongodb.ObjectID.createFromHexString(id);      
+      next();      
     } catch (err) {
-          
+      console.log(err);        
     }
-  }        
-  var gridStore = new mongodb.GridStore(req.db, id, 'r', {root:'csv'});
-  gridStore.open(function(err, gridStore) {
-    if(err) {
-    } else {
-      console.log('found gridStrore');
-      req.gridfile = gridStore;
-      next();
-    }
-  });  
+  }            
 });
 
 //

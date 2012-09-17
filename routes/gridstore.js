@@ -1,32 +1,63 @@
 var mongodb = require('mongodb');
+var csv = require('ya-csv');
 var config = require('../config');
 
 exports.listFile = function(req, res, next) {
   var file_list = [];
   console.log('requesting list files');
-  mongodb.GridStore.list(req.db, 'csv', function(err, items) {
+  mongodb.GridStore.DEFAULT_ROOT_COLLECTION = 'csv';
+  mongodb.GridStore.list(req.db, {id:true}, function(err, items) {
+    if(err) {
+      console.log(err);
+    }
+    console.log(items);
     items.forEach(function(filename) {
+      console.log(filename);
       file_list.push({'name':filename});
     });
-    res.json(file_list);
-  });
+    res.json(file_list);    
+  });  
 };
 
 exports.getFile = function(req, res, next) {
+  console.log('reguesting getFile from gridstore.js');      
+  
+  var gridStore = new mongodb.GridStore(req.db, req._id, "r");
+  gridStore.open(function(err, gs) {
+    if(err) {
+      console.log(err);
+    }
+    var stream = gs.stream(true);
+    
+    var reader = csv.createCsvStreamReader(); 
+    reader.addListener('data', function(data) {
+        console.log('reader data');
+    });
+    
+    reader.addListener('error', function(data) {
+        console.log('error data' + data);
+    });
 
-  var stream = req.gridfile.stream(true);
+    // Register events
+    stream.on("data", function(chunk) {
+      // Record the length of the file
+      console.log('data');      
+      //console.log(chunk.toString());
+      reader.parse(chunk.toString());
+    });
 
-  // Register events
-  stream.on("data", function(chunk) {
-    // Record the length of the file    
-    console.log("read data "+chunk.length);
+    stream.on("end", function() {
+      // Record the end was called
+      console.log('end');
+      reader.end();
+    });
   });
-
-  stream.on("end", function() {
-    // Record the end was called
-    console.log("end");
-  });
+    
+  
+  
+  //var reader = csv.createCsvStreamReader(stream);  
   res.end();
+  
 };
 
 exports.storeFile = function(req, res, next) {
