@@ -1,12 +1,39 @@
-
 var app = angular.module('mongogui', ['mongo_service','gridstore_service']);
 
 app.config(function($routeProvider) {
   $routeProvider.
+    when('/test', {controller:TestController, templateUrl:'/static/test.html'}).
     when('/csv', {controller:UploadController, templateUrl:'/static/csv/csv_list.html'}).
     when('/', {controller:MongoController, templateUrl:'/static/db_list.html'});
 });
 
+app.directive('csvtable', function() {
+  return {
+    restrict:"E",    
+    scope: {
+      ngModel:'=ngModel'
+    },
+    link:function ($scope, element, attrs) {                                    
+      $scope.$watch('ngModel', function(table) {
+        var str = '';
+        for(var row in table) {
+          for(var key in table[row]) {
+            str+=key+'-';
+          }        
+        }
+        element.replaceWith(str);
+      });
+      
+    }
+  };
+});
+
+
+function TestController($scope) {    
+  $scope.content = [
+    {col1:'c1',col2:'c2',col3:'c3'}
+  ];
+};
 
 function UploadController($scope,GridStore) {
   $scope.file_list = GridStore.query({database:'mydb'});
