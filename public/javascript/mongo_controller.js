@@ -1,14 +1,6 @@
 function MongoController($scope,MongoDB) {    
+    console.log('Running MongoController');
     $scope.db_list = MongoDB.query();
-    
-    $scope.test = function(dbname) {    
-        console.log('run test');
-        MongoDB.get({database: dbname}, function(db) {
-            $scope.selected_db = db.collections.db_name;            
-        });        
-        $scope.showCollectionPage = false;
-        $scope.showDatabasePage = true;         
-    };
     
     $scope.create_collection = function() {
         console.log('create collection :'+$scope.collection_name+'  on '+$scope.selected_db);        
@@ -50,7 +42,6 @@ function MongoController($scope,MongoDB) {
     };
     
     $scope.rename_collection = function() {
-        
         console.log('rename collection :'+$scope.new_collection +'  on '+$scope.selected_db);         
         MongoDB.rename_collection({
             database: $scope.selected_db, 
@@ -61,7 +52,5 @@ function MongoController($scope,MongoDB) {
                 $scope.db_list = MongoDB.query(); 
             }
         });
-
-        
     };    
 }
