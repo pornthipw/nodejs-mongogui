@@ -233,6 +233,8 @@ app.get('/gridstore/:database/:file', middleware, routes.getFile);
 app.get('/gridstore/:database', middleware, routes.listFile);
 app.post('/gridstore/:database', middleware, routes.storeFile);
 
+app.post('/csv/upload', middleware, routes.uploadFile);
+
 // document
 app.get('/db/:database/:collection/:document', middleware, routes.viewDocument);
 app.post('/db/:database/:collection', middleware, routes.addDocument);

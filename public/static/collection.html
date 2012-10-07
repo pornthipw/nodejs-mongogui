@@ -23,6 +23,9 @@
            data-toggle="modal">
            <i class="icon-upload icon-white"></i> Add Document
          </button>
+         <a href="#/csv/{{name}}" class="btn btn-success"> 
+           <i class="icon-upload icon-white"></i> Upload CVS File 
+         </a>
         </p>
       </div>
     </div>
@@ -67,13 +70,16 @@
                </form>
             
             <div class="row-fluid" ng-repeat="doc in documents|skip:currentPage*limit|limitTo:limit">
-              <div class="span12"> 
+              <div class="span12" ng-hide="doc.removed"> 
               <div class="btn-group btn-group-vertical pull-right">
                 <button type="button" data-target="#myModal" 
                   ng-click="edit_document(doc)" 
                   class="btn btn-primary btn-small" 
                   data-toggle="modal">
                   <i class="icon-pencil icon-white"></i>
+                </button>
+                <button class="btn btn-danger" ng-click="remove(doc)">
+                  <i class="icon-remove icon-white"></i>
                 </button>
               </div>
              <pre>{{doc|json}}</pre>

@@ -10,9 +10,9 @@ app.filter('skip', function() {
 });
 
 app.config(function($routeProvider) {
-  $routeProvider.when('/csv',{
+  $routeProvider.when('/csv/:collection',{
     controller:UploadController, 
-    templateUrl:'static/csv/csv_list.html'
+    templateUrl:'static/csv_manager.html'
   });
 
   $routeProvider.when('/collections/:collection', {
@@ -56,6 +56,24 @@ function CollectionController($scope, $routeParams, MongoDB, MongoStats) {
       angular.copy(result, doc);
     });
   };
+
+  $scope.remove = function(doc) {
+    MongoDB.delete({
+      collection:$routeParams.collection,
+      document:doc._id
+    },function(result) {
+      console.log(result);
+      if(result.ok) {
+        $scope.stats.count-=1;
+        for(var i=0;i<$scope.documents.length;i++) {
+          if($scope.documents[i]._id==doc._id) {
+            $scope.documents.remove(i); 
+            break;
+          }
+        }
+      }
+    });
+  };
   
   $scope.edit_document = function(doc) {
     self.currentDocument = doc;
@@ -70,6 +88,9 @@ function CollectionController($scope, $routeParams, MongoDB, MongoStats) {
         collection:$routeParams.collection,
       },JSON.parse($scope.document_str),function(result) { 
         $scope.save_result = result;
+        if(result.ok) {
+          $scope.stats.count+=1;
+        }
       });
     } else {
       MongoDB.update({
@@ -88,7 +109,6 @@ function CollectionController($scope, $routeParams, MongoDB, MongoStats) {
   }
   
   $scope.query = function() {
-    console.log('query');
     if(!$scope.query_str) {
       $scope.query_str = '{}';
     }
@@ -109,15 +129,24 @@ function DBController($scope, $routeParams, MongoStats) {
 };
 
 
-function UploadController($scope,GridStore) {
-  $scope.file_list = GridStore.query({database:'mydb'});
-  console.log($scope.file_list);
-
+function UploadController($scope,$routeParams,MongoDB) {
   $('iframe#upload_target').load(function() {
     var data = $.parseJSON($('iframe#upload_target').contents().find("body")[0].innerHTML);
     if(data.success) {
       $scope.$apply(function(){
         $scope.success = true;
+        var col_length = 0;
+        for(var row in data.csv) {
+          if(data.csv[row].length > col_length) {
+            col_length = data.csv[row].length;
+          }
+        }
+        data.col_names = [];
+        for(var i=0;i<col_length;i++) { 
+          data.col_names.push({name:'col'+i});
+        }
+        $scope.result = data;
+        console.log($scope.result);
       });
     } else {
       $scope.$apply(function() {
@@ -132,4 +161,37 @@ function UploadController($scope,GridStore) {
       $scope.theFile = element.files[0];
     });
   };
+  
+  $scope.save = function() {
+    var obj_list = [];
+    for(var row in $scope.result.csv) {
+      var obj = {};
+      if($scope.result.csv[row].exclude) continue;
+      for(var col=0;col<$scope.result.csv[row].length;col++) {
+        var current = $scope.result.col_names[col];
+        if(!current.exclude) {
+          obj[current.name] = $scope.result.csv[row][col].value;
+        }
+      }
+      obj_list.push(obj);
+    }
+    console.log($scope.result);
+    console.log(obj_list);
+
+    for(var i=0;i<obj_list.length;i++) {
+      MongoDB.save({
+        collection:$routeParams.collection,
+      },obj_list[i],function(result) { 
+        if(result.ok) {
+          $scope.document_saved+=1;
+        }
+      });
+    }
+  }
+};
+
+Array.prototype.remove = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
 };

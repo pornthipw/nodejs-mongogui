@@ -1,0 +1,124 @@
+<style>
+  .fileinput-button {
+    position: relative;
+    overflow: hidden;
+    float: left;
+    margin-right: 4px;
+  }
+    
+  .fileinput-button input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    border: solid transparent;
+    border-width: 0 0 100px 200px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    -moz-transform: translate(-300px, 0) scale(4);
+    direction: ltr;
+    cursor: pointer;
+  }
+  
+  .remove-true {
+    text-decoration: line-through;
+    color: grey;
+  }
+
+    
+</style>
+
+<div class="row-fluid">
+  <div class="span12">  
+    <iframe id="upload_target" 
+	name="upload_target" 
+	style="width:0;height:0;border:0px solid #fff;"> 
+    </iframe>
+
+    <legend>Upload</legend>
+    <form id="file_upload_form" method="post" enctype="multipart/form-data" action="csv/upload" target="upload_target" class="form-horizontal">            
+      <span class="btn btn-success fileinput-button">
+	<i class="icon-plus icon-white"></i>
+	<span>Select File</span>
+	<input type="file" name="file" id="file" onchange="angular.element(this).scope().setFile(this)"/>
+      </span>
+      <button type="submit" class="btn btn-primary start">
+	<i class="icon-upload icon-white"></i>
+	<span>Start Upload</span>
+      </button>                
+    </form>
+ 
+    <ul>
+      <li ng-repeat="file in file_item.files">{{file.filename}}</li>
+    </ul>
+  
+    <span>
+      <span ng-show="theFile">
+        <i class="icon-file"></i> {{theFile.name}}
+      </span>    
+      <span ng-switch on="success" >
+        <span ng-switch-when="true">
+	  <i class="icon-ok"></i>
+	</span>
+	<span ng-switch-when="false">
+	  <i class="icon-info-sign"></i>
+	  {{message}}
+	</span>  
+	<span ng-switch-default></span>              
+      </span>
+    </span>    
+    <div class="row-fluid">
+      <div class="span12" ng-show="result.csv">
+        <table class="table table-condensed table-bordered">
+          <thead>
+            <tr>
+              <th>Select</th>
+              <th ng-repeat="content in result.col_names">
+                <span ng-hide="content.show_form" 
+                      ng-init="content.show_form=false" 
+                      class="remove-{{content.exclude}}">
+                  {{content.name}}
+                  <button class="btn btn-primary btn-mini pull-right" 
+                    ng-click="content.show_form=true">
+                    <i class="icon-pencil icon-white"></i>
+                  </button>
+                </span>
+                <form ng-show="content.show_form">                
+                  <label>Label Name</label>
+                  <input type="text" ng-model="content.name">
+                  <label class="checkbox">
+                    <input type="checkbox" ng-model="content.exclude"> Exclude
+                  </label>
+                  <button class="btn btn-primary" ng-click="content.show_form=false">
+                    Save
+                  </button>
+                </form>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="row in result.csv">
+              <td><input type="checkbox" ng-model="row.exclude"></td>
+              <td ng-repeat="content in row">
+                <span class="remove-{{row.exclude}}">
+                  {{content.value}}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row-fluid">
+          <div class="span4">
+            <button class="btn btn-primary start" ng-click="save()">
+	     <i class="icon-upload icon-white"></i>
+	     <span>Save Documents</span>
+            </button>                
+            <span ng-init="document_saved=0" 
+                  ng-show="document_saved">
+              <span class="badge badge-success">{{document_saved}}</span> Document saved.
+            </span> 
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
