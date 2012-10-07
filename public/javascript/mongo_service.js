@@ -2,10 +2,9 @@ angular.module('mongo_service', ['ngResource']).
 factory('MongoDB', function($resource) {
   var MongoDB = $resource('http://www.db.grad.nu.ac.th/mongo/databases/test/collections/:collection/:document', {
     collection: '@collection',
-    document: '@document',
-    limit: 10
+    document: '@document'
   },
-  {});
+  {update: { method:'PUT' }});
   return MongoDB;
 });
 

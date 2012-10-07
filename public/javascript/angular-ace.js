@@ -29,12 +29,8 @@ angular.module('ace', []).directive('ace', function() {
       scope.ace = editor;
 
       if (!ngModel) return; // do nothing if no ngModel
-      console.log('ngModel '+ngModel);
-      console.log(ngModel);
 
       ngModel.$render = function() {
-        console.log('ngModel '+ngModel);
-        console.log('ngModel viewValue '+ngModel.$viewValue);
         var value = ngModel.$viewValue || '';
         editor.getSession().setValue(value);
         textarea.val(value);
@@ -50,7 +46,6 @@ angular.module('ace', []).directive('ace', function() {
       read();
 
       function read() {
-        console.log('read');
         ngModel.$setViewValue(editor.getValue());
         textarea.val(editor.getValue());
       }
