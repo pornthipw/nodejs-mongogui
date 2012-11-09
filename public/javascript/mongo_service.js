@@ -1,6 +1,6 @@
 angular.module('mongo_service', ['ngResource']).
 factory('MongoDB', function($resource) {
-  var MongoDB = $resource('http://www.db.grad.nu.ac.th/mongo/databases/test/collections/:collection/:document', {
+  var MongoDB = $resource('http://www.db.grad.nu.ac.th/apps/mongodb/databases/test/collections/:collection/:document', {
     collection: '@collection',
     document: '@document'
   },
@@ -10,7 +10,7 @@ factory('MongoDB', function($resource) {
 
 angular.module('mongo_stats_service', ['ngResource']).
 factory('MongoStats', function($resource) {
-  var MongoStats = $resource('http://www.db.grad.nu.ac.th/mongo/stats/test/:collection', {
+  var MongoStats = $resource('http://www.db.grad.nu.ac.th/apps/mongodb/stats/test/:collection', {
     collection: '@collection'
   },
   {});

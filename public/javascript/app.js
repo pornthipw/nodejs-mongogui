@@ -10,9 +10,15 @@ app.filter('skip', function() {
 });
 
 app.config(function($routeProvider) {
+
   $routeProvider.when('/csv/:collection',{
     controller:UploadController, 
     templateUrl:'static/csv_manager.html'
+  });
+
+  $routeProvider.when('/collections/:collection/schema/:id', {
+    controller:SchemaController, 
+    templateUrl:'static/schema.html'
   });
 
   $routeProvider.when('/collections/:collection', {
@@ -26,6 +32,29 @@ app.config(function($routeProvider) {
   });
 });
 
+function SchemaController($scope, $routeParams, MongoDB) {
+  var self=this;
+  MongoDB.get({
+    collection:$routeParams.collection,
+    document:$routeParams.id}, function(schema) {
+    $scope.schema = schema;
+    console.log(schema);
+    MongoDB.query({collection:$routeParams.collection}, function(docs) {
+      // filter
+      $scope.doc_list = [];
+      angular.forEach(docs, function(doc,key) {
+        var at_least_one = false;
+        angular.forEach(schema.fields, function(name, field) {
+          if(!at_least_one && doc[field]) {
+            at_least_one = true;
+            $scope.doc_list.push(doc);
+          }
+        });
+      });
+    });
+  });
+}
+
 function CollectionController($scope, $routeParams, MongoDB, MongoStats) {
   var self=this;
   var currentDocument = undefined;
@@ -33,6 +62,7 @@ function CollectionController($scope, $routeParams, MongoDB, MongoStats) {
   $scope.limit = 20;
   $scope.name = $routeParams.collection;
   $scope.stats = MongoStats.get({collection:$routeParams.collection});
+
   $scope.fields = function() {
     var str = {};
     for(var idx in $scope.attributes) {
@@ -42,6 +72,12 @@ function CollectionController($scope, $routeParams, MongoDB, MongoStats) {
     }
     return JSON.stringify(str);
   };
+
+  $scope.table_schemas = MongoDB.query({
+      collection:$routeParams.collection,
+      query:'{"type":"tb_schema"}'
+  });
+    
   
   $scope.add = function() {
     $scope.document = undefined;

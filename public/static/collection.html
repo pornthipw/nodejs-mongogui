@@ -17,6 +17,21 @@
           There are <span class="badge" ng-bind="stats.count | number"></span>
           of objects or documents in this collection.
         </p>
+        <ul>
+          <li ng-repeat="schema in table_schemas">
+            <a href="#/collections/{{name}}/schema/{{schema._id}}">{{schema.name}}</a> 
+            (<span ng-repeat="(key, value) in schema.fields">
+              {{value}} <span ng-hide="$last">,</span>
+            </span>)
+            <a href="" ng-click="edit_document(schema)">Edit</a> 
+                <button type="button" data-target="#myModal" 
+                  ng-click="edit_document(schema)" 
+                  class="btn btn-primary btn-small" 
+                  data-toggle="modal">
+                  <i class="icon-pencil icon-white"></i>
+                </button>
+          </li>
+        </ul>
         <p>
          <button class="btn btn-primary" 
            ng-click="add()" data-target="#myModal"

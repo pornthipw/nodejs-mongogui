@@ -1,0 +1,19 @@
+{{schema_id}}
+
+<table class="table">
+  <thead>
+    <tr>
+      <th ng-repeat="(key, value) in schema.fields">
+        {{value}}
+      </th>
+    </tr>
+    <tbody>
+      <tr ng-repeat="doc in doc_list">
+        <td ng-repeat="(key, value) in schema.fields">
+          {{doc[key]}}
+        </th>
+      </tr>
+    </tbody>
+  </thead>
+</table>
+
