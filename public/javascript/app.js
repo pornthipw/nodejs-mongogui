@@ -200,12 +200,17 @@ function UploadController($scope,$routeParams,MongoDB) {
   
   $scope.save = function() {
     var obj_list = [];
-    for(var row in $scope.result.csv) {
+    for(var row=0;row<$scope.result.csv.length;row++) {
       var obj = {};
       if($scope.result.csv[row].exclude) continue;
       for(var col=0;col<$scope.result.csv[row].length;col++) {
         var current = $scope.result.col_names[col];
         if(!current.exclude) {
+          console.log($scope.result.csv);
+          console.log('Row :'+row);
+          console.log('Col :'+col);
+          console.log(' :'+$scope.result.csv[row].length);
+ 
           obj[current.name] = $scope.result.csv[row][col].value;
         }
       }
