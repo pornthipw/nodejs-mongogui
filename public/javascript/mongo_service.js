@@ -13,7 +13,7 @@ factory('MongoStats', function($resource) {
   var MongoStats = $resource('http://www.db.grad.nu.ac.th/apps/mongodb/stats/test/:collection', {
     collection: '@collection'
   },
-  {});
+  {info: { method:'GET' }});
   return MongoStats;
 });
 

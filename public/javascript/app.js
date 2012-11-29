@@ -61,7 +61,7 @@ function CollectionController($scope, $routeParams, MongoDB, MongoStats) {
   $scope.currentPage = 0;
   $scope.limit = 20;
   $scope.name = $routeParams.collection;
-  $scope.stats = MongoStats.get({collection:$routeParams.collection});
+  $scope.stats = MongoStats.info({collection:$routeParams.collection});
 
   $scope.fields = function() {
     var str = {};
@@ -159,9 +159,7 @@ function CollectionController($scope, $routeParams, MongoDB, MongoStats) {
 }
 
 function DBController($scope, $routeParams, MongoStats) {
-  $scope.db = MongoStats.get(function(result) {
-    console.log(result);
-  });
+  $scope.db = MongoStats.info();
 };
 
 
