@@ -20,6 +20,11 @@ app.config(function($routeProvider) {
     controller:SchemaController, 
     templateUrl:'static/schema.html'
   });
+  
+  $routeProvider.when('/collections/:collection/schema', {
+    controller:SchemaListController, 
+    templateUrl:'static/view_schema.html'
+  });
 
   $routeProvider.when('/collections/:collection', {
     controller:CollectionController, 
@@ -53,6 +58,47 @@ function SchemaController($scope, $routeParams, MongoDB) {
       });
     });
   });
+  
+}
+
+function SchemaListController($scope, $routeParams, MongoDB) {
+  $scope.fields = function() {
+    var str = {};
+    for(var idx in $scope.attributes) {
+      if($scope.attributes[idx].hide) {
+        str[$scope.attributes[idx].name]=0;
+      }
+    }
+    return JSON.stringify(str);
+  };
+  var self=this;
+  if(!$scope.query_str) {
+      $scope.query_str = '{}';
+    }
+    MongoDB.query({
+      collection:$routeParams.collection,
+      query:$scope.query_str,
+      fields:$scope.fields()
+    },function(docs) { 
+      $scope.documents = docs;
+      //nook
+      var schema_dict = {};
+      angular.forEach(docs, function(v, i) {
+        if(v) {
+          angular.forEach(v, function(name, field) {
+            var id = field;
+            if(!(id in schema_dict)) {
+              schema_dict[id] = {'name':id, 'fields':[],'count':0};
+            }        
+            schema_dict[id]['fields'].push(field);
+            schema_dict[id]['count']++;
+            //console.log(schema_dict[id]['count']);
+          });
+        } 
+      });
+      console.log(schema_dict);
+      $scope.schema_list = schema_dict;
+    });
 }
 
 function CollectionController($scope, $routeParams, MongoDB, MongoStats) {
@@ -154,6 +200,24 @@ function CollectionController($scope, $routeParams, MongoDB, MongoStats) {
       fields:$scope.fields()
     },function(docs) { 
       $scope.documents = docs;
+      //nook
+      var schema_dict = {};
+      angular.forEach(docs, function(v, i) {
+        if(v) {
+          angular.forEach(v, function(name, field) {
+            var id = field;
+            if(!(id in schema_dict)) {
+              schema_dict[id] = {'name':id, 'fields':[],'count':0};
+            }        
+            schema_dict[id]['fields'].push(field);
+            schema_dict[id]['count']++;
+            //console.log(schema_dict[id]['count']);
+          });
+        } 
+      });
+      console.log(schema_dict);
+      $scope.schema_list = schema_dict;
+     
     });
   }
 }
