@@ -36,29 +36,10 @@ app.config(function($routeProvider) {
     templateUrl:'static/database.html'
   });
   
-  
-  $routeProvider.when('/schema/list', {
-    controller:SchemaListController, 
-    templateUrl:'static/schema_list.html'
-  });
-  
-  $routeProvider.when('/schema/edit/:id', {
-    controller:SchemaController, 
-    templateUrl:'static/schema.html'
-  });
-  
-  $routeProvider.when('/schema/create', {
-    controller:SchemaCreateController, 
-    templateUrl:'static/schema.html'
-  });
-  
-  
-  /*
   $routeProvider.when('/schema', {
     controller:SchemaManageController, 
     templateUrl:'static/manage_schema.html'
   });
-  */
   
   $routeProvider.when('/query', {
     controller:CollectionController, 
@@ -66,88 +47,6 @@ app.config(function($routeProvider) {
   });
   
 });
-
-
-function SchemaListController($scope, MongoDB, MongoStats) {
-  $scope.table_schemas = MongoDB.query({    
-    query:'{"type":"tb_schema"}'
-  });  
-  $scope.stats = MongoStats.info();
-}
-
-
-function SchemaController($scope, $routeParams, MongoDB, $location) {
-  var self=this;
-  if (!$routeParams.collection) {
-    $routeParams.collection = "person";
-  } else {
-    $routeParams.collection
-  }
-  
-  MongoDB.get({document:$routeParams.id}, function(schema) {
-    $scope.schema = schema;
-    console.log(schema);    
-  });
-  
-  $scope.add_field = function() {    
-    $scope.schema.fields.push({'name':'', 'title':''});
-  }
-  
-  $scope.save = function () {
-    MongoDB.update({
-      collection:$routeParams.collection,
-      document:$routeParams.id
-    }, angular.extend({}, 
-      $scope.schema,
-      {_id:undefined}), function(result) {
-      $scope.save_result = result;
-      if(result.ok) {
-        var obj = angular.extend({},$scope.schema,{_id:$routeParams.id});
-        angular.copy(obj,self.currentDocument);
-        $location.path('/schema/list');
-      } else {
-        console.log("not");
-      }
-    });
-    
-  };
-  
-}
-
-
-function SchemaCreateController($scope, $routeParams, MongoDB, $location) {
-  var self=this;
-  if (!$routeParams.collection) {
-    $routeParams.collection = "person";
-  } else {
-    $routeParams.collection
-  }
-  
-  $scope.schema = {
-    type:"tb_schema",
-    fields:[]
-  };
-  
-  
-  $scope.add_field = function() {    
-    $scope.schema.fields.push({'name':'', 'title':''});
-  }
-  
-  $scope.save = function () {
-    MongoDB.save({
-      collection:$routeParams.collection,
-    },$scope.schema,function(result) { 
-      console.log(result);
-      $location.path('/schema/list');
-    });
-  };
-  
-   $scope.del_field = function(idx) {
-    $scope.schema.fields.splice(idx,1);
-    //$scope.schema_fields.splice(idx,1);
-  }
-  
-}
 
 
 function SchemaManageController($scope, $routeParams, MongoDB) {
@@ -179,13 +78,18 @@ function SchemaManageController($scope, $routeParams, MongoDB) {
   $scope.schema_fields = [];
   
   $scope.add_field = function() {    
-    $scope.schema.fields.push({'name':'', 'title':''});
+    if (!$scope.current_id) {
+      $scope.schema.fields.push({'name':'', 'title':''});
+    } else {
+      $scope.schema.fields.push({'name':'', 'title':''});
+      //console.log("OK");
+    }
     
     //$scope.schema({
     //  name:'',
     //  title:''
    // });
-    //console.log($scope.schema_fields);
+    console.log($scope.schema_fields);
   }
   
   $scope.edit_field = function (document_id) {
@@ -263,8 +167,6 @@ function SchemaController($scope, $routeParams, MongoDB) {
   
 }
 
-
-/*
 function SchemaListController($scope, $routeParams, MongoDB) {
   
   var self=this;
@@ -295,8 +197,8 @@ function SchemaListController($scope, $routeParams, MongoDB) {
       //console.log(schema_dict);
       $scope.schema_list = schema_dict;
     });
+    
 }
-*/
 
 function CollectionController($scope, $routeParams, MongoDB, MongoStats) {
   var self=this;
