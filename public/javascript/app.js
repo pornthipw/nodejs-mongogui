@@ -36,10 +36,29 @@ app.config(function($routeProvider) {
     templateUrl:'static/database.html'
   });
   
+  
+  $routeProvider.when('/schema/list', {
+    controller:SchemaListController, 
+    templateUrl:'static/schema_list.html'
+  });
+  
+  $routeProvider.when('/schema/edit/:id', {
+    controller:SchemaController, 
+    templateUrl:'static/schema.html'
+  });
+  
+  $routeProvider.when('/schema/create', {
+    controller:SchemaCreateController, 
+    templateUrl:'static/schema.html'
+  });
+  
+  
+  /*
   $routeProvider.when('/schema', {
     controller:SchemaManageController, 
     templateUrl:'static/manage_schema.html'
   });
+  */
   
   $routeProvider.when('/query', {
     controller:CollectionController, 
@@ -47,6 +66,28 @@ app.config(function($routeProvider) {
   });
   
 });
+
+
+function SchemaListController($scope, MongoDB, MongoStats) {
+  $scope.table_schemas = MongoDB.query({    
+    query:'{"type":"tb_schema"}'
+  });  
+  $scope.stats = MongoStats.info();
+}
+
+function SchemaController($scope, $routeParams, MongoDB) {
+  var self=this;
+  MongoDB.get({document:$routeParams.id}, function(schema) {
+    $scope.schema = schema;
+    console.log(schema);    
+  });
+  
+}
+
+function SchemaCreateController($scope, $routeParams, MongoDB) {
+  var self=this;
+}
+
 
 
 function SchemaManageController($scope, $routeParams, MongoDB) {
@@ -162,6 +203,8 @@ function SchemaController($scope, $routeParams, MongoDB) {
   
 }
 
+
+/*
 function SchemaListController($scope, $routeParams, MongoDB) {
   
   var self=this;
@@ -192,8 +235,8 @@ function SchemaListController($scope, $routeParams, MongoDB) {
       //console.log(schema_dict);
       $scope.schema_list = schema_dict;
     });
-    
 }
+*/
 
 function CollectionController($scope, $routeParams, MongoDB, MongoStats) {
   var self=this;

@@ -1,5 +1,4 @@
-{{schema_id}}
-
+<!--
 <table class="table">
   <thead>
     <tr>
@@ -16,4 +15,32 @@
     </tbody>
   </thead>
 </table>
+-->
 
+<div class="span12">
+  <form class="form-horizontal">        
+    <div class="control-group">
+      <label class="control-label" for="inputName">name</label>
+      <div class="controls">
+        <input type="text" id="inputName" placeholder="Name" ng-model="schema.name">
+      </div>
+    </div>
+    
+    <div class="control-group" ng-repeat="field in schema.fields">
+      <label class="control-label" for="inputFieldName">{{field.title}}</label>
+      <div class="controls">
+        <input type="text"  placeholder="Name" ng-model="field.name">
+        <input type="text"  placeholder="Title" ng-model="field.title">
+         <button ng-click="del_field($index)" class="btn btn-primary" type="submit"> <i class="icon-ok icon-white"></i> Save</button>
+      </div>
+    </div>
+    
+    <div class="control-group">
+      <div class="controls">
+        <button ng-click="create_schema()" class="btn btn-primary" type="submit"> <i class="icon-ok icon-white"></i> Save</button>
+          <a href="#/" class="btn btn-danger"><i class="icon-ban-circle icon-white"></i> Cancel</a> 
+          <a href="" class="btn btn-info" ng-click="add_field()"><i class="icon-ban-circle icon-white"></i> Add Field</a> 
+      </div>
+    </div>    
+  </form>
+</div>
