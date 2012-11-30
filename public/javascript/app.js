@@ -35,7 +35,108 @@ app.config(function($routeProvider) {
     controller:DBController, 
     templateUrl:'static/database.html'
   });
+  
+  $routeProvider.when('/schema', {
+    controller:SchemaManageController, 
+    templateUrl:'static/manage_schema.html'
+  });
+  
+  $routeProvider.when('/query', {
+    controller:CollectionController, 
+    templateUrl:'static/query.html'
+  });
+  
 });
+
+
+function SchemaManageController($scope, $routeParams, MongoDB) {
+  var self = this;
+  if (!$routeParams.collection) {
+    $routeParams.collection = "person";
+  } else {
+    $routeParams.collection
+  }
+  $scope.table_schemas = MongoDB.query({
+    collection:$routeParams.collection,
+    query:'{"type":"tb_schema"}'
+  });
+    
+  $scope.fields = function() {
+    var str = {};
+    for(var idx in $scope.attributes) {
+      if($scope.attributes[idx].hide) {
+        str[$scope.attributes[idx].name]=0;
+      }
+    }
+    return JSON.stringify(str);
+  };
+  
+  $scope.schema = {
+    fields:[]
+  };
+  
+  $scope.schema_fields = [];
+  
+  $scope.add_field = function() {    
+    $scope.schema.fields.push({'name':'', 'title':''});
+    
+    //$scope.schema({
+    //  name:'',
+    //  title:''
+   // });
+    //console.log($scope.schema_fields);
+  }
+  
+  $scope.edit_field = function (document_id) {
+    console.log(document_id);
+    $scope.current_id = document_id;
+    var self=this;
+    MongoDB.get({
+      collection:$routeParams.collection,
+      document:document_id}, function(schema) {
+        $scope.schema = schema;
+        console.log(schema);
+      });
+    
+  };
+  
+  $scope.del_field = function(idx) {
+    $scope.schema.fields.splice(idx,1);
+    //$scope.schema_fields.splice(idx,1);
+  }
+  
+  $scope.create_schema = function () {
+    console.log($scope.schema);
+    console.log($scope.current_id);
+    if (!$scope.current_id) {
+      MongoDB.save({
+        collection:$routeParams.collection,
+      },$scope.schema,function(result) { 
+        console.log(result);
+      });
+    } else {
+      console.log("update");
+      MongoDB.update({
+        collection:$routeParams.collection,
+        document:$scope.current_id
+      }, angular.extend({}, 
+        $scope.schema,
+        {_id:undefined}), function(result) {
+        $scope.save_result = result;
+        if(result.ok) {
+          var obj = angular.extend({},$scope.schema,{_id:$scope.current_id});
+          angular.copy(obj,self.currentDocument);
+        }
+      });
+      
+    }
+    $scope.table_schemas = MongoDB.query({
+    collection:$routeParams.collection,
+    query:'{"type":"tb_schema"}'
+  });
+  };
+  
+}
 
 function SchemaController($scope, $routeParams, MongoDB) {
   var self=this;
@@ -62,15 +163,7 @@ function SchemaController($scope, $routeParams, MongoDB) {
 }
 
 function SchemaListController($scope, $routeParams, MongoDB) {
-  $scope.fields = function() {
-    var str = {};
-    for(var idx in $scope.attributes) {
-      if($scope.attributes[idx].hide) {
-        str[$scope.attributes[idx].name]=0;
-      }
-    }
-    return JSON.stringify(str);
-  };
+  
   var self=this;
   if(!$scope.query_str) {
       $scope.query_str = '{}';
@@ -96,14 +189,21 @@ function SchemaListController($scope, $routeParams, MongoDB) {
           });
         } 
       });
-      console.log(schema_dict);
+      //console.log(schema_dict);
       $scope.schema_list = schema_dict;
     });
+    
 }
 
 function CollectionController($scope, $routeParams, MongoDB, MongoStats) {
   var self=this;
   var currentDocument = undefined;
+  if (!$routeParams.collection) {
+    $routeParams.collection = "person";
+  } else {
+    $routeParams.collection
+  }
+  
   $scope.currentPage = 0;
   $scope.limit = 20;
   $scope.name = $routeParams.collection;
