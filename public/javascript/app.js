@@ -78,11 +78,6 @@ function SchemaListController($scope, MongoDB, MongoStats) {
 
 function SchemaController($scope, $routeParams, MongoDB, $location) {
   var self=this;
-  if (!$routeParams.collection) {
-    $routeParams.collection = "person";
-  } else {
-    $routeParams.collection
-  }
   
   MongoDB.get({document:$routeParams.id}, function(schema) {
     $scope.schema = schema;
@@ -93,23 +88,20 @@ function SchemaController($scope, $routeParams, MongoDB, $location) {
     $scope.schema.fields.push({'name':'', 'title':''});
   }
   
-  $scope.save = function () {
-    MongoDB.update({
-      collection:$routeParams.collection,
+  $scope.save = function () {		
+    MongoDB.update({      
       document:$routeParams.id
-    }, angular.extend({}, 
-      $scope.schema,
+    }, angular.extend({}, $scope.schema,
       {_id:undefined}), function(result) {
       $scope.save_result = result;
       if(result.ok) {
-        var obj = angular.extend({},$scope.schema,{_id:$routeParams.id});
-        angular.copy(obj,self.currentDocument);
+        //var obj = angular.extend({},$scope.schema,{_id:$routeParams.id});
+        //angular.copy(obj,self.currentDocument);
         $location.path('/schema/list');
       } else {
         console.log("not");
       }
-    });
-    
+    });    
   };
   
 }
@@ -239,6 +231,7 @@ function SchemaManageController($scope, $routeParams, MongoDB) {
   
 }
 
+/*
 function SchemaController($scope, $routeParams, MongoDB) {
   var self=this;
   MongoDB.get({
@@ -259,9 +252,9 @@ function SchemaController($scope, $routeParams, MongoDB) {
         });
       });
     });
-  });
-  
+  });  
 }
+*/
 
 
 /*
