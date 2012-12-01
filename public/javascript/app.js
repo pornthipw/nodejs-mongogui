@@ -81,11 +81,14 @@ function SchemaController($scope, $routeParams, MongoDB, $location) {
   
   MongoDB.get({document:$routeParams.id}, function(schema) {
     $scope.schema = schema;
-    console.log(schema);    
+    console.log(schema);   
   });
+
   
-  $scope.add_field = function() {    
+  $scope.add_field = function() { 
+    console.log("add_field");
     $scope.schema.fields.push({'name':'', 'title':''});
+    
   }
   
   $scope.save = function () {		
