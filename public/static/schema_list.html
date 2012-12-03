@@ -26,7 +26,7 @@
             <a href="#/schema/edit/{{schema._id}}">{{schema.name}}</a> 
             (<span ng-repeat="field in schema.fields">
               {{field.title}} <span ng-hide="$last">,</span>
-            </span>)            
+            </span>)  <a href="" ng-click="del_document(schema._id)"><i class="icon-remove"></i> </a>          
           </li>
         </ul>                
       </div>           

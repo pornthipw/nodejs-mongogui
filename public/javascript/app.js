@@ -68,11 +68,40 @@ app.config(function($routeProvider) {
 });
 
 
-function SchemaListController($scope, MongoDB, MongoStats) {
+function SchemaListController($scope, $routeParams, MongoDB, MongoStats) {
+  
+  if (!$routeParams.collection) {
+    $routeParams.collection = "person";
+  } else {
+    $routeParams.collection
+  }
+  
+  
   $scope.table_schemas = MongoDB.query({    
     query:'{"type":"tb_schema"}'
   });  
   $scope.stats = MongoStats.info();
+  
+  $scope.del_document = function(doc_id){
+    MongoDB.delete({
+      collection:$routeParams.collection,
+      document:doc_id
+    },function(result) {
+      console.log(result);
+      if(result.ok) {
+        $scope.stats.count-=1;
+        for(var i=0;i<$scope.table_schemas.length;i++) {
+          if($scope.table_schemas[i]._id==doc_id) {
+            $scope.table_schemas.remove(i); 
+            break;
+          }
+        }
+      }
+    });
+  };
+  
+  
+  
 }
 
 
