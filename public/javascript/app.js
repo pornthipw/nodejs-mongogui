@@ -136,6 +136,11 @@ function SchemaController($scope, $routeParams, MongoDB, $location) {
     });    
   };
   
+  $scope.del_field = function(idx) {
+    $scope.schema.fields.splice(idx,1);
+    //$scope.schema_fields.splice(idx,1);
+  }
+  
 }
 
 
