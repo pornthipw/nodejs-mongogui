@@ -164,7 +164,7 @@ function SchemaCreateController($scope, $routeParams, MongoDB, $location) {
   
   $scope.save = function () {
     MongoDB.save({
-      collection:$routeParams.collection,
+      collection:$routeParams.collection
     },$scope.schema,function(result) { 
       console.log(result);
       $location.path('/schema/list');
