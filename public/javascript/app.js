@@ -74,6 +74,12 @@ function SchemaListController($scope, $routeParams, MongoDB, MongoStats) {
 
 function SchemaController($scope, $routeParams, MongoDB, $location) {
   var self=this;
+  var currentDocument = undefined;
+  $scope.currentPage = 0;
+  $scope.limit = 20;
+
+
+  
   MongoDB.get({document:$routeParams.id}, function(schema) {
     $scope.schema = schema;
     var query_str = {"$or":[]};
@@ -83,6 +89,8 @@ function SchemaController($scope, $routeParams, MongoDB, $location) {
       query_str["$or"].push(c_field);
     });
     //console.log(JSON.stringify(query_str));
+    
+    
     
     $scope.document_list = MongoDB.query({
       query:JSON.stringify(query_str)

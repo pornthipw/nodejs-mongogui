@@ -97,6 +97,17 @@
         </div>
         
         <div class="tab-pane" id="tab3">
+          <form class="form-inline pull-right" ng-show="schema.fields">
+            <strong>{{currentPage*limit+1}} &#8211;
+              <span ng-hide="currentPage*limit+limit > documents.length">{{currentPage*limit+limit}}</span>
+              <span ng-show="currentPage*limit+limit > documents.length">{{document_list.length}}</span>
+            </strong> of 
+            <strong>{{document_list.length | number}}</strong> 
+            <div class="btn-group">
+              <button class="btn" ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">&laquo;</button>
+              <button class="btn" ng-disabled="currentPage >= document_list.length/limit - 1" ng-click="currentPage=currentPage+1">&raquo;</button>
+            </div>
+          </form>
           <table class="table">
             <thead>
               <tr>
@@ -105,7 +116,7 @@
                 </th>
               </tr>
             <tbody>
-              <tr ng-repeat="doc in document_list">
+              <tr ng-repeat="doc in document_list |skip:currentPage*limit|limitTo:limit">
                 <td ng-repeat="field in schema.fields">
                   {{doc[field.name]}}
                 </td>
