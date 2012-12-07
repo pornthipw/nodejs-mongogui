@@ -36,7 +36,6 @@ app.config(function($routeProvider) {
     templateUrl:'static/database.html'
   });
   
-  
   $routeProvider.when('/schema/list', {
     controller:SchemaListController, 
     templateUrl:'static/schema_list.html'
@@ -53,13 +52,6 @@ app.config(function($routeProvider) {
   });
   
   
-  /*
-  $routeProvider.when('/schema', {
-    controller:SchemaManageController, 
-    templateUrl:'static/manage_schema.html'
-  });
-  */
-  
   $routeProvider.when('/query', {
     controller:CollectionController, 
     templateUrl:'static/query.html'
@@ -68,56 +60,42 @@ app.config(function($routeProvider) {
 });
 
 
-function SchemaListController($scope, $routeParams, MongoDB, MongoStats) {
-  
-  if (!$routeParams.collection) {
-    $routeParams.collection = "person";
-  } else {
-    $routeParams.collection
-  }
-  
+function SchemaListController($scope, $routeParams, MongoDB, MongoStats) {   
   
   $scope.table_schemas = MongoDB.query({    
     query:'{"type":"tb_schema"}'
+  }, function(res) {
+    console.log(res);
   });  
   $scope.stats = MongoStats.info();
-  
-  $scope.del_document = function(doc_id){
-    MongoDB.delete({
-      collection:$routeParams.collection,
-      document:doc_id
-    },function(result) {
-      console.log(result);
-      if(result.ok) {
-        $scope.stats.count-=1;
-        for(var i=0;i<$scope.table_schemas.length;i++) {
-          if($scope.table_schemas[i]._id==doc_id) {
-            $scope.table_schemas.remove(i); 
-            break;
-          }
-        }
-      }
-    });
-  };
-  
-  
   
 }
 
 
 function SchemaController($scope, $routeParams, MongoDB, $location) {
   var self=this;
-  
   MongoDB.get({document:$routeParams.id}, function(schema) {
     $scope.schema = schema;
-    console.log(schema);   
+    var query_str = {"$or":[]};
+    angular.forEach(schema.fields, function(field, index) {
+      var c_field = {};
+      c_field[field.name] = {"$exists":true};
+      query_str["$or"].push(c_field);
+    });
+    //console.log(JSON.stringify(query_str));
+    
+    $scope.document_list = MongoDB.query({
+      query:JSON.stringify(query_str)
+    }, function(res) {
+      console.log(res.length);
+      $scope.length_of_schema = res.length;
+    });
+    
   });
 
-  
   $scope.add_field = function() { 
     console.log("add_field");
     $scope.schema.fields.push({'name':'', 'title':''});
-    
   }
   
   $scope.save = function () {		
@@ -126,31 +104,33 @@ function SchemaController($scope, $routeParams, MongoDB, $location) {
     }, angular.extend({}, $scope.schema,
       {_id:undefined}), function(result) {
       $scope.save_result = result;
-      if(result.ok) {
-        //var obj = angular.extend({},$scope.schema,{_id:$routeParams.id});
-        //angular.copy(obj,self.currentDocument);
+      if(result.ok) {        
         $location.path('/schema/list');
       } else {
         console.log("not");
       }
-    });    
+    });            
   };
   
   $scope.del_field = function(idx) {
-    $scope.schema.fields.splice(idx,1);
-    //$scope.schema_fields.splice(idx,1);
+    $scope.schema.fields.splice(idx,1);    
   }
   
+  $scope.del_document = function(){
+    MongoDB.delete({
+      document:$routeParams.id
+    },function(result) {            
+      if(result.ok) {        
+        $location.path('/schema/list');
+      }
+    });
+  };
+
 }
 
 
 function SchemaCreateController($scope, $routeParams, MongoDB, $location) {
   var self=this;
-  if (!$routeParams.collection) {
-    $routeParams.collection = "person";
-  } else {
-    $routeParams.collection
-  }
   
   $scope.schema = {
     type:"tb_schema",
@@ -163,8 +143,7 @@ function SchemaCreateController($scope, $routeParams, MongoDB, $location) {
   }
   
   $scope.save = function () {
-    MongoDB.save({
-      collection:$routeParams.collection
+    MongoDB.save({  
     },$scope.schema,function(result) { 
       console.log(result);
       $location.path('/schema/list');
@@ -181,13 +160,8 @@ function SchemaCreateController($scope, $routeParams, MongoDB, $location) {
 
 function SchemaManageController($scope, $routeParams, MongoDB) {
   var self = this;
-  if (!$routeParams.collection) {
-    $routeParams.collection = "person";
-  } else {
-    $routeParams.collection
-  }
-  $scope.table_schemas = MongoDB.query({
-    collection:$routeParams.collection,
+  
+  $scope.table_schemas = MongoDB.query({  
     query:'{"type":"tb_schema"}'
   });
     
@@ -205,7 +179,7 @@ function SchemaManageController($scope, $routeParams, MongoDB) {
     fields:[]
   };
   
-  $scope.schema_fields = [];
+  //$scope.schema_fields = [];
   
   $scope.add_field = function() {    
     $scope.schema.fields.push({'name':'', 'title':''});

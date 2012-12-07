@@ -5,30 +5,41 @@
     </div>
     
     <ul class="breadcrumb">
-      <li><a href="#">Home</a> <span class="divider">/</span></li>
-      <li class="active">Schema <span class="divider">/</span></li>
+      <li><a href="#">Home</a> <span class="divider">|</span></li>
+      <li class="active">Schema <span class="divider">|</span></li>
       <li><a href="#/query">Query</a></li>
-    </ul>
-        
-    
-    
+    </ul>  
     <div class="row-fluid">
       <div class="span5">
+      
         <p>
           There are <span class="badge" ng-bind="stats.count | number"></span>
           of objects or documents in this collection.
         </p>
         
-        <a href="#/schema/create" class="btn btn-info"><i class="icon-ban-circle icon-white"></i> Create Schema</a>
-        
-        <ul>
-          <li ng-repeat="schema in table_schemas">
-            <a href="#/schema/edit/{{schema._id}}">{{schema.name}}</a> 
-            (<span ng-repeat="field in schema.fields">
-              {{field.title}} <span ng-hide="$last">,</span>
-            </span>)  <a href="" ng-click="del_document(schema._id)"><i class="icon-remove"></i> </a>          
-          </li>
-        </ul>                
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>
+                <a href="#/schema/create#tab2" class="btn btn-info">
+                  <i class="icon-plus icon-white"></i> Create Schema
+                </a>
+              </th>
+            </tr>
+          </thead>
+          <tr ng-repeat="schema in table_schemas">
+            <td>
+              <a href="#/schema/show/{{schema._id}}"><i class="icon-th-list"></i>
+              <a href="#/schema/edit/{{schema._id}}">{{schema.name}}</a> 
+              
+              </a>
+              (<span ng-repeat="field in schema.fields">
+                {{field.title}} <span ng-hide="$last">,</span>
+              </span>) 
+            </td>
+          </tr>
+        </table>
+                     
       </div>           
   </div>
 </div>
