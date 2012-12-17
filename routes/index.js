@@ -3,7 +3,6 @@
 var csv = require('ya-csv');
 
 exports.uploadFile = function(req, res) {
-  console.log(req.files.file);
   if(req.files.file) {
     var content = [];
     try {
@@ -27,13 +26,4 @@ exports.uploadFile = function(req, res) {
       res.send(JSON.stringify({'success':false}));
     }
   }
-}
-
-// exports.viewDocument = doc.viewDocument;
-exports.index = function(req, res) {
-  var ctx = {
-    title: 'Mongo Express',
-  };
-  //console.log('request index.js');
-  res.render('index', ctx);
 }

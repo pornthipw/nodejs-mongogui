@@ -1,7 +1,9 @@
 var app = angular.module('mongo_service', ['ngResource']);
 
+var prefix = '/apps/demo';
+
 app.factory('MongoDB', function($resource) {
-  var MongoDB = $resource('/db/person/:id', {    
+  var MongoDB = $resource(prefix + '/db/person/:id', {    
     id: '@id'
   },
   {update: { method:'PUT' }});

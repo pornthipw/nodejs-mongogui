@@ -7,12 +7,10 @@ var UserProfile = function(config) {
     name: 'mongodb',
     max: 2,
     create: function(callback) {
-      var db = new mongodb.Db(config.db, 
+      new mongodb.Db(config.db, 
         new mongodb.Server(config.host, config.port),
-        {safe:false, auto_reconnect:true,poolSize:4
-      });      
-      db.open(function(err,db) {
-        console.log('Open DB');
+        {safe:true, auto_reconnect:true
+      }).open(function(err,db) {
         if(err) {
           console.log(err);
         }
@@ -26,6 +24,9 @@ var UserProfile = function(config) {
   
   this.store = function(user,callback) {
     pool.acquire(function(err,db) {
+      if(err) {
+        console.log('Error :'+err);
+      }
       db.collection(config.collection_name, function(err, collection) {
         collection.findOne({'identifier':user.identifier}, function(err, profile) {          
           if(profile) {
@@ -91,6 +92,7 @@ var UserProfile = function(config) {
     pool.acquire(function(err,db) {
       db.collection(config.collection_name, function(err, collection) {
         collection.findOne({'identifier':identifier}, function(err, profile) {                                                  
+          pool.release(db);
           if(!profile.role) {   
             callback(false);
           } else {  

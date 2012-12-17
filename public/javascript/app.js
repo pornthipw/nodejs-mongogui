@@ -11,7 +11,7 @@ app.filter('skip', function() {
 
 app.config(function($routeProvider) {
 
-  $routeProvider.when('/csv/:collection',{
+  $routeProvider.when('/csv/:schema',{
     controller:UploadController, 
     templateUrl:'static/csv_manager.html'
   });
@@ -383,6 +383,12 @@ function UploadController($scope,$routeParams,MongoDB) {
   $('iframe#upload_target').load(function() {
     var data = $.parseJSON($('iframe#upload_target').contents().find("body")[0].innerHTML);
     if(data.success) {
+      MongoDB.get({id:$routeParams.schema}, function(schema) {
+        $scope.schema = schema;
+        console.log(schema);
+      });
+      
+      
       $scope.$apply(function(){
         $scope.success = true;
         var col_length = 0;
@@ -393,7 +399,7 @@ function UploadController($scope,$routeParams,MongoDB) {
         }
         data.col_names = [];
         for(var i=0;i<col_length;i++) { 
-          data.col_names.push({name:'col'+i});
+          data.col_names.push({field:{name:'col'+i}});
         }
         $scope.result = data;
         console.log($scope.result);
@@ -424,8 +430,9 @@ function UploadController($scope,$routeParams,MongoDB) {
           console.log('Row :'+row);
           console.log('Col :'+col);
           console.log(' :'+$scope.result.csv[row].length);
- 
-          obj[current.name] = $scope.result.csv[row][col].value;
+          if(current.field.title) {
+            obj[current.field.name] = $scope.result.csv[row][col].value;
+          }
         }
       }
       obj_list.push(obj);

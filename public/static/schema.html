@@ -13,13 +13,13 @@
     <div class="tabbable" >
       <ul class="nav nav-tabs">
         <li class="active">
-          <a href="#tab1" data-toggle="tab">info</a>
+          <a href="#tab1" data-toggle="tab">Information</a>
         </li>
         <li>
           <a href="#tab2" data-toggle="tab">Edit</a>
         </li>
         <li>
-          <a href="#tab3" data-toggle="tab">Data</a>
+          <a href="#tab3" data-toggle="tab">Content</a>
         </li>
       </ul>
       <div class="tab-content">
@@ -32,7 +32,7 @@
                data-toggle="modal">
                <i class="icon-upload icon-white"></i> Add Document
              </button>
-             <a href="#/csv/{{name}}" class="btn btn-success"> 
+             <a href="#/csv/{{schema._id}}" class="btn btn-success"> 
                <i class="icon-upload icon-white"></i> Upload CVS File 
              </a>
             </p>
@@ -108,7 +108,7 @@
               <button class="btn" ng-disabled="currentPage >= document_list.length/limit - 1" ng-click="currentPage=currentPage+1">&raquo;</button>
             </div>
           </form>
-          <table class="table">
+          <table class="table table-condensed table-bordered">
             <thead>
               <tr>
                 <th ng-repeat="field in schema.fields">

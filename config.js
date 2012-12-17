@@ -6,7 +6,7 @@ module.exports = {
   },
   authorization: {
     mongodb:{
-     server: '10.10.20.75',
+     host: '10.10.20.75',
      port: 27017,
      db: 'projectplan',
      collection_name: 'nook_ac_1',
@@ -17,8 +17,8 @@ module.exports = {
   site: {
     //baseUrl: the URL that mongo express will be located at
     //Remember to add the forward slash at the end!
-    baseUrl: 'http://localhost:8083/',
-    port: 8083,
+    baseUrl: 'http://www.db.grad.nu.ac.th/apps/demo/',
+    port: 9011,
     cookieSecret: 'cookiesecret',
     sessionSecret: 'sessionsecret'
   }

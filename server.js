@@ -9,15 +9,10 @@ var config = require('./config');
 var utils = require('./utils');
 
 var app = express();
+
 var OpenIDStrategy = require('passport-openid').Strategy;
 
-var userprofile = new userdb.userprofile({
-  host:config.authorization.mongodb.server, 
-  port:config.authorization.mongodb.port,
-  db:config.authorization.mongodb.db,
-  collection_name:config.authorization.mongodb.collection_name
-});
-
+var userprofile = new userdb.userprofile(config.authorization.mongodb);
 var mongo = mongo_con.Mongo(config.mongo_connect);
 
 app.configure(function() {
@@ -36,12 +31,11 @@ app.configure(function() {
 
 
 app.use(function(err,req,res,next) {
-    if(err instanceof Error){
-        if(err.message === '401'){
-            res.json({'error':401});
-            //res.render();
-        }
+  if(err instanceof Error){
+    if(err.message === '401'){
+      res.json({'error':401});
     }
+  }
 });
 
 passport.serializeUser(function(user, done) {
@@ -97,7 +91,10 @@ app.get('/logout', function(req, res){
 
 app.post('/csv/upload', routes.uploadFile);
 
-app.get('/', routes.index);
+app.get('/', function(req, res) {;
+  console.log('index ');
+  res.render('index', {baseUrl:config.site.baseUrl});
+});
 
 app.get('/db/:collection/:id?', mongo.query);
 app.post('/db/:collection', mongo.insert);

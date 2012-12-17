@@ -72,12 +72,12 @@
         <table class="table table-condensed table-bordered">
           <thead>
             <tr>
-              <th>Select</th>
+              <th>Exclude</th>
               <th ng-repeat="content in result.col_names">
                 <span ng-hide="content.show_form" 
                       ng-init="content.show_form=false" 
                       class="remove-{{content.exclude}}">
-                  {{content.name}}
+                  {{content.field.title}}
                   <button class="btn btn-primary btn-mini pull-right" 
                     ng-click="content.show_form=true">
                     <i class="icon-pencil icon-white"></i>
@@ -85,7 +85,9 @@
                 </span>
                 <form ng-show="content.show_form">                
                   <label>Label Name</label>
-                  <input type="text" ng-model="content.name">
+                  <select ng-model="content.field" 
+                          ng-options="field.name for field in schema.fields"> 
+                  </select>
                   <label class="checkbox">
                     <input type="checkbox" ng-model="content.exclude"> Exclude
                   </label>
