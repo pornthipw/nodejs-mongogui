@@ -1,21 +1,6 @@
 //Add routes from other files
-var db = require('./database');
-var coll = require('./collection');
-var gridstore = require('./gridstore');
 
 var csv = require('ya-csv');
-
-exports.viewDatabase = db.viewDatabase;
-exports.dropDatabase = db.dropDatabase;
-
-exports.addCollection = coll.addCollection;
-exports.deleteCollection = coll.deleteCollection;
-exports.viewCollection = coll.viewCollection;
-exports.renameCollection = coll.renameCollection;
-
-exports.storeFile = gridstore.storeFile;
-exports.listFile = gridstore.listFile;
-exports.getFile = gridstore.getFile;
 
 exports.uploadFile = function(req, res) {
   console.log(req.files.file);

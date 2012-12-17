@@ -6,7 +6,7 @@
     
     <ul class="breadcrumb">
       <li><a href="#">Home</a> <span class="divider">|</span></li>
-      <li class="active">Schema <span class="divider">|</span></li>
+      <li ><a href="#/schema/list">Schema <span class="divider">|</span></li>
       <li><a href="#/query">Query</a></li>
     </ul>  
     <div class="row-fluid">
@@ -16,8 +16,7 @@
           There are <span class="badge" ng-bind="stats.count | number"></span>
           of objects or documents in this collection.
         </p>
-        
-        <table class="table table-striped">
+        <table class="table table-striped" ng-show="user_n">
           <thead>
             <tr>
               <th>
