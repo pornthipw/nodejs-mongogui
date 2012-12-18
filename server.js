@@ -96,6 +96,24 @@ app.get('/', function(req, res) {;
   res.render('index', {baseUrl:config.site.baseUrl});
 });
 
+app.get('/addrole', function(req, res) {
+  //console.log(req.user);
+  console.log(req.user.identifier);
+  userprofile.addrole(req.user, 'admin', function(exists, profile) {
+    if(profile) {
+      console.log(profile);
+      //done(null, profile);
+    } else {
+      //done(null, null);
+      console.log("OK");
+    }
+  });
+});
+
+app.get('/add_role', function(req, res) {
+  console.log(req.body.identifier);
+});
+
 app.get('/db/:collection/:id?', mongo.query);
 app.post('/db/:collection', mongo.insert);
 app.put('/db/:collection/:id', mongo.update);

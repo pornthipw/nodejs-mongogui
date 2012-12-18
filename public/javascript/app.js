@@ -21,22 +21,12 @@ app.config(function($routeProvider) {
     templateUrl:'static/schema.html'
   });
   
-  $routeProvider.when('/collections/:collection/schema', {
-    controller:SchemaListController, 
-    templateUrl:'static/view_schema.html'
-  });
-
   $routeProvider.when('/collections/:collection', {
     controller:CollectionController, 
     templateUrl:'static/collection.html'
   });
 
   $routeProvider.when('/', {
-    controller:DBController, 
-    templateUrl:'static/database.html'
-  });
-  
-  $routeProvider.when('/schema/list', {
     controller:SchemaListController, 
     templateUrl:'static/schema_list.html'
   });
@@ -56,6 +46,11 @@ app.config(function($routeProvider) {
     templateUrl:'static/query.html'
   });
   
+  $routeProvider.when('/role', {
+    controller:RoleController, 
+    templateUrl:'static/role_manager.html'
+  });
+  
 });
 
 function UserCtrl($scope, User, Logout) {
@@ -70,6 +65,47 @@ function UserCtrl($scope, User, Logout) {
       }
     });
   };
+}
+
+function RoleController($scope, $routeParams, Role ,User, Logout) {   
+  var self = this;
+  
+  $scope.user = User.get(function(response) {
+    console.log(response);
+    if (response.user) {
+      $scope.table_role = Role.query(function(res) {
+        console.log(res);
+      });  
+      $scope.user_n = response.user;
+    }
+  });
+  
+  $scope.edit_role = function (roleId) {
+    $scope.current_role = roleId;
+    Role.get({id:$scope.current_role}, function(role) {
+      $scope.role = role;
+    });
+  };
+  
+  $scope.addrole = function (roleId){
+    $scope.current_role = roleId;
+    Role.update({      
+      id:$scope.current_role
+    }, angular.extend({}, $scope.role,
+      {_id:undefined}), function(result) {
+      $scope.save_result = result;
+      if(result.ok) {        
+        $location.path('/');
+      } else {
+        console.log("not");
+      }
+    });   
+  };
+  
+  $scope.removerole = function (roleId){
+    $scope.current_role = roleId;
+  };
+ 
 }
 
 function SchemaListController($scope, $routeParams, MongoDB,User, Logout) {   
@@ -126,7 +162,7 @@ function SchemaController($scope, $routeParams, MongoDB, $location) {
       {_id:undefined}), function(result) {
       $scope.save_result = result;
       if(result.ok) {        
-        $location.path('/schema/list');
+        $location.path('/');
       } else {
         console.log("not");
       }
@@ -142,7 +178,7 @@ function SchemaController($scope, $routeParams, MongoDB, $location) {
       id:$routeParams.id
     },function(result) {            
       if(result.ok) {        
-        $location.path('/schema/list');
+        $location.path('/');
       }
     });
   };
@@ -165,7 +201,7 @@ function SchemaCreateController($scope, $routeParams, MongoDB, $location) {
     MongoDB.save({  
     },$scope.schema,function(result) { 
       console.log(result);
-      $location.path('/schema/list');
+      $location.path('/');
     });
   };
   

@@ -1,0 +1,42 @@
+
+<div class="row-fluid">
+  <div class="span12">
+    <div class="row-fluid">
+      <div class="span6">
+      <ul>
+        <li ng-repeat="role in table_role"> 
+            <a href = "" ng-click="edit_role(role._id)">{{role.identifier}} </a>
+        </li>
+      </ul>
+      </div>
+      <div class="span6">
+      
+        <form class="form-horizontal" ng-show="current_role">
+            <div class="control-group">
+              <label class="control-label" for="inputIdentifier">Identifier</label>
+              <div class="controls">
+                <input type="text" id="inputIdentifier" ng-model="role.identifier">
+              </div>            
+            </div>
+                        
+            <div class="control-group">
+              <label class="control-label" for="inputRole">Role</label>
+                <div class="controls">
+                  <input type="text" id="inputRole" ng-model="role.role">
+                </div>                
+            </div>
+          
+            <div class="control-group">
+              <label class="control-label" for="inputMethod"></label>
+              <div class="controls">
+                <button ng-click="addrole(role._id)" class="btn btn-primary" type="submit"> addrole</button>
+                <button ng-click="removerole(role._id)" class="btn btn-primary" type="submit"> removerole</button>
+              </div>
+            </div>
+        </form>
+
+
+      </div>
+    </div>
+  </div>
+</div>
