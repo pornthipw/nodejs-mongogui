@@ -94,8 +94,6 @@ function SchemaController($scope, $routeParams, MongoDB, $location) {
   $scope.currentPage = 0;
   $scope.limit = 20;
 
-      
-
   MongoDB.get({id:$routeParams.id}, function(schema) {
     $scope.schema = schema;
     var query_str = {"$or":[]};
@@ -109,6 +107,7 @@ function SchemaController($scope, $routeParams, MongoDB, $location) {
     $scope.document_list = MongoDB.query({
       query:JSON.stringify(query_str)
     }, function(res) {
+      
       console.log(res.length);
       $scope.length_of_schema = res.length;
     });
