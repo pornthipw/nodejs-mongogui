@@ -6,6 +6,10 @@
     "mongodb" : "*",
     "hbs" : "*",
     "underscore" : "*",
-    "ya-csv" :"*"
+    "ya-csv" :"*",
+    "mongo-connect":"*",
+    "passport" : "*",
+    "passport-openid" : "*",
+    "generic-pool" : "*"
   }
 }

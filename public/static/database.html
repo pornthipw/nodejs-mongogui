@@ -1,0 +1,58 @@
+<div class="row-fluid">
+  <div class="span12">
+    <div class="page-header">
+      <h1>Database <small> <span ng-bind="db.stats.db"></span></small></h1>
+    </div>
+    <ul class="breadcrumb">
+      <li class="active">Home <span class="divider">|</span></li>
+      <li><a href="#/schema/list">Schema</a> <span class="divider">|</span></li>
+      <li><a href="#/query">Query</a></li>
+    </ul>
+    
+    <div class="row-fluid">
+      <div class="span6">
+        <table class="table table-bordered table-condensed">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Total number of Collections</td>
+              <td><span ng-bind="db.stats.collections | number"></span></td>
+            </tr>
+            <tr>
+              <td>Total number of Documents</td>
+              <td><span ng-bind="db.stats.objects | number"></span></td>
+            </tr>
+            <tr>
+              <td>Total size of Documents</td>
+              <td><span ng-bind="db.stats.dataSize/1024 | number"></span>KB</td>
+            </tr>
+            <tr>
+              <td>Total storage allocated for data</td>
+              <td><span ng-bind="db.stats.storageSize/1024 | number"></span>KB</td>
+            </tr>
+            <tr>
+              <td>Total size of storage files (increasing by {{database.stats.nsSizeMB}}MB)</td>
+              <td><span ng-bind="db.stats.fileSize/(1024*1024) | number"></span>MB</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="span2">
+        <div class="well" style="max-width:300px; padding:8px 0;">
+          <ul class="nav nav-list">
+            <li class="nav-header">Collections</li>
+            <li ng-repeat="collection in db.collections">
+              <a href="#/collections/{{collection.name}}">{{collection.name}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
