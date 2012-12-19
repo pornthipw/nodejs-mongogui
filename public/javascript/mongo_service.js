@@ -1,7 +1,7 @@
 var app = angular.module('mongo_service', ['ngResource']);
 
-//var prefix = '/apps/demo';
-var prefix = '';
+var prefix = '/apps/demo';
+//var prefix = '';
 
 app.factory('MongoDB', function($resource) {
   var MongoDB = $resource(prefix + '/db/person/:id', {    
@@ -9,6 +9,13 @@ app.factory('MongoDB', function($resource) {
   },
   {update: { method:'PUT' }});
   return MongoDB;
+});
+
+app.factory('Admin', function($resource) {
+  var Admin = $resource(prefix + '/admin/users/:id', {
+  },
+  {update: { method:'PUT' }});
+  return Admin;
 });
 
 app.factory('User', function($resource) {

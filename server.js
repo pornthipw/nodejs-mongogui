@@ -93,26 +93,12 @@ app.post('/csv/upload', routes.uploadFile);
 
 app.get('/', function(req, res) {;
   console.log('index ');
-  res.render('index', {baseUrl:config.site.baseUrl});
+  res.render('index', {baseHref:config.site.baseUrl});
 });
 
-app.get('/addrole', function(req, res) {
-  //console.log(req.user);
-  console.log(req.user.identifier);
-  userprofile.addrole(req.user, 'admin', function(exists, profile) {
-    if(profile) {
-      console.log(profile);
-      //done(null, profile);
-    } else {
-      //done(null, null);
-      console.log("OK");
-    }
-  });
-});
-
-app.get('/add_role', function(req, res) {
-  console.log(req.body.identifier);
-});
+app.get('/admin/users', userprofile.list_user);
+app.get('/admin/users/:id', userprofile.get_user);
+app.put('/admin/users/:id', userprofile.update_user);
 
 app.get('/db/:collection/:id?', mongo.query);
 app.post('/db/:collection', mongo.insert);

@@ -54,8 +54,7 @@ app.config(function($routeProvider) {
 });
 
 function UserCtrl($scope, User, Logout) {
-  $scope.user = User.get(function(response) {
-  });
+  $scope.user = User.get();
   
   $scope.logout = function(){
     Logout.get(function(response){
@@ -67,53 +66,42 @@ function UserCtrl($scope, User, Logout) {
   };
 }
 
-function RoleController($scope, $routeParams, Role ,User, Logout) {   
-  var self = this;
-  
-  $scope.user = User.get(function(response) {
-    //console.log(response);
-    if (response.user) {
-      $scope.table_role = Role.query(function(res) {
-        //console.log(res);
-      });  
-      $scope.user_n = response.user;
-    }
-  });
-  
+function RoleController($scope, Role, User, Logout, Admin) {   
+  var orig = null;
 
-  
-  //$scope.r.role.push({'name':'', 'title':''});
+  $scope.users = Admin.query();
 
-  $scope.add_role = function (roleId) {
-    Role.get({id:roleId}, function(role) {
-      $scope.current_role2 = role;
-      
-      $scope.current_role = [
-        {role:'admin'}
-      ];
-    self.schema_role = $scope.current_role; // red
-    //$scope.current_role2.current_role.push();
-    console.log(self.schema_role);
+  $scope.get_user = function(id) {
+    Admin.get({'id':id}, function(user) {
+      var ng_role = [];
+      $scope.user = user;
+      orig = user;
+      if(user['role']) {
+        angular.forEach(user.role, function(value, idx) {
+          ng_role.push({'name':value});
+        });
+      }
+      $scope.user['role'] = ng_role;
     });
   };
-  
-  /*
-  $scope.addrole = function (roleId){
-    $scope.current_role = roleId;
-    Role.update({      
-      id:$scope.current_role
-    }, angular.extend({}, self.schema_role,
-      {_id:undefined}), function(result) {
-      $scope.save_result = result;
-      if(result.ok) {        
-        $location.path('/');
-      } else {
-        console.log("not");
+
+  $scope.update = function() {
+    var db_role = [];
+    angular.forEach($scope.user.role, function(value, idx) {
+      db_role.push(value.name);
+    });
+    orig['role'] = db_role;
+    
+    var doc = angular.extend({}, orig, {_id:undefined});
+    //console.log(doc);
+    Admin.update({'id':orig._id}, doc, function(response) { 
+      console.log(response);
+      if(response.success) {
+        $scope.get_user(orig._id);
       }
-    });   
+    });
   };
-  */
-  
+ 
 }
 
 function SchemaListController($scope, $routeParams, MongoDB,User, Logout) {   
@@ -417,10 +405,6 @@ function CollectionController($scope, $routeParams, MongoDB, User, Logout) {
     });
   }
 }
-
-function DBController($scope, $routeParams) {
-  //$scope.db = MongoStats.info();
-};
 
 function UploadController($scope,$routeParams,MongoDB) {
   $('iframe#upload_target').load(function() {

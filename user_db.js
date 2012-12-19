@@ -87,6 +87,54 @@ var UserProfile = function(config) {
       });
     });    
   };
+  
+  this.list_user = function(req, res) {
+    pool.acquire(function(err,db) {
+      db.collection(config.collection_name, function(err, collection) {
+        collection.find({'identifier':{'$exists':true}}).toArray(function(err, users) {
+          pool.release(db);
+          if(!err) {
+            res.json(users);
+          } else {
+            res.json([]);
+          }
+        });
+      });
+    });    
+  };
+
+  this.update_user = function(req, res) {
+    var spec = {'_id':mongodb.ObjectID.createFromHexString(req.params.id)};
+    pool.acquire(function(err,db) {
+      db.collection(config.collection_name, function(err, collection) {
+        collection.update(spec,req.body, function(err, result) {
+          pool.release(db);
+          if(!err) {
+            res.json({'success':true, 'message':result});
+          } else {
+            res.json({'success':false,'message':err});
+          }
+        });
+      });
+    });    
+  };
+
+  this.get_user = function(req, res) {
+    var spec = {'_id':mongodb.ObjectID.createFromHexString(req.params.id)};
+    pool.acquire(function(err,db) {
+      db.collection(config.collection_name, function(err, collection) {
+        collection.findOne(spec, function(err, user) {
+          pool.release(db);
+          if(!err) {
+            res.json(user);
+          } else {
+            res.json({});
+          }
+        });
+      });
+    });    
+  };
+
 
   this.check_role = function(identifier, role_names, callback) {
     pool.acquire(function(err,db) {
