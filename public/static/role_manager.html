@@ -5,32 +5,39 @@
       <div class="span6">
       <ul>
         <li ng-repeat="role in table_role"> 
-            <a href = "" ng-click="edit_role(role._id)">{{role.identifier}} </a>
+            <a href = "" ng-click="add_role(role._id)">{{role.identifier}} </a>
         </li>
       </ul>
       </div>
+      
       <div class="span6">
       
         <form class="form-horizontal" ng-show="current_role">
             <div class="control-group">
               <label class="control-label" for="inputIdentifier">Identifier</label>
               <div class="controls">
-                <input type="text" id="inputIdentifier" ng-model="role.identifier">
+                <input type="text" id="inputIdentifier" ng-model="current_role2.identifier">
               </div>            
             </div>
-                        
-            <div class="control-group">
+            <div class="control-group"  ng-repeat="field in current_role">
               <label class="control-label" for="inputRole">Role</label>
                 <div class="controls">
-                  <input type="text" id="inputRole" ng-model="role.role">
-                </div>                
+                  <input type="text" id="inputRole" ng-model="field.role"> [<a href ng-click="current_role.splice($index, 1)">X</a>] 
+                </div>
+                               
+            </div>
+            <div class="control-group">
+              <div class="controls">
+                [<a href ng-click="current_role.push({})">add</a>]
+              </div>
             </div>
           
             <div class="control-group">
               <label class="control-label" for="inputMethod"></label>
               <div class="controls">
-                <button ng-click="addrole(role._id)" class="btn btn-primary" type="submit"> addrole</button>
-                <button ng-click="removerole(role._id)" class="btn btn-primary" type="submit"> removerole</button>
+                <button ng-click="addrole(current_role._id)" class="btn btn-primary" type="submit"> addrole</button>
+                <button ng-click="removerole(current_role._id)" class="btn btn-primary" type="submit"> removerole</button>
+                <a href="" class="btn btn-info" ng-click="add_role_field()"><i class="icon-plus icon-white"></i> Add role Field</a>
               </div>
             </div>
         </form>

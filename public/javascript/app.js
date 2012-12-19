@@ -71,27 +71,38 @@ function RoleController($scope, $routeParams, Role ,User, Logout) {
   var self = this;
   
   $scope.user = User.get(function(response) {
-    console.log(response);
+    //console.log(response);
     if (response.user) {
       $scope.table_role = Role.query(function(res) {
-        console.log(res);
+        //console.log(res);
       });  
       $scope.user_n = response.user;
     }
   });
   
-  $scope.edit_role = function (roleId) {
-    $scope.current_role = roleId;
-    Role.get({id:$scope.current_role}, function(role) {
-      $scope.role = role;
+
+  
+  //$scope.r.role.push({'name':'', 'title':''});
+
+  $scope.add_role = function (roleId) {
+    Role.get({id:roleId}, function(role) {
+      $scope.current_role2 = role;
+      
+      $scope.current_role = [
+        {role:'admin'}
+      ];
+    self.schema_role = $scope.current_role; // red
+    //$scope.current_role2.current_role.push();
+    console.log(self.schema_role);
     });
   };
   
+  /*
   $scope.addrole = function (roleId){
     $scope.current_role = roleId;
     Role.update({      
       id:$scope.current_role
-    }, angular.extend({}, $scope.role,
+    }, angular.extend({}, self.schema_role,
       {_id:undefined}), function(result) {
       $scope.save_result = result;
       if(result.ok) {        
@@ -101,11 +112,8 @@ function RoleController($scope, $routeParams, Role ,User, Logout) {
       }
     });   
   };
+  */
   
-  $scope.removerole = function (roleId){
-    $scope.current_role = roleId;
-  };
- 
 }
 
 function SchemaListController($scope, $routeParams, MongoDB,User, Logout) {   
