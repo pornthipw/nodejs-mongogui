@@ -68,20 +68,18 @@ function UserCtrl($scope, User, Logout) {
 
 function RoleController($scope, Role, User, Logout, Admin) {   
   var orig = null;
-
   $scope.users = Admin.query();
-
   $scope.get_user = function(id) {
     Admin.get({'id':id}, function(user) {
       var ng_role = [];
-      $scope.user = user;
-      orig = user;
-      if(user['role']) {
+      $scope.user = user;//user is object, array
+      orig = user;// ???
+      if(user['role']) { //found
         angular.forEach(user.role, function(value, idx) {
-          ng_role.push({'name':value});
+          ng_role.push({'name':value});//??
         });
       }
-      $scope.user['role'] = ng_role;
+      $scope.user['role'] = ng_role; // not found
     });
   };
 
@@ -90,7 +88,7 @@ function RoleController($scope, Role, User, Logout, Admin) {
     angular.forEach($scope.user.role, function(value, idx) {
       db_role.push(value.name);
     });
-    orig['role'] = db_role;
+    orig['role'] = db_role;// ?? origin -- new user
     
     var doc = angular.extend({}, orig, {_id:undefined});
     //console.log(doc);
@@ -101,7 +99,7 @@ function RoleController($scope, Role, User, Logout, Admin) {
       }
     });
   };
- 
+  
 }
 
 function SchemaListController($scope, $routeParams, MongoDB,User, Logout) {   

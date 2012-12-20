@@ -30,13 +30,6 @@ app.configure(function() {
 });
 
 
-app.use(function(err,req,res,next) {
-  if(err instanceof Error){
-    if(err.message === '401'){
-      res.json({'error':401});
-    }
-  }
-});
 
 passport.serializeUser(function(user, done) {
   userprofile.store(user, function(exists, user) {    
@@ -91,22 +84,50 @@ app.get('/logout', function(req, res){
 
 app.post('/csv/upload', routes.uploadFile);
 
-app.get('/', function(req, res) {;
+app.get('/', function(req, res) {
   console.log('index ');
   res.render('index', {baseHref:config.site.baseUrl});
 });
 
-app.get('/admin/users', userprofile.list_user);
-app.get('/admin/users/:id', userprofile.get_user);
-app.put('/admin/users/:id', userprofile.update_user);
+app.get('/admin/users', admin_role, userprofile.list_user);
+app.get('/admin/users/:id', admin_role ,userprofile.get_user);
+app.put('/admin/users/:id', admin_role ,userprofile.update_user);
 
 app.get('/db/:collection/:id?', mongo.query);
 app.post('/db/:collection', mongo.insert);
 app.put('/db/:collection/:id', mongo.update);
 app.del('/db/:collection/:id', mongo.delete);
 
+function admin_role(req,res,next) {
+  console.log('admin_role');
+  if(req.user) {
+    userprofile.check_role(req.user.identifier, ["admin"], function(allow) {
+      if(allow) {
+          next();
+      } else {
+          next(new Error("401"));
+      }
+    });
+  } else {
+    console.log('no user signin');
+    next(new Error("401"));    
+  }
+}
+
+app.use(function(err,req,res,next) {  
+  if(err instanceof Error){    
+    if(err.message === '401'){
+      res.json({'error':401});
+    }
+  }
+});
+
+
 app.listen(config.site.port || 3000);
 
 console.log("Mongo Express server listening on port " + (config.site.port || 3000));
+
+
+
 
 //var server = app.listen(3000);
