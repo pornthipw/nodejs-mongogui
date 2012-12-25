@@ -15,7 +15,7 @@ exports.uploadFile = function(req, res) {
         content.push(list);
       });
     
-      reader.addListener('error', function() {
+      reader.addListener('error', function(error) {
         res.send(JSON.stringify({'success':false}));
       });
 

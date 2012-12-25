@@ -85,7 +85,6 @@ app.get('/logout', function(req, res){
 app.post('/csv/upload', routes.uploadFile);
 
 app.get('/', function(req, res) {
-  console.log('index ');
   res.render('index', {baseHref:config.site.baseUrl});
 });
 

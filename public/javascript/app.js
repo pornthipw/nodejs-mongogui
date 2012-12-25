@@ -21,11 +21,6 @@ app.config(function($routeProvider) {
     templateUrl:'static/schema.html'
   });
   
-  $routeProvider.when('/collections/:collection', {
-    controller:CollectionController, 
-    templateUrl:'static/collection.html'
-  });
-
   $routeProvider.when('/', {
     controller:SchemaListController, 
     templateUrl:'static/schema_list.html'
@@ -42,7 +37,7 @@ app.config(function($routeProvider) {
   });
   
   $routeProvider.when('/query', {
-    controller:CollectionController, 
+    controller:QueryController, 
     templateUrl:'static/query.html'
   });
   
@@ -280,9 +275,29 @@ function SchemaManageController($scope, $routeParams, MongoDB) {
   
 }
 
-function CollectionController($scope, $routeParams, MongoDB, User, Logout) {
+function QueryController($scope, $routeParams, MongoDB, User, Logout) {
   var self=this;
   var currentDocument = undefined;
+
+  MongoDB.query({    
+    query:'{"type":"tb_schema"}'
+  }, function(schema_list) {
+    var fields = [];
+    $scope.fields = [];
+    angular.forEach(schema_list, function(schema, index) {
+      angular.forEach(schema.fields, function(field) {
+        if(fields.indexOf(field.name) == -1) {
+          fields.push(field.name);
+        }
+      });
+    });
+
+    angular.forEach(fields, function(field) {
+      $scope.fields.push({'name':field,'selected':false});
+    });
+    console.log($scope.fields);
+
+  });  
   
   $scope.currentPage = 0;
   $scope.limit = 20;
@@ -430,6 +445,7 @@ function UploadController($scope,$routeParams,MongoDB) {
         console.log($scope.result);
       });
     } else {
+      console.log(data);
       $scope.$apply(function() {
         $scope.success = false;
         $scope.message = data.message;

@@ -7,6 +7,9 @@
 </style>
 <div class="row-fluid" >
   <div class="span12">
+    <label class="checkbox" ng-repeat="field in fields">
+       <input type="checkbox" ng-model="field.selected"> {{field.name}}
+    </label>
     
   <div class="row-fluid" >
   <div class="span12">
