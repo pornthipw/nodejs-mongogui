@@ -5,7 +5,7 @@
       <div class="span12">
         <label class="checkbox">
           <input type="checkbox" ng-model="field.selected"> 
-          {{field.name}}
+            {{field.name}}
         </label>
       </div>
     </div>
@@ -23,20 +23,45 @@
     
   <div class="span9">
     <div class="row-fluid">
-      <div class="span12">
-        <table ng-show="result_list" 
-               class="table table-bordered table-condensed">
-          <tr>
-            <th ng-repeat="field in selected_fields">
-               {{field}}
-            </th>
-          </tr>
-          <tr ng-repeat="row in result_list">
-            <td ng-repeat="field in selected_fields">
-              <span ng-bind="row[field]"></span>
-            </td>
-          </tr>
-        </table>
+      <div class="span12" ng-show="result_list">
+        <div class="row-fluid">
+          <button class="btn btn-primary" type="button" ng-click="select_merge()">
+            Merge
+          </button>
+        </div>
+        <div class="row-fluid">
+          <div class="span12">
+            <table class="table table-bordered table-condensed">
+              <tr>
+                <th class="span1"></th>
+                <th ng-repeat="field in selected_fields">
+                  {{field}}
+                </th>
+              </tr>
+              <tr ng-repeat="row in result_list">
+                <td>
+                  <input type="checkbox" ng-model="row._ng_selected"> 
+                </td>
+                <td ng-repeat="field in selected_fields">
+                  <span ng-bind="row[field]"></span>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="row-fluid">
+          <ul ng-init="merge_doc={}">
+            <li ng-repeat="(key,value) in merge_tmp">
+               {{key}} 
+               <select ng-model="merge_doc[key]" 
+                   ng-options="v for v in value"></select>
+            </li>
+          </ul>
+          <button class="btn btn-primary" type="button" ng-click="merge()">
+            Merge Content
+          </button>
+        </div>
+       
       </div>
     </div>
   </div>

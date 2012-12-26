@@ -297,19 +297,44 @@ function QueryController($scope, $routeParams, MongoDB, User, Logout) {
     });
   });  
 
+  $scope.merge = function() {
+    console.log($scope.merge_doc);
+  };
+
+  $scope.select_merge = function() {
+    var target_doc = {};
+    angular.forEach($scope.result_list, function(doc, idx) {
+      if(doc._ng_selected) {
+        angular.forEach(doc, function(value,key) {
+          if(!target_doc[key]) {
+            target_doc[key] = [];
+          }
+          if(target_doc[key].indexOf(value) == -1) {
+            target_doc[key].push(value);
+          }
+        });
+      }
+    });
+    $scope.merge_tmp = target_doc;
+    console.log(target_doc);
+  };
+
   $scope.query = function() {
     var q = [];
     $scope.selected_fields = [];
     angular.forEach($scope.select_fields, function(field, idx) {
       if(field.selected) { 
         var tmp = {};
-        tmp[field.name] = {'$regex':$scope.query_str};
+        if($scope.query_str) {
+          tmp[field.name] = {'$regex':$scope.query_str};
+        } else {
+          tmp[field.name] = {'$regex':'.'};
+        }
         $scope.selected_fields.push(field.name);
         q.push(tmp);
       }
     });
 
-   
     MongoDB.query({    
       query:JSON.stringify({'$or':q})
     }, function(res) {
