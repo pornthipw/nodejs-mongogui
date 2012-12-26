@@ -1,0 +1,107 @@
+
+<div class="row-fluid" >
+  <div class="span5">
+    <label class="checkbox" ng-repeat="field in select_fields">
+       <input type="checkbox" ng-model="field.selected"> {{field.name}}
+    </label>
+    <div class="row-fluid">
+      <div class="span12">
+        <div class="input-append">
+          <input type="text" ng-model="query_str"> 
+          <button class="btn" type="button" ng-click="query()">
+            <i class="icon-search"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+  <div class="span7">
+    <div class="row-fluid">
+      <div class="span12">
+        <div class="row-fluid">
+          <div class="span3">
+            <div class="accordion" id="accordion2">
+              <div class="accordion-group">
+                <div class="accordion-heading">
+                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                  Query 
+                  </a>
+                </div>
+                <div id="collapseOne" class="accordion-body collapse">
+                  <div class="accordion-inner">
+                    <form class="form-inline">
+                      <div class="input-append">
+                        <input id="appendedInputButtons" ng-model="query_str" class="span9" type="text">
+                          <button class="btn" type="button" ng-click="query()">
+                            <i class="icon-search"></i>
+                          </button>
+                        </div>
+                    </form>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+          <div class="span6" ng-show="documents">
+               <form class="form-inline pull-right" ng-show="documents">
+                 <strong>{{currentPage*limit+1}} &#8211;
+                 <span ng-hide="currentPage*limit+limit > documents.length">{{currentPage*limit+limit}}</span>
+                 <span ng-show="currentPage*limit+limit > documents.length">{{documents.length}}</span>
+                 </strong> of 
+                 <strong>{{documents.length | number}}</strong> 
+                 <div class="btn-group">
+                   <button class="btn" ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">&laquo;</button>
+                   <button class="btn" ng-disabled="currentPage >= documents.length/limit - 1" ng-click="currentPage=currentPage+1">&raquo;</button>
+                 </div>
+               </form>
+            
+            <div class="row-fluid" ng-repeat="doc in documents|skip:currentPage*limit|limitTo:limit">
+              <div class="span12" ng-hide="doc.removed"> 
+              <div class="btn-group btn-group-vertical pull-right">
+                <button type="button" data-target="#myModal" 
+                  ng-click="edit_document(doc)" 
+                  class="btn btn-primary btn-small" 
+                  data-toggle="modal">
+                  <i class="icon-pencil icon-white"></i>
+                </button>
+                <button class="btn btn-danger" ng-click="remove(doc)">
+                  <i class="icon-remove icon-white"></i>
+                </button>
+              </div>
+             <pre>{{doc|json}}</pre>
+             </div>
+           </div>
+
+          </div>
+
+        </div>
+     </div>   
+
+         </div>
+       </div>
+     </div>
+  </div>
+</div>
+
+<div class="modal hide fade" id="myModal">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Document: {{document._id}}</h3>
+  </div>
+  <div class="modal-body">
+    <div style="height:400px;width:400px">
+      <div ace="json" ng-model="document_str">
+        <textarea></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <span ng-switch on="save_result.ok" class="pull-left">
+      <span ng-switch-when="1">Document Saved</span>
+      <span ng-switch-when="0"><pre>{{save_result|json}}</pre></span>
+    </span>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+    <button class="btn btn-primary" ng-click="save_document()">Save</a>
+  </div>
+</div>

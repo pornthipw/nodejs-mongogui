@@ -278,10 +278,6 @@ function SchemaManageController($scope, $routeParams, MongoDB) {
 function QueryController($scope, $routeParams, MongoDB, User, Logout) {
   var self=this;
   var currentDocument = undefined;
-  
-  $scope.supported_operation = [
-    {'name':'startsWith'}
-  ];
 
   MongoDB.query({    
     query:'{"type":"tb_schema"}'
@@ -301,21 +297,24 @@ function QueryController($scope, $routeParams, MongoDB, User, Logout) {
     });
   });  
 
-  $scope.query_list = [];
+  $scope.query = function() {
+    var q = [];
+    $scope.selected_fields = [];
+    angular.forEach($scope.select_fields, function(field, idx) {
+      if(field.selected) { 
+        var tmp = {};
+        tmp[field.name] = {'$regex':$scope.query_str};
+        $scope.selected_fields.push(field.name);
+        q.push(tmp);
+      }
+    });
 
-  $scope.build_query = function() {
-    var operation = $scope.selected_operation;
-    var field = $scope.selected_field;
-    var q = {};
-    if(operation.name == 'startsWith') {
-      q[field.name] = {'$regex':$scope.param1};
-      $scope.query_list.push(q);
-      MongoDB.query({    
-        query:JSON.stringify(q)
-      }, function(res) {
-        console.log(res);
-      });
-    }
+   
+    MongoDB.query({    
+      query:JSON.stringify({'$or':q})
+    }, function(res) {
+      $scope.result_list = res;
+    });
   };
   
   $scope.currentPage = 0;
@@ -404,37 +403,6 @@ function QueryController($scope, $routeParams, MongoDB, User, Logout) {
         }
       });
     }
-  }
-  
-  $scope.query = function() {
-    if(!$scope.query_str) {
-      $scope.query_str = '{}';
-    }
-    MongoDB.query({
-      collection:$routeParams.collection,
-      query:$scope.query_str,
-      fields:$scope.fields()
-    },function(docs) { 
-      $scope.documents = docs;
-      //nook
-      var schema_dict = {};
-      angular.forEach(docs, function(v, i) {
-        if(v) {
-          angular.forEach(v, function(name, field) {
-            var id = field;
-            if(!(id in schema_dict)) {
-              schema_dict[id] = {'name':id, 'fields':[],'count':0};
-            }        
-            schema_dict[id]['fields'].push(field);
-            schema_dict[id]['count']++;
-            //console.log(schema_dict[id]['count']);
-          });
-        } 
-      });
-      console.log(schema_dict);
-      $scope.schema_list = schema_dict;
-     
-    });
   }
 }
 
