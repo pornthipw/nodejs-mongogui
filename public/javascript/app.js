@@ -278,12 +278,16 @@ function SchemaManageController($scope, $routeParams, MongoDB) {
 function QueryController($scope, $routeParams, MongoDB, User, Logout) {
   var self=this;
   var currentDocument = undefined;
+  
+  $scope.supported_operation = [
+    {'name':'startsWith'}
+  ];
 
   MongoDB.query({    
     query:'{"type":"tb_schema"}'
   }, function(schema_list) {
     var fields = [];
-    $scope.fields = [];
+    $scope.select_fields = [];
     angular.forEach(schema_list, function(schema, index) {
       angular.forEach(schema.fields, function(field) {
         if(fields.indexOf(field.name) == -1) {
@@ -293,11 +297,26 @@ function QueryController($scope, $routeParams, MongoDB, User, Logout) {
     });
 
     angular.forEach(fields, function(field) {
-      $scope.fields.push({'name':field,'selected':false});
+      $scope.select_fields.push({'name':field,'selected':false});
     });
-    console.log($scope.fields);
-
   });  
+
+  $scope.query_list = [];
+
+  $scope.build_query = function() {
+    var operation = $scope.selected_operation;
+    var field = $scope.selected_field;
+    var q = {};
+    if(operation.name == 'startsWith') {
+      q[field.name] = {'$regex':$scope.param1};
+      $scope.query_list.push(q);
+      MongoDB.query({    
+        query:JSON.stringify(q)
+      }, function(res) {
+        console.log(res);
+      });
+    }
+  };
   
   $scope.currentPage = 0;
   $scope.limit = 20;
