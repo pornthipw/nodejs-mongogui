@@ -302,15 +302,19 @@ function QueryController($scope, $routeParams, MongoDB, User, Logout) {
   };
 
   $scope.select_merge = function() {
+    $scope.merge_doc = {};
     var target_doc = {};
     angular.forEach($scope.result_list, function(doc, idx) {
       if(doc._ng_selected) {
         angular.forEach(doc, function(value,key) {
-          if(!target_doc[key]) {
-            target_doc[key] = [];
-          }
-          if(target_doc[key].indexOf(value) == -1) {
-            target_doc[key].push(value);
+          if(!key.match(/^_/)) {
+            if(!target_doc[key]) {
+              target_doc[key] = [];
+              $scope.merge_doc[key] = value;
+            }
+            if(target_doc[key].indexOf(value) == -1) {
+              target_doc[key].push(value);
+            }
           }
         });
       }

@@ -50,16 +50,18 @@
           </div>
         </div>
         <div class="row-fluid">
-          <ul ng-init="merge_doc={}">
-            <li ng-repeat="(key,value) in merge_tmp">
-               {{key}} 
-               <select ng-model="merge_doc[key]" 
-                   ng-options="v for v in value"></select>
-            </li>
-          </ul>
-          <button class="btn btn-primary" type="button" ng-click="merge()">
-            Merge Content
-          </button>
+          <div class="span12">
+            <form class="form-horizontal">
+              <div class="control-group" ng-repeat="(key,value) in merge_tmp">
+                <label class="control-label">{{key}}</label>
+                <div class="controls">
+                  <select ng-model="merge_doc[key]" 
+                          ng-options="v for v in value">
+                  </select>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
        
       </div>
