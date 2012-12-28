@@ -94,6 +94,9 @@
           <div class="input-prepend">
             <span class="add-on"><i class="icon-search"></i></span>
             <input type="text" placeholder="Search" ng-model="search">    
+
+            <input type="text" placeholder="Query" ng-model="query_str">    
+            <input type="button" class="btn btn-primary" value="Query" ng-click="query()">    
           </div>
           <form class="form-inline pull-right" ng-show="schema.fields">
             <strong>{{currentPage*limit+1}} &#8211;

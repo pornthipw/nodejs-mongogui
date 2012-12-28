@@ -119,6 +119,37 @@ function SchemaController($scope, $routeParams, MongoDB, $location) {
   $scope.currentPage = 0;
   $scope.limit = 20;
 
+  $scope.query = function() {
+    MongoDB.get({id:$routeParams.id}, function(schema) {
+      $scope.schema = schema;
+      var query_obj = {"$or":[]};
+      angular.forEach(schema.fields, function(field, index) {
+        var c_field = {};
+        if($scope.query_str) {
+          c_field["$and"] = [];
+          var c1 = {};
+          c1[field.name] = {"$exists":true};
+          var c2 = {};
+          c1[field.name] = {"$regex":$scope.query_str};
+          c_field["$and"].push(c1);
+          c_field["$and"].push(c2);
+        } else {
+          c_field[field.name] = {};
+          c_field[field.name]["$exists"] = true;
+        }
+        query_obj["$or"].push(c_field);
+      });
+    
+      console.log(query_obj);
+      $scope.document_list = MongoDB.query({
+        query:JSON.stringify(query_obj)
+      }, function(res) {
+        console.log(res.length);
+        $scope.length_of_schema = res.length;
+      });
+    });
+  };
+
   MongoDB.get({id:$routeParams.id}, function(schema) {
     $scope.schema = schema;
     var query_str = {"$or":[]};
