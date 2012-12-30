@@ -88,9 +88,9 @@ app.get('/', function(req, res) {
   res.render('index', {baseHref:config.site.baseUrl});
 });
 
-app.get('/admin/users', admin_role, userprofile.list_user);
-app.get('/admin/users/:id', admin_role ,userprofile.get_user);
-app.put('/admin/users/:id', admin_role ,userprofile.update_user);
+app.get('/admin/users', userprofile.list_user);
+app.get('/admin/users/:id', userprofile.get_user);
+app.put('/admin/users/:id', userprofile.update_user);
 
 app.get('/db/:collection/:id?', mongo.query);
 app.post('/db/:collection', mongo.insert);

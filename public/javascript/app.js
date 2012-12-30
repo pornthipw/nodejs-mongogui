@@ -16,13 +16,8 @@ app.config(function($routeProvider) {
     templateUrl:'static/csv_manager.html'
   });
 
-  $routeProvider.when('/collections/:collection/schema/:id', {
-    controller:SchemaController, 
-    templateUrl:'static/schema.html'
-  });
-  
   $routeProvider.when('/', {
-    controller:SchemaListController, 
+    controller:MainController, 
     templateUrl:'static/schema_list.html'
   });
   
@@ -97,20 +92,36 @@ function RoleController($scope, Role, User, Logout, Admin) {
   
 }
 
-function SchemaListController($scope, $routeParams, MongoDB,User, Logout) {   
-  
-  $scope.user = User.get(function(response) {
-    console.log(response);
-    if (response.user) {
+function MainController($scope, $routeParams, MongoDB,User, Logout) {   
+   $scope.limit = 10;
+   // $scope.user = User.get(function(response) {
+   //  console.log(response);
+   // if(response.user) {
       $scope.table_schemas = MongoDB.query({    
         query:'{"type":"tb_schema"}'
       }, function(res) {
         console.log(res);
       });  
-      $scope.user_n = response.user;
-    }
-  });
- 
+   //   $scope.user_n = response.user;
+   // }
+   // });
+  
+   $scope.load_schema = function(schema_id) {
+     MongoDB.get({id:schema_id}, function(schema) {
+       $scope.schema = schema;
+       $scope.currentPage = 0;
+       var query_str = {"$or":[]};
+       angular.forEach(schema.fields, function(field, index) {
+         var c_field = {};
+         c_field[field.name] = {"$exists":true};
+         query_str["$or"].push(c_field);
+       });
+       $scope.document_list = MongoDB.query({
+         query:JSON.stringify(query_str)
+       });
+     });
+
+   };
 }
 
 function SchemaController($scope, $routeParams, MongoDB, $location) {
