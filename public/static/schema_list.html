@@ -1,7 +1,7 @@
 <div class="row-fluid">
   <div class="span12">
     <div class="row-fluid">
-      <div class="span3">
+      <div class="span2">
         <ul class="nav nav-list">
           <li class="nav-header">Schema</li>
           <li ng-repeat="schema in table_schemas">
@@ -9,10 +9,21 @@
           </li>
         </ul>
       </div>
-      <div class="span9">
+      <div class="span10">
         <!-- query list -->
         <div class="row-fluid">
           <div class="span12">
+            <span class="pull-left" ng-show="document_list.length>0">
+              <div class="btn-group">
+                <button class="btn btn-danger" rel="tooltip" title="Delete selected documents"
+                        ng-class="{'disabled':!selected_docs}">
+                  <i class="icon-trash icon-white"></i>
+                  <span ng-show="selected_docs.length!=0" 
+                        ng-bind="selected_docs.length"></span>
+                </button>
+                <button class="btn"><i class="icon-upload"></i></button>
+              </div>
+            </span>
             <form class="form-inline pull-right" ng-show="schema">
               <strong> 
                Page {{currentPage+1}}/
@@ -32,7 +43,7 @@
         </div>
 
         <div class="row-fluid">
-          <div class="span12">
+          <div class="span12" ng-show="document_list.length>0">
             <table class="table table-condensed">
               <tr>
                 <th></th>
@@ -40,10 +51,10 @@
                   {{field.title}}
                 </th>
               </tr>
-              <tr ng-class="{'warning':document._ng_select}" 
+              <tr ng-class="{'warning':document._ng_selected}" 
                 ng-repeat="document in document_list |skip:currentPage*limit|limitTo:limit">
                 <td>
-                  <input type="checkbox" ng-model="document._ng_select">
+                  <input type="checkbox" ng-model="document._ng_selected" ng-click="document_selected()">
                 </td>
                 <td ng-repeat="field in schema.fields">
                   {{document[field.name]}}

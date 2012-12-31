@@ -120,7 +120,15 @@ function MainController($scope, $routeParams, MongoDB,User, Logout) {
          query:JSON.stringify(query_str)
        });
      });
-
+   };
+  
+   $scope.document_selected = function() {
+     $scope.selected_docs = [];
+     angular.forEach($scope.document_list, function(doc, idx) {
+       if(doc._ng_selected) {
+         $scope.selected_docs.push(doc);
+       }
+     });
    };
 }
 
