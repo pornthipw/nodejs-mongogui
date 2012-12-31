@@ -16,9 +16,9 @@ app.config(function($routeProvider) {
     templateUrl:'static/csv_manager.html'
   });
 
-  $routeProvider.when('/', {
-    controller:MainController, 
-    templateUrl:'static/schema_list.html'
+  $routeProvider.when('/schema/:id', {
+    controller:SchemaController, 
+    templateUrl:'static/schema.html'
   });
   
   $routeProvider.when('/schema/edit/:id', {
@@ -92,35 +92,30 @@ function RoleController($scope, Role, User, Logout, Admin) {
   
 }
 
-function MainController($scope, $routeParams, MongoDB,User, Logout) {   
+function SchemaListController($scope, MongoDB, $location) {
+  $scope.schemas = MongoDB.query({query:'{"type":"tb_schema"}'});
+  $scope.load_schema = function(id) {
+    $scope.c_schema = id;
+    $location.path('/schema/edit/'+id);
+  };
+};
+
+function SchemaController($scope, $routeParams, MongoDB,User, Logout) {   
    $scope.limit = 10;
-   // $scope.user = User.get(function(response) {
-   //  console.log(response);
-   // if(response.user) {
-      $scope.table_schemas = MongoDB.query({    
-        query:'{"type":"tb_schema"}'
-      }, function(res) {
-        console.log(res);
-      });  
-   //   $scope.user_n = response.user;
-   // }
-   // });
   
-   $scope.load_schema = function(schema_id) {
-     MongoDB.get({id:schema_id}, function(schema) {
-       $scope.schema = schema;
-       $scope.currentPage = 0;
-       var query_str = {"$or":[]};
-       angular.forEach(schema.fields, function(field, index) {
-         var c_field = {};
-         c_field[field.name] = {"$exists":true};
-         query_str["$or"].push(c_field);
-       });
-       $scope.document_list = MongoDB.query({
-         query:JSON.stringify(query_str)
-       });
+   MongoDB.get({id:$routeParams.id}, function(schema) {
+     $scope.schema = schema;
+     $scope.currentPage = 0;
+     var query_str = {"$or":[]};
+     angular.forEach(schema.fields, function(field, index) {
+       var c_field = {};
+       c_field[field.name] = {"$exists":true};
+       query_str["$or"].push(c_field);
      });
-   };
+     $scope.document_list = MongoDB.query({
+       query:JSON.stringify(query_str)
+     });
+   });
   
    $scope.document_selected = function() {
      $scope.selected_docs = [];
@@ -132,7 +127,7 @@ function MainController($scope, $routeParams, MongoDB,User, Logout) {
    };
 }
 
-function SchemaController($scope, $routeParams, MongoDB, $location) {
+function SchemaOldController($scope, $routeParams, MongoDB, $location) {
   var self=this;
   var currentDocument = undefined;
   $scope.currentPage = 0;

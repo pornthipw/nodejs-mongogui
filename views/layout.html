@@ -65,11 +65,20 @@
   </div>  
 
   <div class="container-fluid">
-    <ul class="breadcrumb">
-      <li><a href="#/">Home</a> / </li>
-      <li><a href="#/query">Query</a></li>
-    </ul>  
-    <div ng-view></div>  
+    <div class="span2 well" style="max-width:340px;padding: 8px 0;"
+         ng-controller="SchemaListController">
+      <ul class="nav nav-list"> 
+        <li class="nav-header">Schema</li> 
+        <li ng-class="{'active':schema._id==c_schema}"
+            ng-repeat="schema in schemas"> 
+          <a herf="" ng-click="load_schema(schema._id)">
+            <span ng-bind="schema.name"></span>
+          </a> 
+        </li> 
+      </ul>
+    </div>
+    <div class="span10" ng-view>
+    </div>  
   </div>
 </body>
 </html>
