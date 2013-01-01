@@ -147,7 +147,7 @@ var UserProfile = function(config) {
             var found = false;
             for(var i=0;i<role_names.length;i++) {
               idx = profile.role.indexOf(role_names[i]);
-              if(idx != -1) { 
+              if(idx == -1) { 
                 found = true;                
                 break;
               } 

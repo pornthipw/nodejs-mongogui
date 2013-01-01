@@ -125,6 +125,25 @@ function SchemaController($scope, $routeParams, MongoDB,User, Logout) {
        }
      });
    };
+   
+    $scope.del_element = function () {
+      //console.log($scope.selected_docs);
+      for(var idx in $scope.selected_docs) {
+        //console.log($scope.selected_docs[idx]._id);
+        MongoDB.delete({
+          id:$scope.selected_docs[idx]._id
+          },function(result) {            
+            if(result.success) { 
+              //var query_str = {"$or":[]};
+              //console.log(result.result);   
+              //$scope.load_schema(result.result._id);    
+              //$location.path('/');
+              $scope.document_list = MongoDB.query();
+            }
+            //$scope.document_list = MongoDB.query();
+        });
+      }
+    };
 }
 
 function SchemaOldController($scope, $routeParams, MongoDB, $location) {
