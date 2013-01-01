@@ -134,13 +134,22 @@ function SchemaController($scope, $routeParams, MongoDB,User, Logout) {
           id:$scope.selected_docs[idx]._id
           },function(result) {            
             if(result.success) { 
-              //var query_str = {"$or":[]};
-              //console.log(result.result);   
-              //$scope.load_schema(result.result._id);    
+              console.log(result);
               //$location.path('/');
-              $scope.document_list = MongoDB.query();
+              MongoDB.get({id:$routeParams.id}, function(schema) {
+                $scope.schema = schema;
+                $scope.currentPage = 0;
+                var query_str = {"$or":[]};
+                angular.forEach(schema.fields, function(field, index) {
+                  var c_field = {};
+                  c_field[field.name] = {"$exists":true};
+                  query_str["$or"].push(c_field);
+                });
+                $scope.document_list = MongoDB.query({
+                  query:JSON.stringify(query_str)
+                });
+              });
             }
-            //$scope.document_list = MongoDB.query();
         });
       }
     };
