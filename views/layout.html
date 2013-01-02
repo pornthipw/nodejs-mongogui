@@ -67,17 +67,36 @@
   <div class="container-fluid">
     <div class="span2 well" style="max-width:340px;padding: 8px 0;"
          ng-controller="SchemaListController">
-      <ul class="nav nav-list"> 
-        <li class="nav-header">Schema</li> 
-        <li ng-class="{'active':schema._id==c_schema}"
-            ng-repeat="schema in schemas"> 
-          <a herf="" ng-click="load_schema(schema._id)">
-            <span ng-bind="schema.name"></span>
-          </a> 
+      <ul class="nav nav-list">    
+        <li class="nav-header">Schema</li>
+        <li ng-repeat="schema in schemas"  ng-class="{'active':schema._id==c_schema}"> 
+            <a herf="" ng-click="load_schema(schema._id)">
+              <span ng-bind="schema.name"></span>
+            </a>                    
+            <!--
+              <ul class="unstyled nav nav-list">                
+                <li>
+                  <a herf="" ng-click="load_schema(schema._id)">
+                    <i class="icon-pencil"></i> Manage
+                  </a> 
+                </li>
+             </ul>            
+             -->
         </li> 
+        <li class="divider"></li>
+        
+        <li ng-class="{'active':d_schema==1}">
+          <a herf="" ng-click="manage_schema()">
+                    <i class="icon-pencil"></i> Manage Schema
+                  </a>
+
+        </li>       
       </ul>
     </div>
-    <div class="span10" ng-view>
+    <div class="span10">
+      <div class="row-fluid">
+        <div class="span12" ng-view></div>
+      </div>
     </div>  
   </div>
 </body>

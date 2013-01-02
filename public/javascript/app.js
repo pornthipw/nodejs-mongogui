@@ -10,7 +10,12 @@ app.filter('skip', function() {
 });
 
 app.config(function($routeProvider) {
-
+  
+  $routeProvider.when('/manager', {
+    controller:SchemaManageController, 
+    templateUrl:'static/schema_manager.html'
+  });
+  
   $routeProvider.when('/csv/:schema',{
     controller:UploadController, 
     templateUrl:'static/csv_manager.html'
@@ -41,7 +46,9 @@ app.config(function($routeProvider) {
     templateUrl:'static/role_manager.html'
   });
   
+  
 });
+
 
 function UserCtrl($scope, User, Logout) {
   $scope.user = User.get();
@@ -95,12 +102,20 @@ function RoleController($scope, Role, User, Logout, Admin) {
 function SchemaListController($scope, MongoDB, $location) {
   $scope.schemas = MongoDB.query({query:'{"type":"tb_schema"}'});
   $scope.load_schema = function(id) {
+    $scope.d_schema = null;
     $scope.c_schema = id;
     $location.path('/schema/edit/'+id);
   };
+  
+  $scope.manage_schema = function() {
+    $scope.c_schema = null;
+    $scope.c_schema = 1;
+    $location.path('/manager');
+  };
 };
 
-function SchemaController($scope, $routeParams, MongoDB,User, Logout) {   
+
+function SchemaController($scope, $routeParams, $location, MongoDB,User, Logout) {   
    $scope.limit = 10;
   
    MongoDB.get({id:$routeParams.id}, function(schema) {
@@ -116,6 +131,25 @@ function SchemaController($scope, $routeParams, MongoDB,User, Logout) {
        query:JSON.stringify(query_str)
      });
    });
+   
+    $scope.query = function() {
+      var q = [];    
+      angular.forEach($scope.schema.fields, function(field, idx) {              
+        var tmp = {};
+        if($scope.query_str) {        
+          tmp[field.name] = {'$regex':$scope.query_str};
+        } else {
+          tmp[field.name] = {'$regex':'.'};
+        }        
+        q.push(tmp);      
+      });
+      
+      MongoDB.query({    
+        query:JSON.stringify({'$or':q})
+      }, function(res) {
+        $scope.document_list = res;
+      });
+    };
   
    $scope.document_selected = function() {
      $scope.selected_docs = [];
@@ -126,33 +160,26 @@ function SchemaController($scope, $routeParams, MongoDB,User, Logout) {
      });
    };
    
-    $scope.del_element = function () {
-      //console.log($scope.selected_docs);
-      for(var idx in $scope.selected_docs) {
-        //console.log($scope.selected_docs[idx]._id);
-        MongoDB.delete({
-          id:$scope.selected_docs[idx]._id
-          },function(result) {            
-            if(result.success) { 
-              console.log(result);
-              //$location.path('/');
-              MongoDB.get({id:$routeParams.id}, function(schema) {
-                $scope.schema = schema;
-                $scope.currentPage = 0;
-                var query_str = {"$or":[]};
-                angular.forEach(schema.fields, function(field, index) {
-                  var c_field = {};
-                  c_field[field.name] = {"$exists":true};
-                  query_str["$or"].push(c_field);
-                });
-                $scope.document_list = MongoDB.query({
-                  query:JSON.stringify(query_str)
-                });
-              });
-            }
-        });
-      }
+   $scope.open_doc = function(id) {
+     MongoDB.get({id:id}, function(result) {            
+       console.log(result);
+       $location.path('/');
+     });      
+   };
+   
+    $scope.del_element = function () {      
+      angular.forEach($scope.selected_docs, function(doc, idx) {                
+        MongoDB.delete({id:doc._id}, function(result) {
+          if(result.success) {
+            var r_idx = $scope.document_list.indexOf(doc);
+            $scope.document_list.splice(r_idx, 1);
+          }
+        });                      
+      });      
     };
+    
+     //$scope.schemas = MongoDB.query({query:'{"type":"tb_schema"}'});
+
 }
 
 function SchemaOldController($scope, $routeParams, MongoDB, $location) {
@@ -275,7 +302,7 @@ function SchemaCreateController($scope, $routeParams, MongoDB, $location) {
 
 function SchemaManageController($scope, $routeParams, MongoDB) {
   var self = this;
-  
+  $scope.show_schema=true;
   $scope.table_schemas = MongoDB.query({  
     query:'{"type":"tb_schema"}'
   });
@@ -314,36 +341,40 @@ function SchemaManageController($scope, $routeParams, MongoDB) {
     $scope.schema.fields.splice(idx,1);
     //$scope.schema_fields.splice(idx,1);
   }
-  
-  $scope.create_schema = function () {
-    console.log($scope.schema);
-    console.log($scope.current_id);
-    if (!$scope.current_id) {
-      MongoDB.save({
+  $scope.add_selected = false;
+  $scope.schema_add = function () {
+    $scope.add_selected = true;
+    $scope.show_schema=false;
+    $scope.create_schema = function () {
+      console.log($scope.schema);
+      console.log($scope.current_id);
+      if (!$scope.current_id) {
+        MongoDB.save({
+          collection:$routeParams.collection,
+        },$scope.schema,function(result) { 
+          console.log(result);
+        });
+      } else {
+        console.log("update");
+        MongoDB.update({
+          collection:$routeParams.collection,
+          id:$scope.current_id
+        }, angular.extend({}, 
+          $scope.schema,
+          {_id:undefined}), function(result) {
+          $scope.save_result = result;
+          if(result.ok) {
+            var obj = angular.extend({},$scope.schema,{_id:$scope.current_id});
+            angular.copy(obj,self.currentDocument);
+          }
+        });
+        
+      }
+      $scope.table_schemas = MongoDB.query({
         collection:$routeParams.collection,
-      },$scope.schema,function(result) { 
-        console.log(result);
+        query:'{"type":"tb_schema"}'
       });
-    } else {
-      console.log("update");
-      MongoDB.update({
-        collection:$routeParams.collection,
-        id:$scope.current_id
-      }, angular.extend({}, 
-        $scope.schema,
-        {_id:undefined}), function(result) {
-        $scope.save_result = result;
-        if(result.ok) {
-          var obj = angular.extend({},$scope.schema,{_id:$scope.current_id});
-          angular.copy(obj,self.currentDocument);
-        }
-      });
-      
-    }
-    $scope.table_schemas = MongoDB.query({
-    collection:$routeParams.collection,
-    query:'{"type":"tb_schema"}'
-  });
+    };
   };
   
 }
@@ -508,15 +539,17 @@ function QueryController($scope, $routeParams, MongoDB, User, Logout) {
   }
 }
 
-function UploadController($scope,$routeParams,MongoDB) {
+function UploadController($scope,$routeParams,MongoDB) {  
+  
+  MongoDB.get({id:$routeParams.schema}, function(schema) {
+    $scope.schema = schema;
+    console.log(schema);
+  });
+  
   $('iframe#upload_target').load(function() {
     var data = $.parseJSON($('iframe#upload_target').contents().find("body")[0].innerHTML);
     if(data.success) {
-      MongoDB.get({id:$routeParams.schema}, function(schema) {
-        $scope.schema = schema;
-        console.log(schema);
-      });
-      
+            
       
       $scope.$apply(function(){
         $scope.success = true;
@@ -556,29 +589,52 @@ function UploadController($scope,$routeParams,MongoDB) {
       for(var col=0;col<$scope.result.csv[row].length;col++) {
         var current = $scope.result.col_names[col];
         if(!current.exclude) {
-          console.log($scope.result.csv);
-          console.log('Row :'+row);
-          console.log('Col :'+col);
-          console.log(' :'+$scope.result.csv[row].length);
+          //console.log($scope.result.csv);
+          //console.log('Row :'+row);
+          //console.log('Col :'+col);
+          //console.log(' :'+$scope.result.csv[row].length);
           if(current.field.title) {
             obj[current.field.name] = $scope.result.csv[row][col].value;
+            $scope.result.csv[row]['_obj'] = obj;
           }
         }
       }
       obj_list.push(obj);
     }
-    console.log($scope.result);
-    console.log(obj_list);
-
+    //console.log($scope.result);
+    //console.log(obj_list);
+    
+    angular.forEach(obj_list, function(obj, idx) {
+      MongoDB.save({}, obj, function(result) {
+         if(result.success) {
+          angular.forEach($scope.result.csv, function(row, idx) {
+            console.log(row);
+            if(row._obj == obj) {
+              row._saved = true;
+              console.log(row);
+            }
+          });
+          $scope.document_saved+=1;
+        }
+      });
+    });
+    /*
     for(var i=0;i<obj_list.length;i++) {
-      MongoDB.save({
-        collection:$routeParams.collection,
+      MongoDB.save({      
       },obj_list[i],function(result) { 
-        if(result.ok) {
+        if(result.success) {
+          angular.forEach($scope.result.csv, function(row, idx) {
+            console.log(row);
+            if(row._obj == obj_list[i]) {
+              row._saved = true;
+              console.log(row);
+            }
+          });
           $scope.document_saved+=1;
         }
       });
     }
+    */
   }
 };
 
