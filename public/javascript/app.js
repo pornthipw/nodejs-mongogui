@@ -305,7 +305,7 @@ function SchemaCreateController($scope, $routeParams, MongoDB, $location) {
   
 }
 
-function SchemaManageController($scope, $routeParams, MongoDB) {
+function SchemaManageController($scope, $routeParams, MongoDB, $location) {
   var self = this;
   $scope.cur_id=$routeParams.id;
   if ($routeParams.id) {
@@ -317,7 +317,6 @@ function SchemaManageController($scope, $routeParams, MongoDB) {
     });
   }
 
-  
   $scope.table_schemas = MongoDB.query({  
     query:'{"type":"tb_schema"}'
   });
@@ -346,7 +345,6 @@ function SchemaManageController($scope, $routeParams, MongoDB) {
     $scope.current_id = document_id;
     var self=this;
     MongoDB.get({
-      collection:$routeParams.collection,
       id:document_id}, function(schema) {
         $scope.schema = schema;
         console.log(schema);
@@ -358,26 +356,27 @@ function SchemaManageController($scope, $routeParams, MongoDB) {
     //$scope.schema_fields.splice(idx,1);
   }
 
-    $scope.create_schema = function () {
+    $scope.save = function () {
       console.log($scope.schema);
       console.log($scope.current_id);
-      if (!$scope.current_id) {
-        MongoDB.save({
-          collection:$routeParams.collection},$scope.schema,function(result) { 
+      //if (!$scope.current_id) {
+      if (!$routeParams.id){
+        MongoDB.save($scope.schema,function(result) { 
           console.log(result);
         });
       } else {
         console.log("update");
         MongoDB.update({
           collection:$routeParams.collection,
-          id:$scope.current_id
+          id:$routeParams.id
         }, angular.extend({}, 
           $scope.schema,
           {_id:undefined}), function(result) {
           $scope.save_result = result;
           if(result.success) {
-            var obj = angular.extend({},$scope.schema,{_id:$scope.current_id});
+            var obj = angular.extend({},$scope.schema,{_id:$routeParams.id});
             angular.copy(obj,self.currentDocument);
+            $location.path('/manager');
           }
         });
         
