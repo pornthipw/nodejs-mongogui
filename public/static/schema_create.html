@@ -1,0 +1,40 @@
+<div class="row-fluid">
+  <div class="span12">
+    <div class="form-actions">
+      <span class="pull-left">   
+      </span>
+    </div>
+      
+      <div class="row-fluid" >
+          <div class="span12">
+            <form class="form-horizontal">        
+              <div class="control-group">
+                <label class="control-label" for="inputName">name</label>
+                <div class="controls">
+                  <input type="text" id="inputName" placeholder="Name" ng-model="schema.name">
+                </div>
+              </div>
+          
+              <div class="control-group" ng-repeat="field in schema.fields">
+                <label class="control-label" for="inputFieldName">{{field.title}}</label>
+                <div class="controls">
+                  <input type="text"  placeholder="Name" ng-model="field.name">
+                  <input type="text"  placeholder="Title" ng-model="field.title">
+                  <button ng-click="del_field($index)" class="btn btn-primary" type="submit"> <i class="icon-remove icon-white"></i> </button>
+                </div>
+              </div>
+          
+              <div class="control-group">
+                <div class="controls">
+                  <button ng-click="save()" class="btn btn-primary" type="submit"> <i class="icon-ok icon-white"></i> Save</button>
+                  <a href="#/schema/list" class="btn btn btn-warning"><i class="icon-ban-circle icon-white"></i> Cancel</a> 
+                  <a href="" class="btn btn-info" ng-click="add_field()"><i class="icon-plus icon-white"></i> Add Field</a>
+                  <a href="" class="btn btn-danger " ng-click="del_document()"><i class="icon-remove icon-white"></i> Delete Scema</a>  
+                </div>
+              </div>    
+            </form>
+          </div>
+      </div>
+  </div>
+</div>
+

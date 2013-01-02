@@ -20,6 +20,11 @@ app.config(function($routeProvider) {
     controller:UploadController, 
     templateUrl:'static/csv_manager.html'
   });
+  
+  $routeProvider.when('/schema/create', {
+    controller:SchemaCreateController, 
+    templateUrl:'static/schema_create.html'
+  });
 
   $routeProvider.when('/schema/:id', {
     controller:SchemaController, 
@@ -31,10 +36,7 @@ app.config(function($routeProvider) {
     templateUrl:'static/schema.html'
   });
   
-  $routeProvider.when('/schema/create', {
-    controller:SchemaCreateController, 
-    templateUrl:'static/schema.html'
-  });
+
   
   $routeProvider.when('/query', {
     controller:QueryController, 
@@ -302,11 +304,11 @@ function SchemaCreateController($scope, $routeParams, MongoDB, $location) {
 
 function SchemaManageController($scope, $routeParams, MongoDB) {
   var self = this;
-  $scope.show_schema=true;
   $scope.table_schemas = MongoDB.query({  
     query:'{"type":"tb_schema"}'
   });
-    
+  
+
   $scope.fields = function() {
     var str = {};
     for(var idx in $scope.attributes) {
@@ -318,6 +320,7 @@ function SchemaManageController($scope, $routeParams, MongoDB) {
   };
   
   $scope.schema = {
+    type:"tb_schema",
     fields:[]
   };
   
@@ -341,17 +344,14 @@ function SchemaManageController($scope, $routeParams, MongoDB) {
     $scope.schema.fields.splice(idx,1);
     //$scope.schema_fields.splice(idx,1);
   }
-  $scope.add_selected = false;
+
   $scope.schema_add = function () {
-    $scope.add_selected = true;
-    $scope.show_schema=false;
     $scope.create_schema = function () {
       console.log($scope.schema);
       console.log($scope.current_id);
       if (!$scope.current_id) {
         MongoDB.save({
-          collection:$routeParams.collection,
-        },$scope.schema,function(result) { 
+          collection:$routeParams.collection},$scope.schema,function(result) { 
           console.log(result);
         });
       } else {
@@ -363,7 +363,7 @@ function SchemaManageController($scope, $routeParams, MongoDB) {
           $scope.schema,
           {_id:undefined}), function(result) {
           $scope.save_result = result;
-          if(result.ok) {
+          if(result.success) {
             var obj = angular.extend({},$scope.schema,{_id:$scope.current_id});
             angular.copy(obj,self.currentDocument);
           }
