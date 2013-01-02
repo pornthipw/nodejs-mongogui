@@ -11,11 +11,6 @@ app.filter('skip', function() {
 
 app.config(function($routeProvider) {
   
-  $routeProvider.when('/manager', {
-    controller:SchemaManageController, 
-    templateUrl:'static/schema_manager.html'
-  });
-  
   $routeProvider.when('/csv/:schema',{
     controller:UploadController, 
     templateUrl:'static/csv_manager.html'
@@ -24,6 +19,16 @@ app.config(function($routeProvider) {
   $routeProvider.when('/schema/create', {
     controller:SchemaCreateController, 
     templateUrl:'static/schema_create.html'
+  });
+  
+  $routeProvider.when('/manager', {
+    controller:SchemaManageController, 
+    templateUrl:'static/schema_manager.html'
+  });
+  
+  $routeProvider.when('/manager/:id', {
+    controller:SchemaManageController, 
+    templateUrl:'static/schema_manager.html'
   });
 
   $routeProvider.when('/schema/:id', {
@@ -35,9 +40,7 @@ app.config(function($routeProvider) {
     controller:SchemaController, 
     templateUrl:'static/schema.html'
   });
-  
 
-  
   $routeProvider.when('/query', {
     controller:QueryController, 
     templateUrl:'static/query.html'
@@ -304,11 +307,21 @@ function SchemaCreateController($scope, $routeParams, MongoDB, $location) {
 
 function SchemaManageController($scope, $routeParams, MongoDB) {
   var self = this;
+  $scope.cur_id=$routeParams.id;
+  if ($routeParams.id) {
+  MongoDB.get({
+      id:$routeParams.id
+    },function(schema) {
+      $scope.schema = schema;
+      //console.log("test"+schema.name);
+    });
+  }
+
+  
   $scope.table_schemas = MongoDB.query({  
     query:'{"type":"tb_schema"}'
   });
   
-
   $scope.fields = function() {
     var str = {};
     for(var idx in $scope.attributes) {
@@ -345,7 +358,6 @@ function SchemaManageController($scope, $routeParams, MongoDB) {
     //$scope.schema_fields.splice(idx,1);
   }
 
-  $scope.schema_add = function () {
     $scope.create_schema = function () {
       console.log($scope.schema);
       console.log($scope.current_id);
@@ -375,7 +387,6 @@ function SchemaManageController($scope, $routeParams, MongoDB) {
         query:'{"type":"tb_schema"}'
       });
     };
-  };
   
 }
 
