@@ -40,6 +40,12 @@ app.config(function($routeProvider) {
     controller:SchemaController, 
     templateUrl:'static/schema.html'
   });
+  
+  $routeProvider.when('/document/edit/:id', {
+    controller:DocumentController, 
+    templateUrl:'static/document.html'
+  });
+  
 /*
   $routeProvider.when('/query', {
     controller:QueryController, 
@@ -168,7 +174,8 @@ function SchemaController($scope, $routeParams, $location, MongoDB,User, Logout)
    
    $scope.select_doc = function(doc) {
      MongoDB.get({id:doc._id}, function(result) {            
-       console.log(result);       
+       console.log(result);   
+       $scope.current_doc = result;    
      });      
    };
    
@@ -183,7 +190,23 @@ function SchemaController($scope, $routeParams, $location, MongoDB,User, Logout)
       });      
     };
     
-     //$scope.schemas = MongoDB.query({query:'{"type":"tb_schema"}'});
+    $scope.editDocument = function (){
+      console.log($scope.current_doc);
+      $location.path('/document/edit/'+$scope.current_doc._id);
+    };
+
+}
+
+
+function DocumentController($scope, $routeParams, $location, MongoDB,User, Logout) {   
+  if ($routeParams.id) {
+    MongoDB.get({
+      id:$routeParams.id
+    },function(schema) {
+      $scope.schema = schema;
+      //console.log("test"+schema.name);
+    });
+  }
 
 }
 
