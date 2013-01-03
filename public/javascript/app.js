@@ -41,7 +41,7 @@ app.config(function($routeProvider) {
     templateUrl:'static/schema.html'
   });
   
-  $routeProvider.when('/document/edit/:id', {
+  $routeProvider.when('/document/schema/:schemaId/edit/:id', {
     controller:DocumentController, 
     templateUrl:'static/document.html'
   });
@@ -191,22 +191,20 @@ function SchemaController($scope, $routeParams, $location, MongoDB,User, Logout)
     };
     
     $scope.editDocument = function (){
-      console.log($scope.current_doc);
-      $location.path('/document/edit/'+$scope.current_doc._id);
+      //console.log($scope.current_doc);
+      $location.path('/document/schema/'+$routeParams.id+'/edit/'+$scope.current_doc._id);
     };
 
 }
 
-
-function DocumentController($scope, $routeParams, $location, MongoDB,User, Logout) {   
-  if ($routeParams.id) {
+function DocumentController($scope, $routeParams, $location, MongoDB,User, Logout) {
+   
     MongoDB.get({
       id:$routeParams.id
     },function(schema) {
       $scope.schema = schema;
       //console.log("test"+schema.name);
     });
-  }
   
   $scope.save = function () {
     console.log($scope.schema);
@@ -218,12 +216,10 @@ function DocumentController($scope, $routeParams, $location, MongoDB,User, Logou
       {_id:undefined}), function(result) {
       $scope.save_result = result;
       if(result.success) {
-        $location.path('/schema/edit/'+$routeParams.id);
+        $location.path('/schema/edit/'+$routeParams.schemaId);
       }
     });
   };
-  
-
 
 }
 
