@@ -191,20 +191,26 @@ function SchemaController($scope, $routeParams, $location, MongoDB,User, Logout)
     };
     
     $scope.editDocument = function (){
-      //console.log($scope.current_doc);
+      console.log($scope.current_doc);
       $location.path('/document/schema/'+$routeParams.id+'/edit/'+$scope.current_doc._id);
     };
 
 }
 
-function DocumentController($scope, $routeParams, $location, MongoDB,User, Logout) {
-   
+function DocumentController($scope, $routeParams, $location, MongoDB,User, Logout) {   
+  if ($routeParams.id) {
     MongoDB.get({
       id:$routeParams.id
     },function(schema) {
       $scope.schema = schema;
-      //console.log("test"+schema.name);
+      //console.log($scope.schema);
+      $scope.name_docs = [];
+      angular.forEach($scope.schema, function(doc, idx) {
+        console.log(idx);
+        $scope.name_docs.push({"doc":doc,"name":idx});
+      });
     });
+  }
   
   $scope.save = function () {
     console.log($scope.schema);

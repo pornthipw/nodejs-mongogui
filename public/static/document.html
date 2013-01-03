@@ -32,10 +32,10 @@
         </div>
       </div>
   
-      <div class="control-group" ng-repeat="field in schema">
-        <label class="control-label" for="inputFieldName"></label>
+      <div class="control-group" ng-repeat="field in name_docs">
+        <label class="control-label" for="inputFieldName">{{field.name}}</label>
         <div class="controls">
-          <input type="text"  placeholder="Name" ng-model="field">
+          <input type="text"  placeholder="Name" ng-model="field.doc">
         </div>
       </div>
     
