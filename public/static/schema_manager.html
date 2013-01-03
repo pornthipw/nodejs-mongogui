@@ -1,23 +1,32 @@
-<div class="row-fluid" ng-hide="cur_id">
+<div class="row-fluid" >
   <div class="span12">
-    <div class="form-actions">
-      <span class="pull-left">   
+     <p class="lead">Schema manager</p>
+     <div class="form-actions" >
+      <span class="pull-right input-append">
+        <a href="#/schema/create"><button class="btn btn-mini"><h6><i class="icon-plus"></i> New Schema</h6></button></a>
       </span>
     </div>
-      <div class="row-fluid" >
-        <div class="span12">                               
-        <ul>
-          <li ng-repeat="schema in table_schemas">
-            {{schema.name}} 
-            <a href="#/manager/{{schema._id}}" ><i class="icon-edit"> </i></a>
-            
-          </li>
-        </ul>
-        </div>
-      </div>
   </div>
 </div>
 
+<!--List Schema-->
+<div class="row-fluid" ng-hide="cur_id">
+  <div class="span12"> 
+    <div class="form-actions-new" ng-repeat="schema in table_schemas" >
+      <div class="row-fluid">
+        <div class="span11"> 
+          {{schema.name}}  
+        </div>
+        <div class="span1">
+        <a href="#/manager/{{schema._id}}" >
+          <button class="btn btn-mini"><h6>Edit</h6></button></a>  
+        </div>
+      </div>
+    </div>                          
+  </div>
+</div>
+
+<!--Edir Schema-->
 <div class="row-fluid" ng-show="cur_id">
   <div class="span12">
     <form class="form-horizontal">        

@@ -1,8 +1,8 @@
 <div class="row-fluid" ng-show="schema">
   <div class="span12">
     <div class="form-actions">    
-    <span class="pull-left">      
-        <div class="input-append">     
+    <span class="pull-left input-append">      
+
           <button class="btn"><i class="icon-pencil"></i> Edit </button>
           <button class="btn btn-danger" 
                 rel="tooltip" 
@@ -15,7 +15,7 @@
           <a href="#/csv/{{schema._id}}" class="btn"><i class="icon-upload"></i> Upload </a>                                    
           <input class="prepend1" type="text" placeholder="Search" ng-model="query_str">                         
           <button class="btn" ng-click="query()"><i class="icon-search"></i> Search </button> 
-        </div>      
+   
     </span>
     
     <form class="form-inline pull-right" ng-show="schema">
