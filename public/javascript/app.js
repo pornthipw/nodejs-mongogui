@@ -207,6 +207,23 @@ function DocumentController($scope, $routeParams, $location, MongoDB,User, Logou
       //console.log("test"+schema.name);
     });
   }
+  
+  $scope.save = function () {
+    console.log($scope.schema);
+    console.log("update");
+    MongoDB.update({
+      id:$routeParams.id
+    }, angular.extend({}, 
+      $scope.schema,
+      {_id:undefined}), function(result) {
+      $scope.save_result = result;
+      if(result.success) {
+        $location.path('/schema/edit/'+$routeParams.id);
+      }
+    });
+  };
+  
+
 
 }
 
@@ -312,6 +329,7 @@ function SchemaManageController($scope, $routeParams, MongoDB, $location) {
       });
       
     }
+    
     $scope.table_schemas = MongoDB.query({
       collection:$routeParams.collection,
       query:'{"type":"tb_schema"}'
