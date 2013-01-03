@@ -565,17 +565,17 @@ function QueryController($scope, $routeParams, MongoDB, User, Logout) {
 }
 
 function UploadController($scope,$routeParams,MongoDB) {  
-  
-  MongoDB.get({id:$routeParams.schema}, function(schema) {
-    $scope.schema = schema;
-    console.log(schema);
-  });
+  $scope.schema = MongoDB.get({id:$routeParams.schema});
+
+  $scope.cp874_to_utf8 = function() {
+    angular.forEach($scope.result.csv[0][0].value,function(ch, idx) {
+      console.log($scope.result.csv[0][0].value.charCodeAt(idx));
+    });
+  };
   
   $('iframe#upload_target').load(function() {
     var data = $.parseJSON($('iframe#upload_target').contents().find("body")[0].innerHTML);
     if(data.success) {
-            
-      
       $scope.$apply(function(){
         $scope.success = true;
         var col_length = 0;
@@ -589,10 +589,8 @@ function UploadController($scope,$routeParams,MongoDB) {
           data.col_names.push({field:{name:'col'+i}});
         }
         $scope.result = data;
-        console.log($scope.result);
       });
     } else {
-      console.log(data);
       $scope.$apply(function() {
         $scope.success = false;
         $scope.message = data.message;
@@ -614,10 +612,6 @@ function UploadController($scope,$routeParams,MongoDB) {
       for(var col=0;col<$scope.result.csv[row].length;col++) {
         var current = $scope.result.col_names[col];
         if(!current.exclude) {
-          //console.log($scope.result.csv);
-          //console.log('Row :'+row);
-          //console.log('Col :'+col);
-          //console.log(' :'+$scope.result.csv[row].length);
           if(current.field.title) {
             obj[current.field.name] = $scope.result.csv[row][col].value;
             $scope.result.csv[row]['_obj'] = obj;
@@ -626,8 +620,6 @@ function UploadController($scope,$routeParams,MongoDB) {
       }
       obj_list.push(obj);
     }
-    //console.log($scope.result);
-    //console.log(obj_list);
     
     angular.forEach(obj_list, function(obj, idx) {
       MongoDB.save({}, obj, function(result) {
@@ -643,23 +635,6 @@ function UploadController($scope,$routeParams,MongoDB) {
         }
       });
     });
-    /*
-    for(var i=0;i<obj_list.length;i++) {
-      MongoDB.save({      
-      },obj_list[i],function(result) { 
-        if(result.success) {
-          angular.forEach($scope.result.csv, function(row, idx) {
-            console.log(row);
-            if(row._obj == obj_list[i]) {
-              row._saved = true;
-              console.log(row);
-            }
-          });
-          $scope.document_saved+=1;
-        }
-      });
-    }
-    */
   }
 };
 
