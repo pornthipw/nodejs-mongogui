@@ -3,7 +3,7 @@ module.exports = {
     //host: 'localhost',
     host: '10.10.20.75',
     port: 27017,
-    db: 'test',
+    db: 'test'
   },
   authorization: {
     mongodb:{

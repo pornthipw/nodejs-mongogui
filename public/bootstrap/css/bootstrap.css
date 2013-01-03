@@ -1496,7 +1496,7 @@ select:focus:required:invalid:focus {
 }
 
 .form-actions-new {
-  padding: 6px 0px 6px 20px;
+  padding: 12px 0px 6px 20px;
   margin-top: 2px;
   margin-bottom: 2px;
   background-color: #ffffff;

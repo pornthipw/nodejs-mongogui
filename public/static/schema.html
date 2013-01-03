@@ -4,7 +4,7 @@
     <span class="pull-left input-append">      
 
           <button class="btn"><i class="icon-pencil"></i> Edit </button>
-          <button class="btn btn-danger" 
+          <button class="btn btn-danger" ng-show="selected_docs.length > 0"
                 rel="tooltip" 
                 title="Delete selected documents"
                 ng-class="{'disabled':!selected_docs||selected_docs.length==0}" ng-click="del_element()">
@@ -53,7 +53,7 @@
           <input type="checkbox" ng-model="document._ng_selected" 
             ng-click="document_selected()">
         </td>
-        <td ng-repeat="field in schema.fields">
+        <td ng-repeat="field in schema.fields" ng-click="select_doc(document)">
           {{document[field.name]}}
         </td>
       </tr>

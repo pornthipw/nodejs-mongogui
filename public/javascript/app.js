@@ -152,6 +152,7 @@ function SchemaController($scope, $routeParams, $location, MongoDB,User, Logout)
       MongoDB.query({    
         query:JSON.stringify({'$or':q})
       }, function(res) {
+        $scope.currentPage = 0;
         $scope.document_list = res;
       });
     };
@@ -165,10 +166,9 @@ function SchemaController($scope, $routeParams, $location, MongoDB,User, Logout)
      });
    };
    
-   $scope.open_doc = function(id) {
-     MongoDB.get({id:id}, function(result) {            
-       console.log(result);
-       $location.path('/');
+   $scope.select_doc = function(doc) {
+     MongoDB.get({id:doc._id}, function(result) {            
+       console.log(result);       
      });      
    };
    
@@ -295,7 +295,7 @@ function SchemaCreateController($scope, $routeParams, MongoDB, $location) {
     MongoDB.save({  
     },$scope.schema,function(result) { 
       console.log(result);
-      $location.path('/');
+      $location.path('/manager');
     });
   };
   
