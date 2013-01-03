@@ -122,7 +122,6 @@ function SchemaListController($scope, MongoDB, $location) {
 
 function SchemaController($scope, $routeParams, $location, MongoDB,User, Logout) {   
    $scope.limit = 10;
-  
    MongoDB.get({id:$routeParams.id}, function(schema) {
      $scope.schema = schema;
      $scope.currentPage = 0;
@@ -356,36 +355,52 @@ function SchemaManageController($scope, $routeParams, MongoDB, $location) {
     //$scope.schema_fields.splice(idx,1);
   }
 
-    $scope.save = function () {
-      console.log($scope.schema);
-      console.log($scope.current_id);
-      //if (!$scope.current_id) {
-      if (!$routeParams.id){
-        MongoDB.save($scope.schema,function(result) { 
-          console.log(result);
-        });
-      } else {
-        console.log("update");
-        MongoDB.update({
-          collection:$routeParams.collection,
-          id:$routeParams.id
-        }, angular.extend({}, 
-          $scope.schema,
-          {_id:undefined}), function(result) {
-          $scope.save_result = result;
-          if(result.success) {
-            var obj = angular.extend({},$scope.schema,{_id:$routeParams.id});
-            angular.copy(obj,self.currentDocument);
-            $location.path('/manager');
-          }
-        });
-        
-      }
-      $scope.table_schemas = MongoDB.query({
-        collection:$routeParams.collection,
-        query:'{"type":"tb_schema"}'
+  $scope.save = function () {
+    console.log($scope.schema);
+    console.log($scope.current_id);
+    //if (!$scope.current_id) {
+    if (!$routeParams.id){
+      MongoDB.save($scope.schema,function(result) { 
+        console.log(result);
       });
-    };
+    } else {
+      console.log("update");
+      MongoDB.update({
+        id:$routeParams.id
+      }, angular.extend({}, 
+        $scope.schema,
+        {_id:undefined}), function(result) {
+        $scope.save_result = result;
+        if(result.success) {
+          var obj = angular.extend({},$scope.schema,{_id:$routeParams.id});
+          angular.copy(obj,self.currentDocument);
+          $location.path('/manager');
+        }
+      });
+      
+    }
+    $scope.table_schemas = MongoDB.query({
+      collection:$routeParams.collection,
+      query:'{"type":"tb_schema"}'
+    });
+  };
+  
+  $scope.remove = function() {
+    MongoDB.delete({
+      id:$routeParams.id
+    },function(result) {
+      console.log(result);
+      if(result.success) {
+        for(var i=0;i<$scope.schema.length;i++) {
+          if($scope.schema[i]._id==$routeParams.id) {
+            $scope.schema.remove(i); 
+            break;
+          }
+        }
+        $location.path('/manager');
+      }
+    });
+  };
   
 }
 

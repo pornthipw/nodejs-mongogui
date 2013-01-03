@@ -1,10 +1,18 @@
 <div class="row-fluid" >
   <div class="span12">
      <p class="lead">Schema manager</p>
-     <div class="form-actions" >
-      <span class="pull-right input-append">
-        <a class="btn" href="#/schema/create"><i class="icon-plus"></i> New Schema</a>
+      <div class="form-actions">
+      <div class="input-append">
+      <span class="pull-left">
+        <a href=""  class="btn " ng-click="save()" ><i class="icon-ok "></i> Save</a>
+         <a href="" class="btn btn-danger " ng-click="remove()"><i class="icon-remove icon-white"></i> Delete Scema</a>  
+        <a href="" class="btn " ng-click="add_field()"><i class="icon-plus-sign"></i> Add Field</a>
+       
       </span>
+      <span class="pull-right ">  
+        <a href="#/schema/create" class="btn"><i class="icon-plus"></i> New Schema</a>
+      </span>
+      </div>
     </div>
   </div>
 </div>
@@ -28,11 +36,16 @@
 <!--Edir Schema-->
 <div class="row-fluid" ng-show="cur_id">
   <div class="span12">
-    <form class="form-horizontal">        
+    <form class="form-horizontal"> 
+    <!--   
       <div class="control-group">
         <label class="control-label" for="inputName">Schema Name</label>
-        <div class="controls">
-          {{schema.name}}
+        <div class="controls ">{{schema.name}}</div>
+      </div>-->
+      <div class="control-group">
+          <div class="alert alert-block">
+            <h4>Schema Name</h4>
+            {{schema.name}}
         </div>
       </div>
   
@@ -44,15 +57,7 @@
           <button ng-click="del_field($index)" class="btn btn-primary" type="submit"> <i class="icon-remove icon-white"></i> </button>
         </div>
       </div>
-  
-      <div class="control-group">
-        <div class="controls">
-          <button ng-click="save()" class="btn btn-primary" type="submit"> <i class="icon-ok icon-white"></i> Save</button>
-          <a href="#/schema/list" class="btn btn btn-warning"><i class="icon-ban-circle icon-white"></i> Cancel</a> 
-          <a href="" class="btn btn-info" ng-click="add_field()"><i class="icon-plus icon-white"></i> Add Field</a>
-          <a href="" class="btn btn-danger " ng-click="del_document()"><i class="icon-remove icon-white"></i> Delete Scema</a>  
-        </div>
-      </div>    
+    
     </form>
   </div>
 </div>
