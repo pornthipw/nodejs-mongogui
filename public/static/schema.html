@@ -3,18 +3,27 @@
     <div class="form-actions">    
     <span class="pull-left input-append">      
 
-          <button class="btn"><i class="icon-pencil"></i> Edit </button>
+          <button class="btn" ng-click="editDocument()">
+            <i class="icon-pencil"></i> Edit 
+          </button>
           <button class="btn btn-danger" ng-show="selected_docs.length>0"
                 rel="tooltip" 
                 title="Delete selected documents"
-                ng-class="{'disabled':!selected_docs||selected_docs.length==0}" ng-click="del_element()">
+                ng-class="{'disabled':!selected_docs||selected_docs.length==0}" 
+                ng-click="del_element()">
             <i class="icon-trash icon-white"></i>
             <span ng-show="selected_docs.length!=0" 
                   ng-bind="selected_docs.length"></span> Delete 
           </button>        
-          <a href="#/csv/{{schema._id}}" class="btn"><i class="icon-upload"></i> Upload </a>                                    
-          <input class="prepend1" type="text" placeholder="Search" ng-model="query_str">                         
-          <button class="btn" ng-click="query()"><i class="icon-search"></i> Search </button> 
+          <a href="#/csv/{{schema._id}}" class="btn">
+            <i class="icon-upload"></i> 
+            Upload 
+          </a>                                    
+          <input class="prepend1" type="text" placeholder="Search" 
+            ng-model="query_str">                         
+          <button class="btn" ng-click="query()"><i class="icon-search"></i> 
+            Search 
+          </button> 
    
     </span>
     

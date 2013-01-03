@@ -4,13 +4,24 @@
       <div class="form-actions">
       <div class="input-append">
       <span class="pull-left">
-        <a href=""  class="btn " ng-click="save()" ><i class="icon-ok "></i> Save</a>
-         <a href="" class="btn btn-danger " ng-click="remove()"><i class="icon-remove icon-white"></i> Delete Scema</a>  
-        <a href="" class="btn " ng-click="add_field()"><i class="icon-plus-sign"></i> Add Field</a>
+        <a href=""  class="btn " ng-click="save()" >
+          <i class="icon-ok "></i> Save
+        </a>
+        <a href="" class="btn btn-danger " ng-click="remove()">
+          <i class="icon-remove icon-white"></i> 
+          Delete Schema
+        </a>  
+        <a href="" class="btn " ng-click="add_field()">
+          <i class="icon-plus-sign"></i> 
+          Add Field
+        </a>
        
       </span>
       <span class="pull-right ">  
-        <a href="#/schema/create" class="btn"><i class="icon-plus"></i> New Schema</a>
+        <a href="#/schema/create" class="btn">
+          <i class="icon-plus"></i> 
+          New Schema
+        </a>
       </span>
       </div>
     </div>
@@ -54,7 +65,9 @@
         <div class="controls">
           <input type="text"  placeholder="Name" ng-model="field.name">
           <input type="text"  placeholder="Title" ng-model="field.title">
-          <button ng-click="del_field($index)" class="btn btn-primary" type="submit"> <i class="icon-remove icon-white"></i> </button>
+          <button ng-click="del_field($index)" class="btn btn-primary" type="submit"> 
+            <i class="icon-remove icon-white"></i> 
+          </button>
         </div>
       </div>
     

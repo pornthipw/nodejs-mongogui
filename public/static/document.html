@@ -1,0 +1,45 @@
+
+<div class="row-fluid" >
+  <div class="span12">
+     <p class="lead">Document manager</p>
+      <div class="form-actions">
+      <div class="input-append">
+      <span class="pull-left">
+        <a href=""  class="btn " ng-click="save()" >
+          <i class="icon-ok "></i> Save
+        </a>
+        <a href="" class="btn btn-danger " ng-click="remove()">
+          <i class="icon-remove icon-white"></i> 
+          Delete Document
+        </a>  
+      </span>
+      
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--Edir Schema-->
+<div class="row-fluid" >
+  <div class="span12">
+    <form class="form-horizontal"> 
+
+      <div class="control-group">
+          <div class="alert alert-block">
+            <h4>Doucment</h4>
+            {{schema}}
+        </div>
+      </div>
+  
+      <div class="control-group" ng-repeat="field in name_docs">
+        <label class="control-label" for="inputFieldName">{{field.name}}</label>
+        <div class="controls">
+          <input type="text"  placeholder="Name" ng-model="field.doc">
+        </div>
+      </div>
+    
+    </form>
+  </div>
+</div>
+

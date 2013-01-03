@@ -40,11 +40,18 @@ app.config(function($routeProvider) {
     controller:SchemaController, 
     templateUrl:'static/schema.html'
   });
-
+  
+  $routeProvider.when('/document/schema/:schemaId/edit/:id', {
+    controller:DocumentController, 
+    templateUrl:'static/document.html'
+  });
+  
+/*
   $routeProvider.when('/query', {
     controller:QueryController, 
     templateUrl:'static/query.html'
   });
+*/
   
   $routeProvider.when('/role', {
     controller:RoleController, 
@@ -167,7 +174,8 @@ function SchemaController($scope, $routeParams, $location, MongoDB,User, Logout)
    
    $scope.select_doc = function(doc) {
      MongoDB.get({id:doc._id}, function(result) {            
-       console.log(result);       
+       console.log(result);   
+       $scope.current_doc = result;    
      });      
    };
    
@@ -182,101 +190,45 @@ function SchemaController($scope, $routeParams, $location, MongoDB,User, Logout)
       });      
     };
     
-     //$scope.schemas = MongoDB.query({query:'{"type":"tb_schema"}'});
+    $scope.editDocument = function (){
+      console.log($scope.current_doc);
+      $location.path('/document/schema/'+$routeParams.id+'/edit/'+$scope.current_doc._id);
+    };
 
 }
 
-function SchemaOldController($scope, $routeParams, MongoDB, $location) {
-  var self=this;
-  var currentDocument = undefined;
-  $scope.currentPage = 0;
-  $scope.limit = 20;
-
-  $scope.query = function() {
-    MongoDB.get({id:$routeParams.id}, function(schema) {
+function DocumentController($scope, $routeParams, $location, MongoDB,User, Logout) {   
+  if ($routeParams.id) {
+    MongoDB.get({
+      id:$routeParams.id
+    },function(schema) {
       $scope.schema = schema;
-      var query_obj = {"$or":[]};
-      angular.forEach(schema.fields, function(field, index) {
-        var c_field = {};
-        if($scope.query_str) {
-          c_field["$and"] = [];
-          var c1 = {};
-          c1[field.name] = {"$exists":true};
-          var c2 = {};
-          c1[field.name] = {"$regex":$scope.query_str};
-          c_field["$and"].push(c1);
-          c_field["$and"].push(c2);
-        } else {
-          c_field[field.name] = {};
-          c_field[field.name]["$exists"] = true;
-        }
-        query_obj["$or"].push(c_field);
-      });
-    
-      console.log(query_obj);
-      $scope.document_list = MongoDB.query({
-        query:JSON.stringify(query_obj)
-      }, function(res) {
-        console.log(res.length);
-        $scope.length_of_schema = res.length;
+      //console.log($scope.schema);
+      $scope.name_docs = [];
+      angular.forEach($scope.schema, function(doc, idx) {
+        console.log(idx);
+        $scope.name_docs.push({"doc":doc,"name":idx});
       });
     });
-  };
-
-  MongoDB.get({id:$routeParams.id}, function(schema) {
-    $scope.schema = schema;
-    var query_str = {"$or":[]};
-    angular.forEach(schema.fields, function(field, index) {
-      var c_field = {};
-      c_field[field.name] = {"$exists":true};
-      query_str["$or"].push(c_field);
-    });
-    //console.log(JSON.stringify(query_str));
-    
-    $scope.document_list = MongoDB.query({
-      query:JSON.stringify(query_str)
-    }, function(res) {
-      
-      console.log(res.length);
-      $scope.length_of_schema = res.length;
-    });
-    
-  });
-
-  $scope.add_field = function() { 
-    console.log("add_field");
-    $scope.schema.fields.push({'name':'', 'title':''});
   }
   
-  $scope.save = function () {		
-    MongoDB.update({      
+  $scope.save = function () {
+    console.log($scope.schema);
+    console.log("update");
+    MongoDB.update({
       id:$routeParams.id
-    }, angular.extend({}, $scope.schema,
+    }, angular.extend({}, 
+      $scope.schema,
       {_id:undefined}), function(result) {
       $scope.save_result = result;
-      if(result.ok) {        
-        $location.path('/');
-      } else {
-        console.log("not");
-      }
-    });            
-  };
-  
-  $scope.del_field = function(idx) {
-    $scope.schema.fields.splice(idx,1);    
-  }
-  
-  $scope.del_document = function(){
-    MongoDB.delete({
-      id:$routeParams.id
-    },function(result) {            
-      if(result.ok) {        
-        $location.path('/');
+      if(result.success) {
+        $location.path('/schema/edit/'+$routeParams.schemaId);
       }
     });
   };
 
 }
+
 
 function SchemaCreateController($scope, $routeParams, MongoDB, $location) {
   var self=this;
@@ -379,6 +331,7 @@ function SchemaManageController($scope, $routeParams, MongoDB, $location) {
       });
       
     }
+    
     $scope.table_schemas = MongoDB.query({
       collection:$routeParams.collection,
       query:'{"type":"tb_schema"}'
@@ -402,166 +355,6 @@ function SchemaManageController($scope, $routeParams, MongoDB, $location) {
     });
   };
   
-}
-
-function QueryController($scope, $routeParams, MongoDB, User, Logout) {
-  var self=this;
-  var currentDocument = undefined;
-
-  MongoDB.query({    
-    query:'{"type":"tb_schema"}'
-  }, function(schema_list) {
-    var fields = [];
-    $scope.select_fields = [];
-    angular.forEach(schema_list, function(schema, index) {
-      angular.forEach(schema.fields, function(field) {
-        if(fields.indexOf(field.name) == -1) {
-          fields.push(field.name);
-        }
-      });
-    });
-
-    angular.forEach(fields, function(field) {
-      $scope.select_fields.push({'name':field,'selected':false});
-    });
-  });  
-
-  $scope.merge = function() {
-    console.log($scope.merge_doc);
-  };
-
-  $scope.select_merge = function() {
-    $scope.merge_doc = {};
-    var target_doc = {};
-    angular.forEach($scope.result_list, function(doc, idx) {
-      if(doc._ng_selected) {
-        angular.forEach(doc, function(value,key) {
-          if(!key.match(/^_/)) {
-            if(!target_doc[key]) {
-              target_doc[key] = [];
-              $scope.merge_doc[key] = value;
-            }
-            if(target_doc[key].indexOf(value) == -1) {
-              target_doc[key].push(value);
-            }
-          }
-        });
-      }
-    });
-    $scope.merge_tmp = target_doc;
-    console.log(target_doc);
-  };
-
-  $scope.query = function() {
-    var q = [];
-    $scope.selected_fields = [];
-    angular.forEach($scope.select_fields, function(field, idx) {
-      if(field.selected) { 
-        var tmp = {};
-        if($scope.query_str) {
-          tmp[field.name] = {'$regex':$scope.query_str};
-        } else {
-          tmp[field.name] = {'$regex':'.'};
-        }
-        $scope.selected_fields.push(field.name);
-        q.push(tmp);
-      }
-    });
-
-    MongoDB.query({    
-      query:JSON.stringify({'$or':q})
-    }, function(res) {
-      $scope.result_list = res;
-    });
-  };
-  
-  $scope.currentPage = 0;
-  $scope.limit = 20;
-  $scope.name = $routeParams.collection;
-  //$scope.stats = MongoStats.info({collection:$routeParams.collection});
-  
-  
-  $scope.fields = function() {
-    var str = {};
-    for(var idx in $scope.attributes) {
-      if($scope.attributes[idx].hide) {
-        str[$scope.attributes[idx].name]=0;
-      }
-    }
-    return JSON.stringify(str);
-  };
-  
-  
-  $scope.table_schemas = MongoDB.query({
-      collection:$routeParams.collection,
-      query:'{"type":"tb_schema"}'
-  });
-    
-  
-  $scope.add = function() {
-    $scope.document = undefined;
-  }
-
-  $scope.get = function(doc) {
-    MongoDB.get({
-      collection:$routeParams.collection,
-      id:doc._id
-    },function(result) {
-      console.log(result);
-      angular.copy(result, doc);
-    });
-  };
-
-  $scope.remove = function(doc) {
-    MongoDB.delete({
-      collection:$routeParams.collection,
-      id:doc._id
-    },function(result) {
-      console.log(result);
-      if(result.ok) {
-        $scope.stats.count-=1;
-        for(var i=0;i<$scope.documents.length;i++) {
-          if($scope.documents[i]._id==doc._id) {
-            $scope.documents.remove(i); 
-            break;
-          }
-        }
-      }
-    });
-  };
-  
-  $scope.edit_document = function(doc) {
-    self.currentDocument = doc;
-    $scope.save_result = undefined;
-    $scope.document = doc;
-    $scope.document_str = JSON.stringify(doc);
-  }
-
-  $scope.save_document = function() {
-    if(!$scope.document) {
-      MongoDB.save({
-        collection:$routeParams.collection,
-      },JSON.parse($scope.document_str),function(result) { 
-        $scope.save_result = result;
-        if(result.ok) {
-          $scope.stats.count+=1;
-        }
-      });
-    } else {
-      MongoDB.update({
-        collection:$routeParams.collection,
-        id:$scope.document._id
-      }, angular.extend({}, 
-        JSON.parse($scope.document_str),
-        {_id:undefined}), function(result) {
-        $scope.save_result = result;
-        if(result.ok) {
-          var obj = angular.extend({},JSON.parse($scope.document_str),{_id:$scope.document._id});
-          angular.copy(obj,self.currentDocument);
-        }
-      });
-    }
-  }
 }
 
 function UploadController($scope,$routeParams,MongoDB) {  
