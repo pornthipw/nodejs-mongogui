@@ -126,7 +126,6 @@ function SchemaListController($scope, MongoDB, $location) {
   };
 };
 
-
 function SchemaController($scope, $routeParams, $location, MongoDB,User, Logout) {   
    $scope.limit = 10;
    MongoDB.get({id:$routeParams.id}, function(schema) {
@@ -173,10 +172,7 @@ function SchemaController($scope, $routeParams, $location, MongoDB,User, Logout)
    };
    
    $scope.select_doc = function(doc) {
-     MongoDB.get({id:doc._id}, function(result) {            
-       console.log(result);   
-       $scope.current_doc = result;    
-     });      
+     $location.path('/document/schema/'+$routeParams.id+'/edit/'+doc._id);        
    };
    
     $scope.del_element = function () {      
@@ -190,42 +186,36 @@ function SchemaController($scope, $routeParams, $location, MongoDB,User, Logout)
       });      
     };
     
-    $scope.editDocument = function (){
-      console.log($scope.current_doc);
-      $location.path('/document/schema/'+$routeParams.id+'/edit/'+$scope.current_doc._id);
-    };
-
 }
 
 function DocumentController($scope, $routeParams, $location, MongoDB,User, Logout) {   
-  if ($routeParams.id) {
-    MongoDB.get({
-      id:$routeParams.id
-    },function(schema) {
-      $scope.schema = schema;
-      //console.log($scope.schema);
-      $scope.name_docs = [];
-      angular.forEach($scope.schema, function(doc, idx) {
-        console.log(idx);
-        $scope.name_docs.push({"doc":doc,"name":idx});
+  var self = this;
+  self.message = function(message) {
+    $scope.message = message;
+    setTimeout(function() {      
+      $scope.$apply(function() {
+        $scope.message = null;
       });
-    });
+    }, 3000);
+  };
+  
+  $scope.document = MongoDB.get({id:$routeParams.id});  
+  
+  $scope.editField = function(field) {
+    $scope.selectField = field;
+    $scope.selectValue = $scope.document[field];
   }
   
-  $scope.save = function () {
-    console.log($scope.schema);
-    console.log("update");
+  $scope.update = function() {
+    $scope.document[$scope.selectField] = $scope.selectValue;
     MongoDB.update({
       id:$routeParams.id
-    }, angular.extend({}, 
-      $scope.schema,
-      {_id:undefined}), function(result) {
-      $scope.save_result = result;
+    }, angular.extend({}, $scope.document, {_id:undefined}), function(result) {      
       if(result.success) {
-        $location.path('/schema/edit/'+$routeParams.schemaId);
+        self.message("Document Saved");                
       }
     });
-  };
+  }   
 
 }
 
