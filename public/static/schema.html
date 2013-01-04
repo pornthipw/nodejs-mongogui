@@ -2,15 +2,13 @@
   <div class="span12">
     <div class="form-actions">    
     <span class="pull-left form-inline">      
-          <button class="btn btn-danger" ng-show="selected_docs.length>0"
-                rel="tooltip" 
-                title="Delete selected documents"
+          <a class="btn btn-danger" ng-show="selected_docs.length>0"
                 ng-class="{'disabled':!selected_docs||selected_docs.length==0}" 
                 ng-click="del_element()">
             <i class="icon-trash icon-white"></i>
             <span ng-show="selected_docs.length!=0" 
                   ng-bind="selected_docs.length"></span> Delete 
-          </button>        
+          </a>        
           <a href="#/csv/{{schema._id}}" class="btn">
             <i class="icon-upload"></i> 
             Upload 

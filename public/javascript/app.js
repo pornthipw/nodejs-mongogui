@@ -40,11 +40,6 @@ app.config(function($routeProvider) {
     templateUrl:'static/schema_manager.html'
   });
   
-  $routeProvider.when('/manager/:id', {
-    controller:SchemaManageController, 
-    templateUrl:'static/schema_manager.html'
-  });
-
   $routeProvider.when('/schema/:id', {
     controller:SchemaController, 
     templateUrl:'static/schema.html'
@@ -260,19 +255,14 @@ function SchemaCreateController($scope, $routeParams, MongoDB, $location) {
   
 }
 
-function SchemaManageController($scope, $routeParams, MongoDB, $location) {
+function SchemaManageController($scope, MongoDB) {
   var self = this;
-  $scope.cur_id=$routeParams.id;
-  if ($routeParams.id) {
-  MongoDB.get({
-      id:$routeParams.id
-    },function(schema) {
-      $scope.schema = schema;
-      //console.log("test"+schema.name);
-    });
+  
+  $scope.select_schema = function(doc) {
+    $scope.schema = doc;
   }
 
-  $scope.table_schemas = MongoDB.query({  
+  $scope.schema_list = MongoDB.query({  
     query:'{"type":"tb_schema"}'
   });
   
@@ -286,17 +276,26 @@ function SchemaManageController($scope, $routeParams, MongoDB, $location) {
     return JSON.stringify(str);
   };
   
-  $scope.schema = {
-    type:"tb_schema",
-    fields:[]
+  $scope.init_schema = function() {
+    var tmp_schema = {
+      type:"tb_schema",
+      fields:[]
+    };
+    MongoDB.save({  
+    },tmp_schema,function(result) { 
+      if(result.success) {
+        MongoDB.get({id:result._id}, function(res) {
+          $scope.schema = res;
+        });
+      }
+    });
   };
-  
+
   $scope.add_field = function() {    
     $scope.schema.fields.push({'name':'', 'title':''});
   }
   
   $scope.edit_field = function (document_id) {
-    console.log(document_id);
     $scope.current_id = document_id;
     var self=this;
     MongoDB.get({
@@ -308,53 +307,32 @@ function SchemaManageController($scope, $routeParams, MongoDB, $location) {
   
   $scope.del_field = function(idx) {
     $scope.schema.fields.splice(idx,1);
-    //$scope.schema_fields.splice(idx,1);
   }
 
-  $scope.save = function () {
-    console.log($scope.schema);
-    console.log($scope.current_id);
-    //if (!$scope.current_id) {
-    if (!$routeParams.id){
-      MongoDB.save($scope.schema,function(result) { 
-        console.log(result);
-      });
-    } else {
-      console.log("update");
-      MongoDB.update({
-        id:$routeParams.id
-      }, angular.extend({}, 
-        $scope.schema,
-        {_id:undefined}), function(result) {
-        $scope.save_result = result;
-        if(result.success) {
-          var obj = angular.extend({},$scope.schema,{_id:$routeParams.id});
-          angular.copy(obj,self.currentDocument);
-          $location.path('/manager');
-        }
-      });
-      
-    }
-    
-    $scope.table_schemas = MongoDB.query({
-      collection:$routeParams.collection,
-      query:'{"type":"tb_schema"}'
+  $scope.save = function() {
+    MongoDB.update({
+      id:$scope.schema._id
+    }, angular.extend({},$scope.schema,{_id:undefined}), function(result) {
+      if(result.success) {
+        $scope.schema_list = MongoDB.query({  
+          query:'{"type":"tb_schema"}'
+        });
+      }
     });
   };
   
   $scope.remove = function() {
     MongoDB.delete({
-      id:$routeParams.id
+      id:$scope.schema._id
     },function(result) {
-      console.log(result);
       if(result.success) {
-        for(var i=0;i<$scope.schema.length;i++) {
-          if($scope.schema[i]._id==$routeParams.id) {
-            $scope.schema.remove(i); 
+        for(var i=0;i<$scope.schema_list.length;i++) {
+          if($scope.schema_list[i]._id==$scope.schema._id) {
+            $scope.schema_list.remove(i); 
             break;
           }
         }
-        $location.path('/manager');
+        $scope.schema = null;
       }
     });
   };

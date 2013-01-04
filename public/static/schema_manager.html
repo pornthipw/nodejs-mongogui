@@ -1,77 +1,74 @@
 <div class="row-fluid" >
   <div class="span12">
-     <p class="lead">Schema manager</p>
+    <p class="lead">Schema manager</p>
+  </div>
+
+  <div class="row-fluid">
+    <div class="span3">
+     <table class="table table-condensed">
+       <tr>
+         <th>
+          Schema
+          <span class="pull-right">
+            <a href="" ng-click="init_schema()">
+              <i class="icon-plus-sign"></i>
+            </a>
+          </span>
+         </th>
+       </tr>
+       <tr ng-repeat="sc in schema_list">
+         <td>
+          {{sc.name}}  
+          <span class="pull-right">
+            <button class="btn btn-mini" 
+               ng-click="select_schema(sc)"> Edit
+            </button>
+          </span>
+         </td>
+       </tr>
+     </table>
+    </div>                          
+
+    <div class="span9" ng-show="schema">
       <div class="form-actions">
-      <div class="input-append">
-      <span class="pull-left">
-        <a href=""  class="btn " ng-click="save()" >
-          <i class="icon-ok "></i> Save
-        </a>
-        <a href="" class="btn btn-danger " ng-click="remove()">
-          <i class="icon-remove icon-white"></i> 
-          Delete Schema
-        </a>  
-        <a href="" class="btn " ng-click="add_field()">
-          <i class="icon-plus-sign"></i> 
-          Add Field
-        </a>
-       
-      </span>
-      <span class="pull-right ">  
-        <a href="#/schema/create" class="btn">
-          <i class="icon-plus"></i> 
-          New Schema
-        </a>
-      </span>
+        <div class="input-append">
+          <span class="pull-left">
+            <a class="btn " ng-click="save()" >
+              <i class="icon-ok "></i> Save
+            </a>
+            <a href="" class="btn btn-danger " ng-click="remove()">
+              <i class="icon-remove icon-white"></i> 
+              Delete
+            </a>  
+            <a href="" class="btn" ng-click="add_field()">
+              <i class="icon-plus-sign"></i> 
+              Field
+            </a>
+          </span>
+        </div>
       </div>
+
+      <form class="form-horizontal"> 
+        <div class="control-group">
+          <label class="control-label">Name</label>
+          <div class="controls">
+            <input type="text" placeholder="Schema Name" 
+                   ng-model="schema.name">
+          </div>
+        </div>
+        
+        <div class="control-group" ng-repeat="field in schema.fields">
+          <label class="control-label">{{field.title}}</label>
+          <div class="controls">
+            <input type="text"  placeholder="Name" ng-model="field.name">
+            <input type="text"  placeholder="Title" ng-model="field.title">
+            <button ng-click="del_field($index)" 
+                    class="btn btn-primary" type="submit"> 
+              <i class="icon-remove icon-white"></i> 
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 </div>
-
-<!--List Schema-->
-<div class="row-fluid" ng-hide="cur_id">
-  <div class="span12"> 
-    <div class="form-actions-new" ng-repeat="schema in table_schemas" >
-      <div class="row-fluid">
-        <div class="span11"> 
-          {{schema.name}}  
-        </div>
-        <div class="span1">
-        <a class="btn" href="#/manager/{{schema._id}}" >Edit</a>  
-        </div>
-      </div>
-    </div>                          
-  </div>
-</div>
-
-<!--Edir Schema-->
-<div class="row-fluid" ng-show="cur_id">
-  <div class="span12">
-    <form class="form-horizontal"> 
-    <!--   
-      <div class="control-group">
-        <label class="control-label" for="inputName">Schema Name</label>
-        <div class="controls ">{{schema.name}}</div>
-      </div>-->
-      <div class="control-group">
-          <div class="alert alert-block">
-            <h4>Schema Name</h4>
-            {{schema.name}}
-        </div>
-      </div>
-  
-      <div class="control-group" ng-repeat="field in schema.fields">
-        <label class="control-label" for="inputFieldName">{{field.title}}</label>
-        <div class="controls">
-          <input type="text"  placeholder="Name" ng-model="field.name">
-          <input type="text"  placeholder="Title" ng-model="field.title">
-          <button ng-click="del_field($index)" class="btn btn-primary" type="submit"> 
-            <i class="icon-remove icon-white"></i> 
-          </button>
-        </div>
-      </div>
-    
-    </form>
-  </div>
-</div>
-
