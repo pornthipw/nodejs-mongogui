@@ -9,6 +9,20 @@ app.filter('skip', function() {
   }
 });
 
+app.filter('hide', function() {
+  return function(input, key) {
+    if(input) {
+      var result = [];
+      angular.forEach(input, function(v) {
+        if(!v.hide) {
+          result.push(v);
+        }
+      });
+      return result;
+    }
+  }
+});
+
 app.config(function($routeProvider) {
   
   $routeProvider.when('/csv/:schema',{

@@ -1,7 +1,7 @@
 <div class="row-fluid" ng-show="schema">
   <div class="span12">
     <div class="form-actions">    
-    <span class="pull-left input-append">      
+    <span class="pull-left form-inline">      
           <button class="btn btn-danger" ng-show="selected_docs.length>0"
                 rel="tooltip" 
                 title="Delete selected documents"
@@ -20,7 +20,6 @@
           <button class="btn" ng-click="query()"><i class="icon-search"></i> 
             Search 
           </button> 
-   
     </span>
     
     <form class="form-inline pull-right" ng-show="schema">
@@ -43,14 +42,21 @@
 </div>
 
 <div class="row-fluid">
-
-  
-  <div class="span12" ng-show="document_list.length>0">
+  <div class="span2">
+    <ul class="unstyled well">
+      <li ng-repeat="field in schema.fields">
+         <label class="checkbox">
+           <input type="checkbox" ng-model="field.hide"> {{field.title}}
+         </label>
+      </li>
+    </ul>
+  </div>
+  <div class="span10" ng-show="document_list.length>0">
     <table class="table table-condensed table-bordered">
       <tr>
         <th></th>
-        <th ng-repeat="field in schema.fields">
-          {{field.title}}
+        <th ng-repeat="field in schema.fields|hide">
+          {{field.title}} 
         </th>
       </tr>
       <tr ng-class="{'warning':document._ng_selected}" 
@@ -60,7 +66,7 @@
           <input type="checkbox" ng-model="document._ng_selected" 
             ng-click="document_selected()">
         </td>
-        <td ng-repeat="field in schema.fields" ng-click="select_doc(document)">
+        <td ng-repeat="field in schema.fields|hide" ng-click="select_doc(document)">
           {{document[field.name]}}
         </td>
       </tr>
