@@ -393,15 +393,12 @@ function UploadController($scope,$routeParams,MongoDB) {
    
    $scope.del_element = function () {   
      console.log("delete");  
-     console.log($scope.selected_docs); 
-      angular.forEach($scope.selected_docs, function(doc, idx) {   
-        console.log(doc._id);             
-        /*MongoDB.delete({id:doc._id}, function(result) {
-          if(result.success) {
-            var r_idx = $scope.result.csv.indexOf(doc);
-            $scope.result.csv.splice(r_idx, 1);
-          }
-        }); */                     
+     console.log("selected doc-->"+$scope.selected_docs); 
+      angular.forEach($scope.selected_docs, function(doc, idx) { 
+        console.log("uuu-->"+doc._id); 
+        var r_idx = $scope.result.csv.indexOf(doc);
+        $scope.result.csv.splice(r_idx, 1);
+        console.log("result -->"+$scope.result.csv);                            
       });      
     };
   
