@@ -1,7 +1,7 @@
 var app = angular.module('mongo_service', ['ngResource']);
 
-var prefix = '/apps/demo';
-//var prefix = '';
+//var prefix = '/apps/demo';
+var prefix = '';
 
 app.factory('MongoDB', function($resource) {
   var MongoDB = $resource(prefix + '/db/person/:id', {    

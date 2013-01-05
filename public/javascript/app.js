@@ -364,6 +364,8 @@ function UploadController($scope,$routeParams,MongoDB) {
           data.col_names.push({field:{name:'col'+i}});
         }
         $scope.result = data;
+        //console.log("test-->"+$scope.result );
+        
       });
     } else {
       $scope.$apply(function() {
@@ -379,7 +381,59 @@ function UploadController($scope,$routeParams,MongoDB) {
     });
   };
   
+  
+   $scope.document_selected = function() {
+     $scope.selected_docs = [];
+     angular.forEach($scope.result.csv, function(doc, idx) {
+       if(doc._ng_selected) {
+         $scope.selected_docs.push(doc);
+       }
+     });
+   };
+   
+   $scope.del_element = function () {   
+     console.log("delete");  
+     console.log($scope.selected_docs); 
+      angular.forEach($scope.selected_docs, function(doc, idx) {   
+        console.log(doc._id);             
+        /*MongoDB.delete({id:doc._id}, function(result) {
+          if(result.success) {
+            var r_idx = $scope.result.csv.indexOf(doc);
+            $scope.result.csv.splice(r_idx, 1);
+          }
+        }); */                     
+      });      
+    };
+  
   $scope.save = function() {
+    var obj_list = [];
+    for(var row=0;row<$scope.result.csv.length;row++) {
+      var obj = {};
+      for(var col=0;col<$scope.result.csv[row].length;col++) {
+        var current = $scope.result.col_names[col];
+        if(current.field.title) {
+          obj[current.field.name] = $scope.result.csv[row][col].value;
+          $scope.result.csv[row]['_obj'] = obj;
+        }
+      }
+      obj_list.push(obj);
+    }
+    
+    angular.forEach(obj_list, function(obj, idx) {
+      MongoDB.save({}, obj, function(result) {
+         if(result.success) {
+          angular.forEach($scope.result.csv, function(row, idx) {
+            console.log(row);
+            if(row._obj == obj) {
+              row._saved = true;
+              console.log(row);
+            }
+          });
+          $scope.document_saved+=1;
+        }
+      });
+    });
+    /*
     var obj_list = [];
     for(var row=0;row<$scope.result.csv.length;row++) {
       var obj = {};
@@ -410,6 +464,8 @@ function UploadController($scope,$routeParams,MongoDB) {
         }
       });
     });
+    */
+    
   }
 };
 
