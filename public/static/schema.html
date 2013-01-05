@@ -9,10 +9,6 @@
             <span ng-show="selected_docs.length!=0" 
                   ng-bind="selected_docs.length"></span> Delete 
           </a>        
-          <a href="#/csv/{{schema._id}}" class="btn">
-            <i class="icon-upload"></i> 
-            Upload 
-          </a>                                    
           <input class="prepend1" type="text" placeholder="Search" 
             ng-model="query_str">                         
           <button class="btn" ng-click="query()"><i class="icon-search"></i> 

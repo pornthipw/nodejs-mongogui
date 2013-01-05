@@ -25,7 +25,7 @@ app.filter('hide', function() {
 
 app.config(function($routeProvider) {
   
-  $routeProvider.when('/csv/:schema',{
+  $routeProvider.when('/upload',{
     controller:UploadController, 
     templateUrl:'static/csv_manager.html'
   });
@@ -54,13 +54,6 @@ app.config(function($routeProvider) {
     controller:DocumentController, 
     templateUrl:'static/document.html'
   });
-  
-/*
-  $routeProvider.when('/query', {
-    controller:QueryController, 
-    templateUrl:'static/query.html'
-  });
-*/
   
   $routeProvider.when('/role', {
     controller:RoleController, 
@@ -339,33 +332,42 @@ function SchemaManageController($scope, MongoDB) {
   
 }
 
-function UploadController($scope,$routeParams,MongoDB) {  
-  $scope.schema = MongoDB.get({id:$routeParams.schema});
-
-  $scope.cp874_to_utf8 = function() {
-    angular.forEach($scope.result.csv[0][0].value,function(ch, idx) {
-      console.log($scope.result.csv[0][0].value.charCodeAt(idx));
+function UploadController($scope,MongoDB) {  
+  MongoDB.query({query:'{"type":"tb_schema"}'},function(result) {
+    var schema_list = result;
+    var fields = {};
+    $scope.field_list = [];
+    angular.forEach(schema_list,function(schema,idx) {
+      angular.forEach(schema.fields, function(field, i) { 
+        if(!(field.name in fields)) {
+          fields[field.name]=[];
+        }
+        if(fields[field.name].indexOf(field.title) == -1) {
+          fields[field.name].push(field.title);
+          $scope.field_list.push(field);
+        }
+      });
     });
-  };
+    console.log($scope.field_list);
+  });
   
   $('iframe#upload_target').load(function() {
     var data = $.parseJSON($('iframe#upload_target').contents().find("body")[0].innerHTML);
     if(data.success) {
       $scope.$apply(function(){
+        console.log(data);
         $scope.success = true;
         var col_length = 0;
-        for(var row in data.csv) {
-          if(data.csv[row].length > col_length) {
-            col_length = data.csv[row].length;
+        angular.forEach(data.csv, function(row, idx) {
+          if(row.length > col_length) {
+            col_length = row.length;
           }
-        }
+        });
         data.col_names = [];
         for(var i=0;i<col_length;i++) { 
           data.col_names.push({field:{name:'col'+i}});
         }
         $scope.result = data;
-        //console.log("test-->"+$scope.result );
-        
       });
     } else {
       $scope.$apply(function() {
@@ -375,6 +377,14 @@ function UploadController($scope,$routeParams,MongoDB) {
     }
   });
 
+
+  $scope.hide_col = function(col) {
+    var col_idx = $scope.result.col_names.indexOf(col);
+    angular.forEach($scope.result.csv, function(row, idx) {
+      row[col_idx].hide = col.hide;
+    });
+  };
+
   $scope.setFile = function(element) {
     $scope.$apply(function() {
       $scope.theFile = element.files[0];
@@ -382,87 +392,40 @@ function UploadController($scope,$routeParams,MongoDB) {
   };
   
   
-   $scope.document_selected = function() {
-     $scope.selected_docs = [];
-     angular.forEach($scope.result.csv, function(doc, idx) {
-       if(doc._ng_selected) {
-         $scope.selected_docs.push(doc);
-       }
-     });
-   };
-   
-   $scope.del_element = function () {   
-     console.log("delete");  
-     console.log("selected doc-->"+$scope.selected_docs); 
-      angular.forEach($scope.selected_docs, function(doc, idx) { 
-        console.log("uuu-->"+doc._id); 
-        var r_idx = $scope.result.csv.indexOf(doc);
-        $scope.result.csv.splice(r_idx, 1);
-        console.log("result -->"+$scope.result.csv);                            
-      });      
-    };
+  $scope.del_element = function () {   
+    angular.forEach($scope.result.csv, function(doc, idx) { 
+      if(doc._ng_selected) {
+        doc.hide=true;
+      }
+    });      
+  };
   
   $scope.save = function() {
     var obj_list = [];
-    for(var row=0;row<$scope.result.csv.length;row++) {
+    angular.forEach($scope.result.csv, function(row,r_idx) {
       var obj = {};
-      for(var col=0;col<$scope.result.csv[row].length;col++) {
-        var current = $scope.result.col_names[col];
-        if(current.field.title) {
-          obj[current.field.name] = $scope.result.csv[row][col].value;
-          $scope.result.csv[row]['_obj'] = obj;
-        }
-      }
-      obj_list.push(obj);
-    }
-    
-    angular.forEach(obj_list, function(obj, idx) {
-      MongoDB.save({}, obj, function(result) {
-         if(result.success) {
-          angular.forEach($scope.result.csv, function(row, idx) {
-            console.log(row);
-            if(row._obj == obj) {
-              row._saved = true;
-              console.log(row);
-            }
-          });
-          $scope.document_saved+=1;
-        }
-      });
-    });
-    /*
-    var obj_list = [];
-    for(var row=0;row<$scope.result.csv.length;row++) {
-      var obj = {};
-      if($scope.result.csv[row].exclude) continue;
-      for(var col=0;col<$scope.result.csv[row].length;col++) {
-        var current = $scope.result.col_names[col];
-        if(!current.exclude) {
-          if(current.field.title) {
-            obj[current.field.name] = $scope.result.csv[row][col].value;
-            $scope.result.csv[row]['_obj'] = obj;
+      if(!row.hide) {
+        angular.forEach($scope.result.col_names, function(col,c_idx) {
+          if(!col.hide) {
+            obj[col.field.name] = row[c_idx].value;
           }
-        }
+        });
+        obj_list.push(obj);
       }
-      obj_list.push(obj);
-    }
+    });
     
     angular.forEach(obj_list, function(obj, idx) {
       MongoDB.save({}, obj, function(result) {
          if(result.success) {
           angular.forEach($scope.result.csv, function(row, idx) {
-            console.log(row);
             if(row._obj == obj) {
               row._saved = true;
-              console.log(row);
             }
           });
           $scope.document_saved+=1;
         }
       });
     });
-    */
-    
   }
 };
 
