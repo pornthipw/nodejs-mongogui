@@ -333,6 +333,7 @@ function SchemaManageController($scope, MongoDB) {
 }
 
 function UploadController($scope,MongoDB) {  
+  $scope.limit = 50;
   MongoDB.query({query:'{"type":"tb_schema"}'},function(result) {
     var schema_list = result;
     var fields = {};
@@ -368,6 +369,13 @@ function UploadController($scope,MongoDB) {
           data.col_names.push({field:{name:'col'+i}});
         }
         $scope.result = data;
+        /*
+        $scope.orig_result = {'csv':data.csv};
+        $scope.result = {'col_names':data.col_names};
+        if(data.csv.length > 100) {
+          $scope.result['csv'] = data.csv.slice(0,50)};
+        }
+        */
       });
     } else {
       $scope.$apply(function() {
