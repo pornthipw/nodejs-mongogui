@@ -1,30 +1,80 @@
 <div class="row-fluid">
   <div class="span12">
+    <p class="lead">Role Manager</p>
+  </div><!---class="span12"-->
+  
+  <div class="span12">
     <div class="row-fluid">
-      <div class="span6">
-      <ul>
-        <li ng-repeat="user in users"> 
-            <a href = "" 
-               ng-click="get_user(user._id)">
-               {{user.profile.displayName}}
-            </a>
-        </li>
-      </ul>
-      </div>
       
-      <div class="span6" ng-show="user">
-        <span ng-bind="user.profile.displayName"></span>
-        <ul>
-          <li ng-repeat="role in user.role">
-            Role : <input ng-model="role.name">
-            [<a href ng-click="user.role.splice($index, 1)">X</a>] 
-          </li>
-          <li>
-            [<a href ng-click="user.role.push({})">Add</a>]
-          </li>
-        </ul>
-        <input type="button" class="btn btn-primary" value="Update" ng-click="update()">
-      </div>
-    </div>
-  </div>
-</div>
+      <div class="span4">
+      <table class="table table-condensed">
+       <tr>
+         <th>
+          User 
+          <span class="pull-right">
+            <a href="" ng-click="init_role()">
+              <i class="icon-plus-sign"></i>
+            </a>
+          </span>
+         </th>
+       </tr>
+       <tr ng-repeat="user in users">
+         <td>
+          {{user.profile.displayName}} 
+          <span class="pull-right">
+            <a href = ""  class="btn btn-mini" 
+               ng-click="get_user(user._id)">
+               Edit
+            </a>
+          </span>
+         </td>
+       </tr>
+     </table>
+      
+      </div><!--class="span4"----->
+    
+      
+      <div class="span8" >
+        <div class="row-fluid" ng-show="user">
+          <div class="span12" >
+            <div class="form-actions">
+              <div class="input-append">
+                <span class="pull-left">
+                  <a class="btn " ng-click="update()" >
+                    <i class="icon-ok "></i> Save
+                  </a><!--
+                  <a href="" class="btn btn-danger " ng-click="remove()">
+                    <i class="icon-remove icon-white"></i> 
+                    Delete
+                  </a>  -->
+                  <a href="" class="btn" ng-click="user.role.push({})">
+                    <i class="icon-plus-sign"></i> 
+                    New Role
+                  </a>
+                </span><!--class="pull-left"--->
+                
+              </div><!--class="input-append"--->
+              <span ng-bind="user.profile.displayName" class="pull-right"></span>
+            </div><!--class="form-actions"-->
+          </div><!--<div class="span12" >-->
+        
+          <div class="span12">
+            <form class="form-horizontal"> 
+            
+              <div class="control-group" ng-repeat="role in user.role">
+                <label class="control-label">Role Name : </label>
+                <div class="controls">
+                  <input ng-model="role.name">
+                  <a href ng-click="user.role.splice($index, 1)">X</a>
+                </div>
+              </div>
+            </form><!--class="form-horizontal"-->
+          </div><!--class="span12"-->
+        
+        </div><!--class="row-fluid" ng-show="user"-->
+      </div><!--class="span8"-->
+      
+      
+    </div><!---class="row-fluid"--->
+  </div><!--class="span12"-->
+</div><!--class="row-fluid"-->

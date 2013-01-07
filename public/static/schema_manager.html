@@ -47,7 +47,7 @@
           </span>
         </div>
       </div>
-
+      <!--Schema--->
       <div class="row-fluid">
         <div class="span12">
         <form class="form-horizontal"> 
@@ -73,22 +73,23 @@
         </form>
         </div>
       </div>
-
+      
+      <!---Action--->
       <div class="row-fluid">
         <div class="span12 well" ng-show="current_action">
           <form> 
             <legend>Action Manager
               <span class="pull-right input-append">
-            <a href="" class="btn" ng-click="init_action()">
-              <i class="icon-plus-sign"></i> 
-              Action
-            </a>
-            <select ng-model="current_action" 
-               ng-options="action.name for action in schema.actions">
-            </select>
+                <a href="" class="btn" ng-click="init_action()">
+                  <i class="icon-plus-sign"></i> 
+                  New Action
+                </a>
+                <select ng-model="current_action" 
+                  ng-options="action.name for action in schema.actions">
+                </select>
               </span>
             </legend>
-            <label>Name</label>
+            <label>Action Name</label>
             <input type="text" placeholder="Action Name" 
                   ng-model="current_action.name">
             <label>Map</label>
