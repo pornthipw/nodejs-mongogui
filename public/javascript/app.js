@@ -285,12 +285,16 @@ function SchemaManageController($scope, MongoDB) {
     }
     return JSON.stringify(str);
   };
-  
+  // Create Object :[{}]
   $scope.init_action = function() {
     if(!$scope.schema.actions) {
       $scope.schema.actions = [];
     }
-    $scope.schema.actions.push({name:'New Action'});
+    $scope.schema.actions.push({
+      name:$scope.name,
+      map:$scope.map,
+      reduce:$scope.reduce
+    });
   };
   
   $scope.init_schema = function() {
