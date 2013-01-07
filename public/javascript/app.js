@@ -1,4 +1,4 @@
-var app = angular.module('mongogui', ['mongo_service','ace']);
+var app = angular.module('mongogui', ['mongo_service','codemirror']);
 
 app.filter('skip', function() {
   return function(input, start) {
@@ -253,6 +253,7 @@ function SchemaManageController($scope, MongoDB) {
   
   $scope.select_schema = function(doc) {
     $scope.schema = doc;
+    $scope.current_action = null;
   }
 
   $scope.schema_list = MongoDB.query({  
@@ -267,6 +268,13 @@ function SchemaManageController($scope, MongoDB) {
       }
     }
     return JSON.stringify(str);
+  };
+  
+  $scope.init_action = function() {
+    if(!$scope.schema.actions) {
+      $scope.schema.actions = [];
+    }
+    $scope.schema.actions.push({name:'New Action'});
   };
   
   $scope.init_schema = function() {
