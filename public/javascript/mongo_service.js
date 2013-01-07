@@ -11,6 +11,13 @@ app.factory('MongoDB', function($resource) {
   return MongoDB;
 });
 
+app.factory('MapReduce', function($resource) {
+  var MapReduce = $resource(prefix + '/mapreduce/person', {    
+  },
+  {query: { method:'POST',isArray:false }});
+  return MapReduce;
+});
+
 app.factory('Admin', function($resource) {
   var Admin = $resource(prefix + '/admin/users/:id', {
   },

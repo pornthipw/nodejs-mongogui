@@ -94,6 +94,7 @@ app.put('/admin/users/:id', userprofile.update_user);
 
 app.get('/db/:collection/:id?', mongo.query);
 app.post('/db/:collection', mongo.insert);
+app.post('/mapreduce/:collection', mongo.mapreduce);
 app.put('/db/:collection/:id', mongo.update);
 app.del('/db/:collection/:id', mongo.delete);
 

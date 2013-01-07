@@ -93,12 +93,16 @@
                   ng-model="current_action.name">
             <label>Map</label>
             <div class="controls">
-              <div ng-model="current_action.map" codemirror="text">
+              <div ng-model="current_action.map" codemirror="javascript">
                  <textarea></textarea>
               </div>
             </div>
             <label>Reduce</label>
-            <div ng-model="current_action.reduce" codemirror="text">
+            <div ng-model="current_action.reduce" codemirror="javascript">
+              <textarea></textarea>
+            </div>
+            <label>Template</label>
+            <div ng-model="current_action.template" codemirror="text">
               <textarea></textarea>
             </div>
             </legend>

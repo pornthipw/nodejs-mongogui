@@ -1,4 +1,7 @@
-var app = angular.module('mongogui', ['mongo_service','codemirror']);
+var app = angular.module('mongogui', [
+  'mongo_service',
+  'dynamicTemplate',
+  'codemirror']);
 
 app.filter('skip', function() {
   return function(input, start) {
@@ -128,41 +131,54 @@ function SchemaListController($scope, MongoDB, $location) {
   };
 };
 
-function SchemaController($scope, $routeParams, $location, MongoDB,User, Logout) {   
-   $scope.limit = 10;
-   MongoDB.get({id:$routeParams.id}, function(schema) {
-     $scope.schema = schema;
-     $scope.currentPage = 0;
-     var query_str = {"$or":[]};
-     angular.forEach(schema.fields, function(field, index) {
-       var c_field = {};
-       c_field[field.name] = {"$exists":true};
-       query_str["$or"].push(c_field);
-     });
-     $scope.document_list = MongoDB.query({
-       query:JSON.stringify(query_str)
-     });
-   });
+function SchemaController($scope, $routeParams, $location, MongoDB,User,MapReduce,Logout) {   
+  $scope.limit = 10;
+
+  MongoDB.get({id:$routeParams.id}, function(schema) {
+    $scope.schema = schema;
+    $scope.currentPage = 0;
+    var query_str = {"$or":[]};
+    angular.forEach(schema.fields, function(field, index) {
+      var c_field = {};
+      c_field[field.name] = {"$exists":true};
+      query_str["$or"].push(c_field);
+    });
+    $scope.document_list = MongoDB.query({
+      query:JSON.stringify(query_str)
+    });
+  });
+  
+  $scope.execute_action = function(action) {
+    MapReduce.query({},{map:action.map, reduce:action.reduce},function(res) {
+      console.log(res);
+      if(res.success) {
+        $scope.action_result = res.result;
+        console.log(action.template);
+        $scope.action_template = action.template;
+        $scope.show_action = true;
+      }
+    });
+  };
    
-    $scope.query = function() {
-      var q = [];    
-      angular.forEach($scope.schema.fields, function(field, idx) {              
-        var tmp = {};
-        if($scope.query_str) {        
-          tmp[field.name] = {'$regex':$scope.query_str};
-        } else {
-          tmp[field.name] = {'$regex':'.'};
-        }        
-        q.push(tmp);      
-      });
-      
-      MongoDB.query({    
-        query:JSON.stringify({'$or':q})
-      }, function(res) {
-        $scope.currentPage = 0;
-        $scope.document_list = res;
-      });
-    };
+  $scope.query = function() {
+    var q = [];    
+    angular.forEach($scope.schema.fields, function(field, idx) {              
+      var tmp = {};
+      if($scope.query_str) {        
+        tmp[field.name] = {'$regex':$scope.query_str};
+      } else {
+        tmp[field.name] = {'$regex':'.'};
+      }        
+      q.push(tmp);      
+    });
+     
+    MongoDB.query({    
+      query:JSON.stringify({'$or':q})
+    }, function(res) {
+      $scope.currentPage = 0;
+      $scope.document_list = res;
+    });
+  };
   
    $scope.document_selected = function() {
      $scope.selected_docs = [];
