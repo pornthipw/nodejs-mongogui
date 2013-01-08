@@ -294,6 +294,28 @@ function SchemaManageController($scope, MongoDB) {
     $scope.schema.actions.push($scope.current_action);
   };
   
+  $scope.del_action_filed = function(){
+      angular.forEach($scope.schema.actions, function(doc, idx) {
+        if (doc.name == $scope.current_action.name) {
+          console.log("OK");
+          $scope.schema.actions.splice(idx,1);
+          //console.log("-->"+$scope.schema._id);
+          MongoDB.update({
+            id:$scope.schema._id
+            }, angular.extend({},$scope.schema,{_id:undefined}), function(result) {
+              if(result.success) {
+                //$scope.schema_list = MongoDB.query({  
+                //  query:'{"type":"tb_schema"}'
+                //});
+                MongoDB.get({id:$scope.schema._id}, function(res) {
+                  $scope.schema = res;
+               });
+              }
+          });
+        }
+    });
+  };
+  
   $scope.init_schema = function() {
     var tmp_schema = {
       type:"tb_schema",
