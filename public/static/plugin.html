@@ -1,0 +1,91 @@
+<div class="row-fluid" >
+  <div class="row-fluid">
+    <div class="span3">
+     <table class="table table-condensed">
+       <tr>
+         <th>
+          Plug-in 
+          <span class="pull-right">
+            <a href="" ng-click="init_plugin()">
+              <i class="icon-plus-sign"></i>
+            </a>
+          </span>
+         </th>
+       </tr>
+       <tr ng-repeat="pi in plugin_list">
+         <td>
+          {{pi.name}}  
+          <span class="pull-right">
+            <div class="btn-group">
+            <button class="btn btn-success btn-mini" ng-click="execute(pi)">
+               Run
+            </button>  
+            <button class="btn btn-mini" 
+               ng-click="select_plugin(pi)"> Edit
+            </button>
+            </div>
+          </span>
+         </td>
+       </tr>
+     </table>
+    </div>                          
+    
+    <div class="span9">
+      <div class="row-fluid" ng-show="current_plugin._id&&!show_action">
+        <div class="form-actions">
+          <div class="input-append">
+            <span class="pull-left">
+              <a class="btn " ng-click="save()" >
+               <i class="icon-ok "></i> Save
+              </a>
+              <a href="" class="btn btn-danger" ng-click="remove()">
+                <i class="icon-remove icon-white"></i> 
+                 Delete
+              </a>  
+              <a href="" class="btn btn-success" ng-click="execute()">
+                 Run
+              </a>  
+            </span>
+          </div>
+        </div>
+      
+        <div class="row-fluid">
+          <div class="span12 well">
+            <form> 
+              <legend>Plugin Manager </legend>
+              <label>Name</label>
+              <input type="text" placeholder="Name" 
+                  ng-model="current_plugin.name">
+              <label>Map</label>
+              <div class="controls">
+                <div ng-model="current_plugin.map" codemirror="javascript">
+                   <textarea></textarea>
+                </div>
+              </div>
+              <label>Reduce</label>
+              <div ng-model="current_plugin.reduce" 
+                   codemirror="javascript">
+                <textarea></textarea>
+              </div>
+              <label>Template</label>
+              <div ng-model="current_plugin.template" codemirror="text">
+                <textarea></textarea>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="row-fluid" ng-show="show_action">
+        <h4>Execute Result</h4>
+        <div class="row-fluid">
+          <div class="span12">
+            <div dynamic-template template="plugin_template"
+               content="plugin_result"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>

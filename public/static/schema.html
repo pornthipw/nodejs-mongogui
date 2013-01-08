@@ -14,9 +14,6 @@
           <button class="btn" ng-click="query()"><i class="icon-search"></i> 
             Search 
           </button> 
-          <button ng-show="show_action" class="btn" ng-click="show_action=false">
-            Hide Action Result
-          </button> 
     </span>
     
     <form class="form-inline pull-right" ng-show="schema">
@@ -47,12 +44,6 @@
          </label>
       </li>
     </ul>
-
-    <ul class="unstyled">
-      <li ng-repeat="action in schema.actions">
-        <a href="" ng-click="execute_action(action)">{{action.name}}</a>
-      </li>
-    </ul>
   </div>
 
   <div class="span10" ng-show="document_list.length>0&&!show_action">
@@ -75,11 +66,6 @@
         </td>
       </tr>
     </table>
-  </div>
-
-  <div class="span10" ng-show="show_action">
-    <div dynamic-template="hello" template="action_template" 
-         content="action_result"></div>
   </div>
 </div>
 

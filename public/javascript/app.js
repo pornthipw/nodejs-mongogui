@@ -32,10 +32,10 @@ app.config(function($routeProvider) {
     controller:UploadController, 
     templateUrl:'static/csv_manager.html'
   });
-  
-  $routeProvider.when('/schema/create', {
-    controller:SchemaCreateController, 
-    templateUrl:'static/schema_create.html'
+
+  $routeProvider.when('/plugin',{
+    controller:PluginController, 
+    templateUrl:'static/plugin.html'
   });
   
   $routeProvider.when('/manager', {
@@ -237,31 +237,69 @@ function DocumentController($scope, $routeParams, $location, MongoDB,User, Logou
 
 }
 
-
-function SchemaCreateController($scope, $routeParams, MongoDB, $location) {
-  var self=this;
+function PluginController($scope, MongoDB,MapReduce) {
+  var self = this;
   
-  $scope.schema = {
-    type:"tb_schema",
-    fields:[]
-  };
-  
-  $scope.add_field = function() {    
-    $scope.schema.fields.push({'name':'', 'title':''});
-  }
-  
-  $scope.save = function () {
-    MongoDB.save({  
-    },$scope.schema,function(result) { 
-      console.log(result);
-      $location.path('/manager');
+  self.get_list = function() {
+    $scope.plugin_list = MongoDB.query({
+      query:'{"type":"plugin_entry"}'
     });
   };
   
-   $scope.del_field = function(idx) {
-    $scope.schema.fields.splice(idx,1);
-  }
+  self.get_list();
   
+  $scope.init_plugin = function() {
+    var tmp = {'type':'plugin_entry',
+      'name':'New Plugin '+$scope.plugin_list.length};
+    MongoDB.save({},tmp, function(res) {
+      if(res.success) {
+        $scope.current_plugin = tmp;
+        self.get_list();
+      }
+    });
+  };
+  
+  $scope.select_plugin = function(pi) {
+    $scope.current_plugin = pi;
+    $scope.show_action = false;
+  }
+
+  $scope.save = function() {
+    MongoDB.update({
+      id:$scope.current_plugin._id
+    }, angular.extend({},$scope.current_plugin,{_id:undefined}), 
+      function(result) {
+        if(result.success) {
+          self.get_list();
+        }
+    });
+  };
+
+  $scope.remove = function() {
+    MongoDB.delete({
+      id:$scope.current_plugin._id
+    },function(result) {
+      if(result.success) {
+        self.get_list();
+        $scope.current_plugin = null;
+      }
+    });
+  };
+   
+  $scope.execute = function(plugin) {
+    MapReduce.query({},{
+      map:plugin.map,
+      reduce:plugin.reduce
+    }, function(res) {
+      if(res.success) {
+        $scope.plugin_result = res.result;
+        $scope.show_action = true;
+        $scope.plugin_template = plugin.template;
+      }
+       
+    });
+  }
+
 }
 
 function SchemaManageController($scope, MongoDB) {

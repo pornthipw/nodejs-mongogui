@@ -73,49 +73,6 @@
         </form>
         </div>
       </div>
-      
-      <!---Action--->
-      <div class="row-fluid">
-        <div class="span12 well" ng-show="current_action">
-          <form> 
-            <legend>Action Manager
-              <span class="pull-right input-append">
-                <a href="" ng-show="current_action.name" 
-                   class="btn btn-danger" 
-                   ng-click="del_action()">
-                  <i class="icon-remove icon-white"></i> 
-                  Action
-                </a>
-                <a href="" class="btn" ng-click="init_action()">
-                  <i class="icon-plus-sign"></i> 
-                  New Action
-                </a>
-                <select ng-model="current_action" 
-                  ng-options="action.name for action in schema.actions">
-                </select>
-              </span>
-            </legend>
-            <label>Action Name</label>
-            <input type="text" placeholder="Action Name" 
-                  ng-model="current_action.name">
-            <label>Map</label>
-            <div class="controls">
-              <div ng-model="current_action.map" codemirror="javascript">
-                 <textarea></textarea>
-              </div>
-            </div>
-            <label>Reduce</label>
-            <div ng-model="current_action.reduce" codemirror="javascript">
-              <textarea></textarea>
-            </div>
-            <label>Template</label>
-            <div ng-model="current_action.template" codemirror="text">
-              <textarea></textarea>
-            </div>
-            </legend>
-          </form>
-        </div>
-      </div>
     </div>
   </div>
 </div>

@@ -8,11 +8,6 @@ angular.module('codemirror', []).directive('codemirror', function() {
         lineNumbers: true,
 	mode: mode	
       });
-    
-    //var editor = ace.edit($(element).find('.' + ACE_EDITOR_CLASS)[0]);
-    //editor.session.setMode("ace/mode/" + mode);
-    //editor.renderer.setShowPrintMargin(false);
-
     return editor;
   }
 
@@ -38,6 +33,8 @@ angular.module('codemirror', []).directive('codemirror', function() {
 
       ngModel.$render = function() {
         var value = ngModel.$viewValue || '';
+        console.log('Render');
+        console.log(value);
         editor.setValue(value);
         textarea.val(value);	
       };
@@ -46,15 +43,6 @@ angular.module('codemirror', []).directive('codemirror', function() {
 	ngModel.$setViewValue(editor.getValue());	
         textarea.val(editor.getValue());
       });
-
-      //editor.getSession().on('change', function() {
-        //if (valid(editor)) {
-          //scope.$apply(read);
-	  
-	 // ngModel.$setViewValue(editor.getValue());	
-        //textarea.val(editor.getValue());
-        //}
-      //});
 
       editor.setValue(textarea.val());
             
