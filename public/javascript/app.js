@@ -290,11 +290,8 @@ function SchemaManageController($scope, MongoDB) {
     if(!$scope.schema.actions) {
       $scope.schema.actions = [];
     }
-    $scope.schema.actions.push({
-      name:$scope.name,
-      map:$scope.map,
-      reduce:$scope.reduce
-    });
+    $scope.current_action = {'name':'New Action'+$scope.schema.actions.length};
+    $scope.schema.actions.push($scope.current_action);
   };
   
   $scope.init_schema = function() {
