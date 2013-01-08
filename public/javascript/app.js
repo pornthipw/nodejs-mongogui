@@ -295,6 +295,9 @@ function PluginController($scope, MongoDB,MapReduce) {
         $scope.plugin_result = res.result;
         $scope.show_action = true;
         $scope.plugin_template = plugin.template;
+      } else {
+        console.log(res);
+        $scope.message = res.message;
       }
        
     });

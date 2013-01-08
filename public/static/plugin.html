@@ -42,9 +42,6 @@
                 <i class="icon-remove icon-white"></i> 
                  Delete
               </a>  
-              <a href="" class="btn btn-success" ng-click="execute()">
-                 Run
-              </a>  
             </span>
           </div>
         </div>
@@ -78,6 +75,13 @@
 
       <div class="row-fluid" ng-show="show_action">
         <h4>Execute Result</h4>
+        <div class="row-fluid">
+          <div class="span12" ng-show="message">
+             {{message}}
+          </div>
+        </div>
+         
+
         <div class="row-fluid">
           <div class="span12">
             <div dynamic-template template="plugin_template"

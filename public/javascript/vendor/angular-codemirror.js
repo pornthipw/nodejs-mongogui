@@ -33,8 +33,6 @@ angular.module('codemirror', []).directive('codemirror', function() {
 
       ngModel.$render = function() {
         var value = ngModel.$viewValue || '';
-        console.log('Render');
-        console.log(value);
         editor.setValue(value);
         textarea.val(value);	
       };
