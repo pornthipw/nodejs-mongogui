@@ -29,6 +29,14 @@
      </table>
     </div>                          
 
+    <div class="span9" ng-show="message">
+        <div class="row-fluid">
+          <div class="alert alert-info"  ng-show="message">
+             {{message}}
+          </div>
+        </div>
+    </div>
+    
     <div class="span9" ng-show="schema">
       <div class="form-actions">
         <div class="input-append">

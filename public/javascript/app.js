@@ -246,6 +246,16 @@ function DocumentController($scope, $routeParams, $location, MongoDB,User, Logou
 function MainController($scope, MongoDB,MapReduce) {
   var self = this;
   
+  self.message = function(message) {
+    $scope.message = message;
+    setTimeout(function() {      
+      $scope.$apply(function() {
+        $scope.message = null;
+      });
+    }, 3000);
+  };
+  
+  
   $scope.plugin_list = MongoDB.query({
     query:'{"type":"plugin_entry"}'
   });
@@ -262,7 +272,8 @@ function MainController($scope, MongoDB,MapReduce) {
         $scope.plugin_template = plugin.template;
       } else {
         console.log(res);
-        $scope.message = res.message;
+        //$scope.message = res.message;
+        self.message(res.message);   
       }
        
     });
@@ -272,6 +283,16 @@ function MainController($scope, MongoDB,MapReduce) {
 
 function PluginController($scope, MongoDB,MapReduce) {
   var self = this;
+  
+  self.message = function(message) {
+    $scope.message = message;
+    console.log($scope.message);
+    setTimeout(function() {      
+      $scope.$apply(function() {
+        $scope.message = null;
+      });
+    }, 3000);
+  };
   
   self.get_list = function() {
     $scope.plugin_list = MongoDB.query({
@@ -286,9 +307,13 @@ function PluginController($scope, MongoDB,MapReduce) {
       'name':'New Plugin '+$scope.plugin_list.length};
     MongoDB.save({},tmp, function(res) {
       if(res.success) {
-        $scope.current_plugin = tmp;
+        self.message("Plugin Created"); 
         self.get_list();
+        $scope.current_plugin = tmp;
+      } else {                
+        self.message("Plugin don't Created"); 
       }
+      self.get_list();
     });
   };
   
@@ -303,8 +328,12 @@ function PluginController($scope, MongoDB,MapReduce) {
     }, angular.extend({},$scope.current_plugin,{_id:undefined}), 
       function(result) {
         if(result.success) {
+          self.message("Plugin Saved"); 
           self.get_list();
-        }
+        } else {                
+        self.message("Plugin don't Saved"); 
+      }
+      self.get_list();
     });
   };
 
@@ -313,9 +342,13 @@ function PluginController($scope, MongoDB,MapReduce) {
       id:$scope.current_plugin._id
     },function(result) {
       if(result.success) {
-        self.get_list();
+        self.message("Plugin Deleted"); 
         $scope.current_plugin = null;
+        self.get_list();
+      } else {                
+        self.message("Plugin don't Deleted");   
       }
+      self.get_list();
     });
   };
    
@@ -330,7 +363,7 @@ function PluginController($scope, MongoDB,MapReduce) {
         $scope.plugin_template = plugin.template;
       } else {
         console.log(res);
-        $scope.message = res.message;
+        self.message(res.message);
       }
        
     });
@@ -340,6 +373,16 @@ function PluginController($scope, MongoDB,MapReduce) {
 
 function SchemaManageController($scope, MongoDB) {
   var self = this;
+  
+  self.message = function(message) {
+    $scope.message = message;
+    console.log($scope.message);
+    setTimeout(function() {      
+      $scope.$apply(function() {
+        $scope.message = null;
+      });
+    }, 3000);
+  };
   
   $scope.select_schema = function(doc) {
     $scope.schema = doc;
@@ -382,6 +425,7 @@ function SchemaManageController($scope, MongoDB) {
     MongoDB.save({  
     },tmp_schema,function(result) { 
       if(result.success) {
+        self.message("Schema Created");
         MongoDB.get({id:result._id}, function(res) {
           $scope.schema = res;
         });
@@ -412,10 +456,16 @@ function SchemaManageController($scope, MongoDB) {
       id:$scope.schema._id
     }, angular.extend({},$scope.schema,{_id:undefined}), function(result) {
       if(result.success) {
+        self.message("Schema Saved");
         $scope.schema_list = MongoDB.query({  
           query:'{"type":"tb_schema"}'
         });
+        } else {
+          self.message("Schema don't Saved");
       }
+        $scope.schema_list = MongoDB.query({  
+          query:'{"type":"tb_schema"}'
+        });
     });
   };
   
@@ -430,7 +480,10 @@ function SchemaManageController($scope, MongoDB) {
             break;
           }
         }
+        self.message("Schema Deleted");
         $scope.schema = null;
+      } else {
+        self.message("Schema don't Deleted");
       }
     });
   };
@@ -439,6 +492,17 @@ function SchemaManageController($scope, MongoDB) {
 
 function UploadController($scope,MongoDB) {  
   $scope.limit = 50;
+  
+  self.message = function(message) {
+    $scope.message = message;
+    console.log($scope.message);
+    setTimeout(function() {      
+      $scope.$apply(function() {
+        $scope.message = null;
+      });
+    }, 3000);
+  };
+  
   MongoDB.query({query:'{"type":"tb_schema"}'},function(result) {
     var schema_list = result;
     var fields = {};
@@ -489,7 +553,15 @@ function UploadController($scope,MongoDB) {
       });
     }
   });
-
+  
+  $scope.re_upload = function () {
+    angular.forEach($scope.result.csv, function(row,r_idx) {
+      angular.forEach($scope.result.col_names, function(col,c_idx) {
+        row.hide = true;
+        col.hide = true;
+      });
+    });
+  };
 
   $scope.hide_col = function(col) {
     var col_idx = $scope.result.col_names.indexOf(col);
@@ -503,7 +575,6 @@ function UploadController($scope,MongoDB) {
       $scope.theFile = element.files[0];
     });
   };
-  
   
   $scope.del_element = function () {   
     angular.forEach($scope.result.csv, function(doc, idx) { 
@@ -529,7 +600,8 @@ function UploadController($scope,MongoDB) {
     
     angular.forEach(obj_list, function(obj, idx) {
       MongoDB.save({}, obj, function(result) {
-         if(result.success) {
+        if(result.success) {
+          self.message("Document Saved");
           angular.forEach($scope.result.csv, function(row, idx) {
             if(row._obj == obj) {
               row._saved = true;
