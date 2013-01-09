@@ -42,10 +42,15 @@ angular.module('codemirror', []).directive('codemirror', function() {
         textarea.val(editor.getValue());
       });
 
-      editor.setValue(textarea.val());
+      editor.setOption('onFocus', function() {		
+        editor.refresh();
+      });
+
+      //editor.setValue(ngModel.$viewValue||'');
+      //editor.refresh();
             
-      ngModel.$setViewValue(editor.getValue());	
-      textarea.val(editor.getValue());      
+      //ngModel.$setViewValue(editor.getValue());	
+      //textarea.val(editor.getValue());      
     }
   }
 });
