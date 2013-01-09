@@ -63,6 +63,12 @@ app.config(function($routeProvider) {
     templateUrl:'static/role_manager.html'
   });
   
+  $routeProvider.when('/', {
+    controller:MainController, 
+    templateUrl:'static/index.html'
+  });
+  
+  
   
 });
 
@@ -234,6 +240,33 @@ function DocumentController($scope, $routeParams, $location, MongoDB,User, Logou
       }
     });
   }   
+
+}
+
+function MainController($scope, MongoDB,MapReduce) {
+  var self = this;
+  
+  $scope.plugin_list = MongoDB.query({
+    query:'{"type":"plugin_entry"}'
+  });
+  
+  $scope.execute = function(plugin) {
+    $scope.current_id = plugin._id;
+    MapReduce.query({},{
+      map:plugin.map,
+      reduce:plugin.reduce
+    }, function(res) {
+      if(res.success) {
+        $scope.plugin_result = res.result;
+        $scope.show_action = true;
+        $scope.plugin_template = plugin.template;
+      } else {
+        console.log(res);
+        $scope.message = res.message;
+      }
+       
+    });
+  }
 
 }
 
