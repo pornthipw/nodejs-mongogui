@@ -43,10 +43,9 @@
         </div>                         
         CP874 Encoding : <input type="checkbox" name="cp874">
       </form>
-<!---ng-show="result.csv"-->
- 
     </div>
     
+    <!----->
     <div class="row-fluid">
       <div class="span12">
         <span ng-switch on="success" >
@@ -94,7 +93,7 @@
             saved.
           </span> 
           
-          <a href="" class="btn" ng-click="re_upload()" ng-class="{'disabled':!result.csv||result.csv.length==0}" >
+          <a href="" class="btn" ng-click="result.csv = null" >
             Re-upload</a>
          
         </div>

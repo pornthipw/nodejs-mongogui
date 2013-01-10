@@ -553,15 +553,7 @@ function UploadController($scope,MongoDB) {
       });
     }
   });
-  
-  $scope.re_upload = function () {
-    angular.forEach($scope.result.csv, function(row,r_idx) {
-      angular.forEach($scope.result.col_names, function(col,c_idx) {
-        row.hide = true;
-        col.hide = true;
-      });
-    });
-  };
+   
 
   $scope.hide_col = function(col) {
     var col_idx = $scope.result.col_names.indexOf(col);
