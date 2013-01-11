@@ -1,6 +1,7 @@
 {
   "name" : "nodejs-mongogui",
   "version" : "0.0.1",
+  "user": "kphongph",
   "dependencies" : {
     "express" : "*",    
     "mongodb" : "*",
@@ -12,5 +13,8 @@
     "passport-openid" : "*",
     "generic-pool" : "*",
     "crc":"*"
-  }
+  },
+  "scripts": {
+    "start":"server.js"
+  } 
 }
