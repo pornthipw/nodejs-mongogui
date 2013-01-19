@@ -1,0 +1,67 @@
+
+
+<div class="row-fluid" >
+  <div class="row-fluid">
+    <div class="span3">
+     <table class="table table-condensed">
+       <tr>
+         <th>
+          Function 
+          <span class="pull-right">
+            <a href="" ng-click="init_function()">
+              <i class="icon-plus-sign"></i>
+            </a>
+          </span>
+         </th>
+       </tr>
+       <tr ng-repeat="fi in function_list">
+         <td>
+          {{fi.name}}  
+          <span class="pull-right">
+            <div class="btn-group">
+            <button class="btn btn-mini" 
+               ng-click="select_function(fi)"> Edit
+            </button>
+            </div>
+          </span>
+         </td>
+       </tr>
+     </table>
+    </div>                          
+    
+    <div class="span9"  >
+      <div class="row-fluid">
+        <div class="row-fluid">
+          <div class="span12 well">
+            <form> 
+              <legend>Function Manager 
+                <span class="pull-right">
+                  <a class="btn" ng-show="current_function._id"
+                      ng-click="save()" >
+                    <i class="icon-ok "></i> Save
+                  </a>
+                  <a href="" class="btn btn-danger" 
+                      ng-show="current_function._id"
+                      ng-click="remove()">
+                    <i class="icon-remove icon-white"></i> Delete
+                 </a>  
+                </span>
+              </legend>
+              <label>Name</label>
+              <input type="text" placeholder="Name" 
+                  ng-model="current_function.name">
+              <label>Code</label>
+              <div class="controls">
+                <div ng-model="current_function.code" mode="javascript"
+                   codemirror="javascript">
+                   <textarea></textarea>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    
+  </div>
+</div>

@@ -37,6 +37,11 @@ app.config(function($routeProvider) {
     controller:PluginController, 
     templateUrl:'static/plugin.html'
   });
+
+  $routeProvider.when('/function',{
+    controller:FunctionController, 
+    templateUrl:'static/function.html'
+  });
   
   $routeProvider.when('/manager', {
     controller:SchemaManageController, 
@@ -67,9 +72,6 @@ app.config(function($routeProvider) {
     controller:MainController, 
     templateUrl:'static/index.html'
   });
-  
-  
-  
 });
 
 
@@ -278,6 +280,77 @@ function MainController($scope, MongoDB,MapReduce) {
        
     });
   }
+}
+
+function FunctionController($scope, MongoDB) {
+  var self = this;
+  
+  self.message = function(message) {
+    $scope.message = message;
+    setTimeout(function() {      
+      $scope.$apply(function() {
+        $scope.message = null;
+      });
+    }, 3000);
+  };
+
+  self.get_list = function() {
+    $scope.function_list = MongoDB.query({
+      query:'{"type":"function_entry"}'
+    });
+  };
+
+  self.get_list();
+
+  $scope.init_function = function() {
+    var tmp = {'type':'function_entry',
+      'name':'New Function '+$scope.function_list.length};
+    MongoDB.save({},tmp, function(res) {
+      if(res.success) {
+        self.message("Function Created"); 
+        self.get_list();
+        $scope.current_plugin = tmp;
+      } else {                
+        self.message("Fail to create Function"); 
+      }
+      self.get_list();
+    });
+  };
+  
+  $scope.select_function = function(pi) {
+    $scope.current_function = pi;
+    $scope.show_action = false;
+  }
+
+  $scope.save = function() {
+    MongoDB.update({
+      id:$scope.current_function._id
+    }, angular.extend({},$scope.current_function,{_id:undefined}), 
+      function(result) {
+        if(result.success) {
+          self.message("Function Saved"); 
+          self.get_list();
+        } else {                
+        self.message("Fail to save Function"); 
+      }
+      self.get_list();
+    });
+  };
+
+  $scope.remove = function() {
+    MongoDB.delete({
+      id:$scope.current_function._id
+    },function(result) {
+      if(result.success) {
+        self.message("Plugin Deleted"); 
+        $scope.current_function = null;
+        self.get_list();
+      } else {                
+        self.message("Plugin don't Deleted");   
+      }
+      self.get_list();
+    });
+  };
 
 }
 
@@ -286,7 +359,6 @@ function PluginController($scope, MongoDB,MapReduce) {
   
   self.message = function(message) {
     $scope.message = message;
-    console.log($scope.message);
     setTimeout(function() {      
       $scope.$apply(function() {
         $scope.message = null;
@@ -368,7 +440,6 @@ function PluginController($scope, MongoDB,MapReduce) {
        
     });
   }
-
 }
 
 function SchemaManageController($scope, MongoDB) {
@@ -492,10 +563,18 @@ function SchemaManageController($scope, MongoDB) {
 
 function UploadController($scope,MongoDB) {  
   $scope.limit = 50;
+
+  $scope.function_list = MongoDB.query({
+    query:'{"type":"function_entry"}'
+  });
+
+  $scope.test_function = function(func) {
+    var f=eval('('+func.code+')');
+    $scope.current_function = new f();
+  };
   
   self.message = function(message) {
     $scope.message = message;
-    console.log($scope.message);
     setTimeout(function() {      
       $scope.$apply(function() {
         $scope.message = null;
@@ -518,33 +597,36 @@ function UploadController($scope,MongoDB) {
         }
       });
     });
-    console.log($scope.field_list);
   });
   
   $('iframe#upload_target').load(function() {
-    var data = $.parseJSON($('iframe#upload_target').contents().find("body")[0].innerHTML);
+    var contents = $('iframe#upload_target').contents();
+    var data = $.parseJSON(contents.find("body")[0].innerHTML);
     if(data.success) {
       $scope.$apply(function(){
-        console.log(data);
         $scope.success = true;
         var col_length = 0;
+        var obj_list = [];
+        var column_names = [];
+        var max = 0;
         angular.forEach(data.csv, function(row, idx) {
+          var tmp_obj = {};
+          angular.forEach(row,function(value, i) {
+            var column_name = 'col'+i;
+            if(i>max) {
+              max=i;
+            }
+            tmp_obj['col'+i] = value.value;
+          });
+          obj_list.push(tmp_obj);
           if(row.length > col_length) {
             col_length = row.length;
           }
         });
-        data.col_names = [];
-        for(var i=0;i<col_length;i++) { 
-          data.col_names.push({field:{name:'col'+i}});
+        for(var i=0;i<max;i++) {
+          column_names.push({'name':'col'+i});
         }
-        $scope.result = data;
-        /*
-        $scope.orig_result = {'csv':data.csv};
-        $scope.result = {'col_names':data.col_names};
-        if(data.csv.length > 100) {
-          $scope.result['csv'] = data.csv.slice(0,50)};
-        }
-        */
+        $scope.result = {'data':obj_list,'column_names':column_names};
       });
     } else {
       $scope.$apply(function() {
@@ -564,12 +646,13 @@ function UploadController($scope,MongoDB) {
 
   $scope.setFile = function(element) {
     $scope.$apply(function() {
+      $scope.success = true;
       $scope.theFile = element.files[0];
     });
   };
   
   $scope.del_element = function () {   
-    angular.forEach($scope.result.csv, function(doc, idx) { 
+    angular.forEach($scope.result.data, function(doc, idx) { 
       if(doc._ng_selected) {
         doc.hide=true;
       }
