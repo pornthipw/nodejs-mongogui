@@ -34,6 +34,9 @@
          action="csv/upload" 
          target="upload_target" class="form-horizontal">                      
         <div class="btn-group">
+           <select ng-model="schema" 
+              ng-options="schema.name for schema in schemas" >
+           </select>
           <button class="btn btn-success fileinput-button">
             <i class="icon-plus icon-white"></i>     
             Select File     
@@ -48,7 +51,14 @@
         CP874 Encoding : <input type="checkbox" name="cp874">
       </form>
     </div>
-    
+    <div><span ng-bind="schema.name"></span></div>
+    <!--
+      <li ng-repeat="schema in schemas"> 
+        <a herf="" ng-click="load_schema(schema._id)">
+          <span ng-bind="schema.name"></span>
+        </a>                                
+      </li>
+      -->
     <div class="row-fluid" ng-show="result">
       <div class="span12">
         <ul>
@@ -145,6 +155,7 @@
                   <th ng-repeat="column in result.column_names|hide">
                     {{column.name}}
                   </th>
+                  <th>schema type</th>
                 </tr>
               </thead>
               <tbody>
@@ -156,6 +167,7 @@
                   <td ng-repeat="column in result.column_names|hide">
                     <span>{{row[column.name]}}</span>
                   </td>
+                  <td><span ng-bind="schema.name"></span></td>
                 </tr>
               </tbody>
             </table>

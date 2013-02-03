@@ -567,6 +567,9 @@ function UploadController($scope,MongoDB) {
   $scope.function_list = MongoDB.query({
     query:'{"type":"function_entry"}'
   });
+  
+  $scope.schemas = MongoDB.query({query:'{"type":"tb_schema"}'});
+
 
   $scope.test_function = function(func) {
     var f=eval('('+func.code+')');
@@ -582,6 +585,7 @@ function UploadController($scope,MongoDB) {
     }, 3000);
   };
   
+
   MongoDB.query({query:'{"type":"tb_schema"}'},function(result) {
     var schema_list = result;
     var fields = {};
