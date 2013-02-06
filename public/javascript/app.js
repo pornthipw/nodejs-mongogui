@@ -27,8 +27,7 @@ app.filter('hide', function() {
 });
 
 app.config(function($routeProvider) {
-  
-  $routeProvider.when('/upload',{
+  $routeProvider.when('/upload/:schema_id',{
     controller:UploadController, 
     templateUrl:'static/csv_manager.html'
   });
@@ -145,12 +144,16 @@ function SchemaController($scope, $routeParams, $location, MongoDB,User,MapReduc
   MongoDB.get({id:$routeParams.id}, function(schema) {
     $scope.schema = schema;
     $scope.currentPage = 0;
+    /*
     var query_str = {"$or":[]};
     angular.forEach(schema.fields, function(field, index) {
       var c_field = {};
       c_field[field.name] = {"$exists":true};
       query_str["$or"].push(c_field);
     });
+    */
+    console.log(schema);
+    var query_str = {"schema":schema._id};
     $scope.document_list = MongoDB.query({
       query:JSON.stringify(query_str)
     });
@@ -179,9 +182,9 @@ function SchemaController($scope, $routeParams, $location, MongoDB,User,MapReduc
       }        
       q.push(tmp);      
     });
-     
+    
     MongoDB.query({    
-      query:JSON.stringify({'$or':q})
+      query:JSON.stringify({'$and':[{'$or':q},{'schema':$scope.schema._id}]})
     }, function(res) {
       $scope.currentPage = 0;
       $scope.document_list = res;
@@ -561,15 +564,15 @@ function SchemaManageController($scope, MongoDB) {
   
 }
 
-function UploadController($scope,MongoDB) {  
+function UploadController($scope,$routeParams,MongoDB) {  
   $scope.limit = 50;
 
   $scope.function_list = MongoDB.query({
     query:'{"type":"function_entry"}'
   });
-  
-  $scope.schemas = MongoDB.query({query:'{"type":"tb_schema"}'});
 
+  $scope.schema = MongoDB.get({id:$routeParams.schema_id});
+  
 
   $scope.test_function = function(func) {
     var f=eval('('+func.code+')');
@@ -665,30 +668,15 @@ function UploadController($scope,MongoDB) {
   
   $scope.save = function() {
     var obj_list = [];
-    angular.forEach($scope.result.csv, function(row,r_idx) {
-      var obj = {};
+    angular.forEach($scope.result.data, function(row,r_idx) {
       if(!row.hide) {
-        angular.forEach($scope.result.col_names, function(col,c_idx) {
-          if(!col.hide) {
-            obj[col.field.name] = row[c_idx].value;
-          }
-        });
-        obj_list.push(obj);
-      }
-    });
-    
-    angular.forEach(obj_list, function(obj, idx) {
-      MongoDB.save({}, obj, function(result) {
-        if(result.success) {
-          self.message("Document Saved");
-          angular.forEach($scope.result.csv, function(row, idx) {
-            if(row._obj == obj) {
-              row._saved = true;
-            }
-          });
+        row['schema'] = $scope.schema._id;
+        MongoDB.save({}, row, function(result) {
+         if(result.success) {
           $scope.document_saved+=1;
-        }
-      });
+         }
+        });
+      }
     });
   }
 };

@@ -27,6 +27,17 @@
 
 <div class="row-fluid">
   <div class="span12">    
+    <div class="row-fluid">
+      <div class="span6">
+       Schema Name:<b>{{schema.name}}</b>
+       <ol>
+         <li ng-repeat="field in schema.fields">
+           Field Name :<strong>{{field.name}}</strong>
+           ({{field.title}})
+         </li>
+       </ol>
+      </div>
+    </div>
     <div class="form-actions" ng-hide="result">    
       <form class="form-inline pull-left"  
          id="file_upload_form" 
@@ -34,9 +45,6 @@
          action="csv/upload" 
          target="upload_target" class="form-horizontal">                      
         <div class="btn-group">
-           <select ng-model="schema" 
-              ng-options="schema.name for schema in schemas" >
-           </select>
           <button class="btn btn-success fileinput-button">
             <i class="icon-plus icon-white"></i>     
             Select File     
@@ -51,7 +59,6 @@
         CP874 Encoding : <input type="checkbox" name="cp874">
       </form>
     </div>
-    <div><span ng-bind="schema.name"></span></div>
     <!--
       <li ng-repeat="schema in schemas"> 
         <a herf="" ng-click="load_schema(schema._id)">
@@ -109,14 +116,12 @@
             <span ng-show="selected_docs.length!=0" 
                   ng-bind="selected_docs.length"></span> Exclude Row
           </a>    
-          <!--
           <a class="btn btn-primary" 
                 ng-class="{'disabled':!result.data||result.data.length==0}"
                 ng-click="save()">
 	    <i class="icon-upload icon-white"></i>
 	    <span>Save Record</span>
           </a>                
-          -->
 
           <span ng-init="document_saved=0" 
                 ng-show="document_saved">
@@ -126,7 +131,7 @@
           
           <a href="" class="btn" ng-click="result = null" >
             Re-upload</a>
-
+         
           <form class="form-inline pull-right" ng-show="result">
             <strong>
               Page {{currentPage+1}}/
@@ -155,7 +160,6 @@
                   <th ng-repeat="column in result.column_names|hide">
                     {{column.name}}
                   </th>
-                  <th>schema type</th>
                 </tr>
               </thead>
               <tbody>
@@ -167,7 +171,6 @@
                   <td ng-repeat="column in result.column_names|hide">
                     <span>{{row[column.name]}}</span>
                   </td>
-                  <td><span ng-bind="schema.name"></span></td>
                 </tr>
               </tbody>
             </table>

@@ -2,18 +2,19 @@
   <div class="span12">
     <div class="form-actions">    
     <span class="pull-left form-inline">      
-          <a class="btn btn-danger" ng-show="selected_docs.length>0"
-                ng-class="{'disabled':!selected_docs||selected_docs.length==0}" 
-                ng-click="del_element()">
-            <i class="icon-trash icon-white"></i>
-            <span ng-show="selected_docs.length!=0" 
-                  ng-bind="selected_docs.length"></span> Delete 
-          </a>        
-          <input class="prepend1" type="text" placeholder="Search" 
-            ng-model="query_str">                         
-          <button class="btn" ng-click="query()"><i class="icon-search"></i> 
-            Search 
-          </button> 
+       <a class="btn btn-danger" ng-show="selected_docs.length>0"
+         ng-class="{'disabled':!selected_docs||selected_docs.length==0}" 
+         ng-click="del_element()">
+         <i class="icon-trash icon-white"></i>
+         <span ng-show="selected_docs.length!=0" 
+           ng-bind="selected_docs.length"></span> Delete 
+       </a>        
+       <input class="prepend1" type="text" placeholder="Search" 
+         ng-model="query_str">                         
+       <button class="btn" ng-click="query()"><i class="icon-search"></i> 
+         Search 
+       </button> 
+       <a href="#/upload/{{schema._id}}" class="btn">Upload</a>
     </span>
     
     <form class="form-inline pull-right" ng-show="schema">
