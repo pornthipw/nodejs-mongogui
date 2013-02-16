@@ -757,6 +757,20 @@ function CsvController($scope,$routeParams,Csv) {
     var query_str = JSON.stringify({raw_id:res._id});
     $scope.document_list = Csv.query({query:query_str});
   });
+   
+  $scope.save = function() {
+    Csv.update({id:$scope.csv._id}, 
+     angular.extend({},$scope.csv,{_id:undefined}),function(res) {
+       if(res.success) {
+         $scope.message = "Saved";
+         setTimeout(function() {      
+           $scope.$apply(function() {
+             $scope.message = null;
+           });
+         }, 3000);
+       };
+    });
+  }
 }
 
 Array.prototype.remove = function(from, to) {

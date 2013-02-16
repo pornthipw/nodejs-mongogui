@@ -23,11 +23,14 @@
               <input type="text" ng-model="csv[attribute.attr].description">
               Possible Value (e.g., M, F)
               <input type="text" ng-list ng-model="csv[attribute.attr].values">
+              <button class="btn btn-success" ng-click="save()">Save</button>
+              {{message}}
             </form>
             </div>
           </div>
 
           <div class="row-fluid">
+           <div class="span12">
            <table class="table table-bordered table-condensed">
             <tr>
              <td>Document</td>
@@ -38,17 +41,44 @@
              <td>{{csv.max_col}}</td>
             </tr>
            </table>
+           </div>
           </div>
         </div>
 
         <div class="span3">
-          <ol>  
-            <li ng-repeat="doc in document_list">
-              {{doc[attribute.attr]}}
+          Page {{currentPage}}
+          <div class="btn-group pull-right">
+            <button class="btn" 
+              ng-click="currentPage=0">First
+            </button>
+            <button class="btn" 
+              ng-disabled="currentPage==0"
+              ng-click="currentPage=currentPage-1">&laquo;
+            </button>
+            <button class="btn"
+              ng-click="currentPage=currentPage+1">&raquo;
+            </button>
+          </div>
+          <br>
+
+          <table class="table table-bordered table-condensed">
+            <tr>
+              <th>{{attribute.attr}}</th>
+            </tr>
+            <tr ng-repeat="doc in document_list|skip:currentPage*15|limitTo:15">
+              <td>{{doc[attribute.attr]}}</td>
+            </tr>
+          </table>
+          </div>
+        <div class="span5">
+          <ol style="unstyled">
+            <li ng-repeat="(key,value) in csv" ng-show="value.name">
+              <strong>{{key}}</strong> - {{value.name}}
+              ({{value.description}})
             </li>
           </ol>
-        </div>
-        <div class="span3">
+  
+          <!--
           <table class="table table-condensed table-bordered">
             <tr ng-repeat="(key,value) in csv" ng-show="value.name">
               <td>{{key}}</td>
@@ -56,6 +86,7 @@
               <td>{{value.description}}</td>
             </tr>
           </table>
+          -->
         </div>
       </div>
     </div>
