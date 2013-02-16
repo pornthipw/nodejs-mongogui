@@ -12,6 +12,7 @@
     "passport" : "*",
     "passport-openid" : "*",
     "generic-pool" : "*",
+    "xml2js" : "*",
     "crc":"*"
   },
   "scripts": {

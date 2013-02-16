@@ -1,10 +1,9 @@
 var app = angular.module('mongo_service', ['ngResource']);
 
 var prefix = '/apps/demo';
-//var prefix = '';
 
-app.factory('MongoDB', function($resource) {
-  var MongoDB = $resource(prefix + '/db/person/:id', {    
+app.factory('Entry', function($resource) {
+  var MongoDB = $resource(prefix + '/db/entry/:id', {    
     id: '@id'
   },
   {update: { method:'PUT' }});
@@ -12,10 +11,18 @@ app.factory('MongoDB', function($resource) {
 });
 
 app.factory('MapReduce', function($resource) {
-  var MapReduce = $resource(prefix + '/mapreduce/person', {    
+  var MapReduce = $resource(prefix + '/mapreduce/entry', {    
   },
   {query: { method:'POST',isArray:false }});
   return MapReduce;
+});
+
+app.factory('Csv', function($resource) {
+  var Csv = $resource(prefix + '/db/csv/:id', {
+    id: '@id'
+  },
+  {update: { method:'PUT' }});
+  return Csv;
 });
 
 app.factory('Admin', function($resource) {

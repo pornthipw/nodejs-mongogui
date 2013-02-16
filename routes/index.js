@@ -7,7 +7,9 @@ var fs = require('fs');
 function csv_parser(req, res, filepath) {
   var content = [];
   try {
+   
    var reader = csv.createCsvFileReader(filepath);
+
    reader.addListener('data', function(data) {
      var list = [];
      for(var col=0;col<data.length;col++) {
@@ -16,15 +18,18 @@ function csv_parser(req, res, filepath) {
      content.push(list);
    });
     
-   reader.addListener('error', function() {
+   reader.addListener('error', function(err) {
+     console.log(err);
      res.send(JSON.stringify({'success':false}));
    });
 
    reader.addListener('end', function() {
      res.send(JSON.stringify({'success':true,'csv':content}));
    });
+
   } catch(err) {
     res.send(JSON.stringify({'success':false}));
+    console.log(err);
   }
 }
 
@@ -41,5 +46,18 @@ exports.uploadFile = function(req, res) {
     } else {
       csv_parser(req, res, req.files.file.path);
     }
+    // XML file
+    /*
+    var parser = new xml2js.Parser();
+
+    console.log(req.files.file.path);
+    parser.addListener('end', function(result) {
+      res.send(JSON.stringify({'success':true,'json':result}));
+    });
+
+    fs.readFile(req.files.file.path, function(err,data) {
+      parser.parseString(data);
+    });
+    */
   }
 }
