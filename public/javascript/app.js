@@ -38,6 +38,11 @@ app.config(function($routeProvider) {
     templateUrl:'static/csv/index.html'
   });
 
+  $routeProvider.when('/csv/view',{
+    controller:CsvViewController, 
+    templateUrl:'static/csv/view.html'
+  });
+
   $routeProvider.when('/csv/upload',{
     controller:CsvUploadController, 
     templateUrl:'static/csv/upload.html'
@@ -84,8 +89,10 @@ app.config(function($routeProvider) {
   });
   
   $routeProvider.when('/', {
-    controller:MainController, 
-    templateUrl:'static/index.html'
+    controller:CsvListController, 
+    templateUrl:'static/csv/index.html'
+    //controller:MainController, 
+    //templateUrl:'static/index.html'
   });
 });
 
@@ -461,12 +468,11 @@ function PluginController($scope, Entry,MapReduce) {
   }
 }
 
-function SchemaManageController($scope, Entry) {
+function SchemaManageController($scope, Entry, Csv) {
   var self = this;
   
   self.message = function(message) {
     $scope.message = message;
-    console.log($scope.message);
     setTimeout(function() {      
       $scope.$apply(function() {
         $scope.message = null;
@@ -474,9 +480,129 @@ function SchemaManageController($scope, Entry) {
     }, 3000);
   };
   
+  $scope.document_linked = function(csv) {
+    var query_str = JSON.stringify({
+      query:{_csv_id:csv._id,_schema_id:$scope.schema._id}
+    });
+    Entry.query({query:query_str}, function(e_res) {
+      $scope.linked_document= e_res.length;
+    });
+  };
+  
+  $scope.unlink_csv = function(csv) {
+    var query_str = JSON.stringify({
+      query:{_csv_id:csv._id,_schema_id:$scope.schema._id}
+    });
+ 
+    Entry.query({query:query_str}, function(e_res) {
+      $scope.linked_document = e_res.length;
+      angular.forEach(e_res, function(entry) {
+        Entry.delete({id:entry._id}, function(d_res) {
+          if(d_res.success) {
+            $scope.linked_document -= 1;
+          }
+        });
+      });
+    });
+  };
+
+  $scope.link_csv = function(csv) {
+    $scope.linked_document = 0;
+    var type_map=[];
+    if(!$scope.schema['csv']) {
+      $scope.schema['csv']=[];
+    }
+    var csv_exists = false;
+    var csv_exists_idx = -1;
+    angular.forEach($scope.schema.csv,function(csv_o,idx) {
+      if(csv_o._id == csv._id) {
+        csv_exists = true; 
+        csv_exists_idx = idx;
+      }
+    });
+    
+    if(csv_exists) {
+      $scope.schema.csv.remove(csv_exists_idx,1);
+    } 
+    $scope.schema.csv.push(csv);
+    Entry.update({id:$scope.schema._id},
+      angular.extend({},$scope.schema,{_id:undefined}));
+    
+    
+    angular.forEach(csv, function(value,key) {
+      if(value.selected) {
+        type_map.push({'from':key,'to':value.map_name});
+      }
+    });
+    Csv.query({query:JSON.stringify({query:{raw_id:csv._id}})},function(res) {
+      angular.forEach(res, function(csv_doc) {
+        query_str = JSON.stringify({
+          query:{_doc_id:csv_doc._id,_schema_id:$scope.schema._id}
+        });
+        Entry.query({query:query_str}, function(e_res) {
+          if(e_res.length == 0) {
+            var tmp_obj = {
+              _schema_id:$scope.schema._id,
+              _csv_id:csv._id, 
+              _doc_id:csv_doc._id
+            };
+            angular.forEach(type_map, function(value) {
+              tmp_obj[value.to] = csv_doc[value.from];
+            });
+            Entry.save({},tmp_obj,function(s_res) {
+              if(s_res.success) {
+                $scope.linked_document += 1;
+              }
+            });
+          } else {
+            if(e_res.length==1) {
+              tmp_obj = e_res[0];
+             
+              angular.forEach(type_map, function(value) {
+                tmp_obj[value.to] = csv_doc[value.from];
+              });
+              Entry.update({id:tmp_obj._id},
+                angular.extend({},tmp_obj,{_id:undefined}),function(s_res) {
+                if(s_res.success) {
+                  $scope.linked_document += 1;
+                }
+              });
+            } else {
+              console.log('Duplicate Reture');
+              console.log(e_res);
+            }
+          }
+        });
+      });
+    });
+  };
+
+  $scope.get_csv_content = function(csv) {
+    Csv.query({query:JSON.stringify({query:{raw_id:csv._id}})},function(res) {
+      console.log(res.length);
+    });
+  };
+  
+  
   $scope.select_schema = function(doc) {
     $scope.schema = doc;
-    $scope.current_action = null;
+    var query_str = JSON.stringify({query:{root:true}});
+    $scope.csv_list = [];
+    Csv.query({query:query_str},function(res) {
+      angular.forEach(res, function(csv) {
+        var csv_exist = false;
+        angular.forEach($scope.schema.csv, function(e_csv) {
+          if(csv._id == e_csv._id) {
+            angular.extend(csv,e_csv);
+            $scope.csv_list.push(csv);
+            csv_exist = true;
+          } 
+        });
+        if(!csv_exist) {
+          $scope.csv_list.push(csv);
+        }
+      });
+    });
   }
 
   $scope.schema_list = Entry.query({  
@@ -492,7 +618,7 @@ function SchemaManageController($scope, Entry) {
     }
     return JSON.stringify(str);
   };
-  // Create Object :[{}]
+
   $scope.init_action = function() {
     if(!$scope.schema.actions) {
       $scope.schema.actions = [];
@@ -577,7 +703,6 @@ function SchemaManageController($scope, Entry) {
       }
     });
   };
-  
 }
 
 function UploadController($scope,$routeParams,Entry) {  
@@ -714,7 +839,7 @@ function CsvUploadController($scope,Csv) {
           $scope.success = true;
           var max_col = 0;
           angular.forEach(data.csv, function(row, idx) {
-            var tmp_obj = {};
+            var tmp_obj = {'_row':idx};
             angular.forEach(row,function(value, i) {
               tmp_obj['col'+i] = value.value;
               if(i>max_col) {
@@ -726,7 +851,10 @@ function CsvUploadController($scope,Csv) {
               $scope.saved_doc+=1;
             });
           });
-          r_obj['max_col'] = max_col;
+          r_obj['attrs'] = [];
+          for(var i=0;i<max_col;i++) {
+            r_obj['attrs'].push({name:'col'+i,hidden:true});
+          }
           Csv.update({id:r_obj._id}, 
            angular.extend({},r_obj,{_id:undefined}));
         }
@@ -745,18 +873,120 @@ function CsvUploadController($scope,Csv) {
   };
 };  
 
-function CsvController($scope,$routeParams,Csv) {  
-  Csv.get({id:$routeParams.id},function(res) {
-    $scope.csv = res;
-    if(res.max_col) {
-      $scope.attributes = [];
-      for(var i=0;i<res.max_col;i++) {
-        $scope.attributes.push({'attr':'col'+i});
+function CsvViewController($scope,Csv,Entry) {  
+  $scope.pageSize = 25;
+  
+  $scope.export_xml_data = function() {
+    var result='<?xml version="1.0"?>';
+    result+='<rows>';
+    var selected_fields = [];
+    angular.forEach($scope.csv.attrs, function(attr) {
+      if(!attr.hidden) {
+        selected_fields.push(attr);
       }
-    }
-    var query_str = JSON.stringify({raw_id:res._id});
-    $scope.document_list = Csv.query({query:query_str});
+    });
+    angular.forEach($scope.document_list,function(doc) {
+      result+='<row id="'+doc._id+'">'
+      angular.forEach(selected_fields,function(attr) {
+        result+='<'+attr.name+'>';
+        result+=doc[attr.name];
+        result+='</'+attr.name+'>';
+      });
+      result+='</row>'
+    });
+    result+='</rows>';
+    var dataUrl = 'data:text/xml;charset=utf-8,'+encodeURI(result); 
+    var link = document.createElement('a');
+    var link_e = angular.element(link);
+    link_e.attr('href',dataUrl);
+    link_e.attr('download','export.xml');
+    link.click();
+  };
+
+  $scope.function_list = Entry.query({
+    query:'{"type":"function_entry"}'
   });
+
+  $scope.test_function = function() {
+    var f=eval('('+$scope.selected_function.code+')');
+    $scope.current_function = new f();
+  };
+
+  var query_str = JSON.stringify({query:{root:true}});
+  $scope.raw_list = Csv.query({query:query_str});
+  
+  $scope.update_doc = function(doc) {
+    Csv.update({id:doc._id},
+      angular.extend({},doc,{_id:undefined}),
+      function(res) {
+        console.log(res);
+    });
+  };
+  
+  $scope.save_docs = function() {
+    $scope.document_saved=0;
+    Csv.update({id:$scope.csv._id},
+      angular.extend({},$scope.csv,{_id:undefined}),
+      function(res) {
+        if(res.success) {
+          angular.forEach($scope.document_list,function(doc) {
+            Csv.update({id:doc._id},
+              angular.extend({},doc,{_id:undefined}),
+                function(s_res) {
+                  if(s_res.success) {
+                    $scope.document_saved+=1;
+                  }
+            });
+          });
+        }
+    });
+  };
+  
+  $scope.get_content = function() {
+    $scope.fields = [];
+    $scope.currentPage = 0;
+    var query_json = {raw_id:$scope.csv._id};
+    angular.forEach($scope.csv, function(value, key) {
+      if(value.name) {
+        $scope.fields.push({'key':key,'value':value});
+      }
+    });
+    $scope.message = "Loading...";
+    $scope.document_list = Csv.query({query:JSON.stringify(query_json)},
+      function(res) {
+      $scope.message = "";
+      $scope.totalPage = Math.ceil(res.length/$scope.pageSize)-1;
+    });
+  }
+};
+
+function CsvController($scope,$location,$routeParams,Csv) {  
+  $scope.csv = Csv.get({id:$routeParams.id},function(res) {
+    var query_str = JSON.stringify({raw_id:res._id});
+    $scope.document_list = Csv.query({query:query_str}, function(res) {
+      $scope.document_size = res.length;
+    });
+  });
+ 
+  $scope.delete_csv = function() {
+    if($scope.document_size == 0) {
+      Csv.remove({id:$scope.csv._id},function(res) {
+        if(res.success) {
+          $location.path('/csv');
+        }
+      });
+    }
+  };
+  
+  $scope.clear_document = function() {
+    angular.forEach($scope.document_list, function(doc) {
+      Csv.remove({id:doc._id},function(res) {
+        if(res.success) {
+          $scope.document_size -= 1;
+        }
+      });
+    });
+  };
    
   $scope.save = function() {
     Csv.update({id:$scope.csv._id}, 

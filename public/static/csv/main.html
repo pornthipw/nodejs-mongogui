@@ -8,7 +8,7 @@
             <div class="span12 well">
             <div class="input-append">
              <select ng-model="attribute"  class="input-small"
-               ng-options="a.attr for a in attributes">
+               ng-options="a.name for a in csv.attrs">
              </select>
              <button class="btn btn-primary" 
               ng-click="csv[attribute.attr]={}"
@@ -16,13 +16,15 @@
                Insert 
              </button>
             </div>
-            <form ng-show="csv[attribute.attr]">
-              Attribute Name
-              <input type="text" ng-model="csv[attribute.attr].name">
+            <form ng-show="attribute">
               Description
-              <input type="text" ng-model="csv[attribute.attr].description">
+              <input type="text" ng-model="attribute.description">
               Possible Value (e.g., M, F)
-              <input type="text" ng-list ng-model="csv[attribute.attr].values">
+              <input type="text" ng-list ng-model="attribute.values">
+              <br>
+              <label class="checkbox">
+                <input type="checkbox" ng-model="attribute.hidden"> Hidden
+              </label>
               <button class="btn btn-success" ng-click="save()">Save</button>
               {{message}}
             </form>
@@ -34,13 +36,21 @@
            <table class="table table-bordered table-condensed">
             <tr>
              <td>Document</td>
-             <td>{{document_list.length}}</td>
+             <td>
+                {{document_size}} 
+                <a href="" ng-click="clear_document()">Clear</a>
+             </td>
             </tr>
             <tr>
              <td>Attribute</td>
-             <td>{{csv.max_col}}</td>
+             <td>{{csv.attrs.length}}</td>
             </tr>
            </table>
+           <button ng-show="document_size==0"
+             ng-click="delete_csv()"
+             class="btn btn-danger">
+             Delete 
+           </button>
            </div>
           </div>
         </div>
@@ -63,18 +73,18 @@
 
           <table class="table table-bordered table-condensed">
             <tr>
-              <th>{{attribute.attr}}</th>
+              <th>{{attribute.name}}</th>
             </tr>
-            <tr ng-repeat="doc in document_list|skip:currentPage*15|limitTo:15">
-              <td>{{doc[attribute.attr]}}</td>
+            <tr ng-repeat="doc in document_list|orderBy:'_row'|skip:currentPage*15|limitTo:15">
+              <td>{{doc[attribute.name]}}</td>
             </tr>
           </table>
           </div>
         <div class="span5">
           <ol style="unstyled">
-            <li ng-repeat="(key,value) in csv" ng-show="value.name">
-              <strong>{{key}}</strong> - {{value.name}}
-              ({{value.description}})
+            <li ng-repeat="attr in csv.attrs" ng-show="!attr.hidden">
+              <strong>{{attr.name}}</strong>
+              ({{attr.description}})
             </li>
           </ol>
   
