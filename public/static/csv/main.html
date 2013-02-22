@@ -6,15 +6,15 @@
         <div class="span4">
           <div class="row-fluid">
             <div class="span12 well">
+             <div class="input-append">
+              <input class="input-medium"
+                type="text" ng-model="csv.name">
+              <button class="btn btn-success" ng-click="save()">Save</button>
+             </div>
             <div class="input-append">
              <select ng-model="attribute"  class="input-small"
                ng-options="a.name for a in csv.attrs">
              </select>
-             <button class="btn btn-primary" 
-              ng-click="csv[attribute.attr]={}"
-              ng-hide="csv[attribute.attr]">
-               Insert 
-             </button>
             </div>
             <form ng-show="attribute">
               Description
@@ -87,6 +87,7 @@
               ({{attr.description}})
             </li>
           </ol>
+          <a href="#/csv/view/{{csv._id}}">Edit</a>
   
           <!--
           <table class="table table-condensed table-bordered">

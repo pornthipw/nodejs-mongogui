@@ -3,6 +3,23 @@ var app = angular.module('mongogui', [
   'dynamicTemplate',
   'codemirror']);
 
+app.filter('toXML', function() {
+  return function(result,type) {
+    var str = '<?xml version="1.0"?>';
+    str+='<rows>';
+    
+    angular.forEach(result, function(row) {
+      str+='<'+type+' id="'+row._id+'">';
+      angular.forEach(row.value, function(value,key) {
+        str+='<'+key+'>'+value;
+        str+='</'+key+'>'
+      });
+      str+='</'+type+'>';
+    });
+    str+='</rows>';
+    return vkbeautify.xml(str,'  ');
+  };
+});
 
 app.run(function($rootScope,$location) {
   $rootScope.location = $location;
@@ -38,7 +55,7 @@ app.config(function($routeProvider) {
     templateUrl:'static/csv/index.html'
   });
 
-  $routeProvider.when('/csv/view',{
+  $routeProvider.when('/csv/view/:id',{
     controller:CsvViewController, 
     templateUrl:'static/csv/view.html'
   });
@@ -89,10 +106,10 @@ app.config(function($routeProvider) {
   });
   
   $routeProvider.when('/', {
-    controller:CsvListController, 
-    templateUrl:'static/csv/index.html'
-    //controller:MainController, 
-    //templateUrl:'static/index.html'
+   // controller:CsvListController, 
+   // templateUrl:'static/csv/index.html'
+    controller:MainController, 
+    templateUrl:'static/index.html'
   });
 });
 
@@ -460,7 +477,6 @@ function PluginController($scope, Entry,MapReduce) {
         $scope.show_action = true;
         $scope.plugin_template = plugin.template;
       } else {
-        console.log(res);
         self.message(res.message);
       }
        
@@ -828,10 +844,12 @@ function CsvListController($scope,Csv) {
 
 function CsvUploadController($scope,Csv) {  
   $scope.saved_doc = 0;
+  $scope.failed_doc = 0;
   $('iframe#upload_target').load(function() {
     var contents = $('iframe#upload_target').contents();
     var data = $.parseJSON(contents.find("body")[0].innerHTML);
     if(data.success) {
+      $scope.total_docs = data.csv.length;
       var r_obj = {'root':true,'name':$scope.theFile.name};
       Csv.save({},r_obj,function(res) {
         if(res.success) {
@@ -848,7 +866,11 @@ function CsvUploadController($scope,Csv) {
             });
             tmp_obj['raw_id'] = res._id;
             Csv.save({},tmp_obj,function(r_doc) {
-              $scope.saved_doc+=1;
+              if(r_doc.success) {
+                $scope.saved_doc+=1;
+              } else {
+                $scope.failed_doc+=1;
+              }
             });
           });
           r_obj['attrs'] = [];
@@ -873,9 +895,27 @@ function CsvUploadController($scope,Csv) {
   };
 };  
 
-function CsvViewController($scope,Csv,Entry) {  
+function CsvViewController($scope,$routeParams,Csv,Entry) {  
   $scope.pageSize = 25;
+
+  $scope.csv = Csv.get({id:$routeParams.id},function(res) {
+    $scope.fields = [];
+    $scope.currentPage = 0;
+    var query_json = {raw_id:res._id};
+    angular.forEach(res, function(value, key) {
+      if(value.name) {
+        $scope.fields.push({'key':key,'value':value});
+      }
+    });
+    $scope.message = "Loading...";
+    $scope.document_list = Csv.query({query:JSON.stringify(query_json)},
+      function(r_res) {
+      $scope.message = "";
+      $scope.totalPage = Math.ceil(r_res.length/$scope.pageSize)-1;
+    });
+  });
   
+  /*
   $scope.export_xml_data = function() {
     var result='<?xml version="1.0"?>';
     result+='<rows>';
@@ -902,6 +942,7 @@ function CsvViewController($scope,Csv,Entry) {
     link_e.attr('download','export.xml');
     link.click();
   };
+  */
 
   $scope.function_list = Entry.query({
     query:'{"type":"function_entry"}'
@@ -941,23 +982,6 @@ function CsvViewController($scope,Csv,Entry) {
         }
     });
   };
-  
-  $scope.get_content = function() {
-    $scope.fields = [];
-    $scope.currentPage = 0;
-    var query_json = {raw_id:$scope.csv._id};
-    angular.forEach($scope.csv, function(value, key) {
-      if(value.name) {
-        $scope.fields.push({'key':key,'value':value});
-      }
-    });
-    $scope.message = "Loading...";
-    $scope.document_list = Csv.query({query:JSON.stringify(query_json)},
-      function(res) {
-      $scope.message = "";
-      $scope.totalPage = Math.ceil(res.length/$scope.pageSize)-1;
-    });
-  }
 };
 
 function CsvController($scope,$location,$routeParams,Csv) {  

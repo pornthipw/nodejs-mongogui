@@ -56,9 +56,13 @@
       </span>
       <span ng-switch on="success">
        <span ng-switch-when="true">
-        <span class="badge badge-success">
-         {{saved_doc}}
-        </span> document saved.
+        <span class="label label-success" ng-show="total_docs>0">
+         {{saved_doc}}/{{total_docs}} document saved.
+        </span> 
+        <br>
+        <span class="label label-important" ng-show="failed_doc > 0">
+         {{failed_doc}} error while saving document.
+        </span>
        </span>          
        <span ng-switch-when="false">
         <i class="icon-info-sign"></i>

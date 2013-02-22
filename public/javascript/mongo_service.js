@@ -11,7 +11,7 @@ app.factory('Entry', function($resource) {
 });
 
 app.factory('MapReduce', function($resource) {
-  var MapReduce = $resource(prefix + '/mapreduce/entry', {    
+  var MapReduce = $resource(prefix + '/mapreduce/csv', {    
   },
   {query: { method:'POST',isArray:false }});
   return MapReduce;
