@@ -11,6 +11,13 @@
                 type="text" ng-model="csv.name">
               <button class="btn btn-success" ng-click="save()">Save</button>
              </div>
+
+             <div class="input-append">
+              <input class="input-medium"
+                type="text" ng-model="new_a">
+              <button class="btn btn-primary" ng-click="csv.attrs.push({'name':new_a})">Insert</button>
+             </div>
+
             <div class="input-append">
              <select ng-model="attribute"  class="input-small"
                ng-options="a.name for a in csv.attrs">
@@ -46,6 +53,7 @@
              <td>{{csv.attrs.length}}</td>
             </tr>
            </table>
+          
            <button ng-show="document_size==0"
              ng-click="delete_csv()"
              class="btn btn-danger">
@@ -85,6 +93,7 @@
             <li ng-repeat="attr in csv.attrs" ng-show="!attr.hidden">
               <strong>{{attr.name}}</strong>
               ({{attr.description}})
+              <a href="" ng-click="attr.hidden=true">hide</a>
             </li>
           </ol>
           <a href="#/csv/view/{{csv._id}}">Edit</a>

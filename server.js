@@ -8,6 +8,9 @@ var routes = require('./routes');
 var config = require('./config');
 var utils = require('./utils');
 
+var mssqldb = require('./mssql_db');
+var mssql = new mssqldb.azure_connect(config.azure_connect);
+
 var app = express();
 
 var OpenIDStrategy = require('passport-openid').Strategy;
@@ -91,6 +94,8 @@ app.get('/', function(req, res) {
 app.get('/admin/users', userprofile.list_user);
 app.get('/admin/users/:id', userprofile.get_user);
 app.put('/admin/users/:id', userprofile.update_user);
+
+app.get('/query/:table',mssql.query);
 
 app.get('/db/:collection/:id?', mongo.query);
 app.post('/db/:collection', mongo.insert);

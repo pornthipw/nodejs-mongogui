@@ -13,7 +13,8 @@
     "passport-openid" : "*",
     "generic-pool" : "*",
     "xml2js" : "*",
-    "crc":"*"
+    "crc":"*",
+    "tedious":"*"
   },
   "scripts": {
     "start":"server.js"

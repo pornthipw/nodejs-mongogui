@@ -874,7 +874,7 @@ function CsvUploadController($scope,Csv) {
             });
           });
           r_obj['attrs'] = [];
-          for(var i=0;i<max_col;i++) {
+          for(var i=0;i<=max_col;i++) {
             r_obj['attrs'].push({name:'col'+i,hidden:true});
           }
           Csv.update({id:r_obj._id}, 
@@ -965,6 +965,7 @@ function CsvViewController($scope,$routeParams,Csv,Entry) {
   };
   
   $scope.save_docs = function() {
+    var doc_saved = 0;
     $scope.document_saved=0;
     Csv.update({id:$scope.csv._id},
       angular.extend({},$scope.csv,{_id:undefined}),
@@ -975,7 +976,15 @@ function CsvViewController($scope,$routeParams,Csv,Entry) {
               angular.extend({},doc,{_id:undefined}),
                 function(s_res) {
                   if(s_res.success) {
-                    $scope.document_saved+=1;
+                    doc_saved++;
+                    if(doc_saved==$scope.document_list.length) {
+                      $scope.document_saved=doc_saved;
+                    } else {
+                      if(doc_saved % 50 == 0) {
+                        $scope.document_saved=doc_saved;
+                        console.log(doc_saved);
+                      }
+                    }
                   }
             });
           });
