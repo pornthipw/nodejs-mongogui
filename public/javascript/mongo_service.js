@@ -10,6 +10,14 @@ app.factory('Entry', function($resource) {
   return MongoDB;
 });
 
+app.factory('SQL', function($resource) {
+  var SQL = $resource(prefix + '/query/:table', {    
+    table: '@table'
+  },
+  {update: { method:'PUT' }});
+  return SQL;
+});
+
 app.factory('MapReduce', function($resource) {
   var MapReduce = $resource(prefix + '/mapreduce/csv', {    
   },

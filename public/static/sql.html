@@ -1,0 +1,44 @@
+<div class="row-fluid">
+ <div class="span12">
+  
+  <h4>Database Content Manager</h4>
+  <div class="row-fluid">
+   <div class="span2">
+    <ul class="nav nav-list well">
+     <li><a href="#/sql/person">Person</a></li>
+     <li><a href="#/sql/province">Province</a></li>
+    </ul>
+   </div>
+
+   <div class="span10">
+    <div class="row-fluid" ng-hide="entry">
+     <table class="table table-bordered table-condensed">
+      <tr>
+       <th></th>
+       <th ng-repeat="name in table.list">
+        {{name}}
+       </th>
+      </tr>
+      <tr ng-repeat="row in result">
+       <td> 
+         <a href="" ng-click="get(row.pk)">PKey</a>
+       </td>
+       <td ng-repeat="col in row.content">
+         {{col.value}}
+       </td>
+      </tr>
+     </table>
+    </div>
+    <div class="row-fluid" ng-show="entry">
+      <button class="btn" ng-click="entry=null">Back</button>
+      <ol>
+        <li ng-repeat="col in entry.cols">
+          <b>{{col.metadata.colName}}</b>
+          : {{col.value}}
+        </li>
+      </ol>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>

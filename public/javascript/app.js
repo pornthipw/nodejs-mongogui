@@ -49,7 +49,6 @@ app.filter('hide', function() {
 });
 
 app.config(function($routeProvider) {
-
   $routeProvider.when('/csv',{
     controller:CsvListController, 
     templateUrl:'static/csv/index.html'

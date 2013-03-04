@@ -19,6 +19,7 @@ var AzureConnect = function(config) {
     }
   });
   
+  /*
   this.query = function(req,res) {
     pool.acquire(function(err,con) {
       if(err) {
@@ -37,11 +38,39 @@ var AzureConnect = function(config) {
           }
           //console.log(rows.length+' returned');
           pool.release(con);
-          res.json({'success':true,'rows':rows});
-          
+          res.json(rows);
         });
         request.on('row', function(cols) {
-          rows.push(cols);
+          rows.push({'cols':cols});
+        });
+
+        con.execSql(request);
+      }
+    });
+  };
+  */
+  
+  this.query = function(req,res) {
+    pool.acquire(function(err,con) {
+      if(err) {
+        pool.release(con);
+        res.json({'success':false,'error':err});
+      } else {
+        var qstr = req.query.query;
+        var rows = [];
+        var request = new tedious.Request(qstr, function(err,rc) {
+          if(err) {
+            console.log(err);
+            res.json({'success':false,'error':err});
+          } else {
+            console.log(rc+' rows');
+          }
+          //console.log(rows.length+' returned');
+          pool.release(con);
+          res.json(rows);
+        });
+        request.on('row', function(cols) {
+          rows.push({'cols':cols});
         });
 
         con.execSql(request);
