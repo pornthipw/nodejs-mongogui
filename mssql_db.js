@@ -1,8 +1,12 @@
 var tedious = require('tedious');
 var generic_pool = require('generic-pool');
 
-
 var AzureConnect = function(config) {
+  
+  var type_map = {
+    'VarChar':tedious.TYPES.NVarChar,
+  };
+
   var pool = generic_pool.Pool({
     name:'mssqldb',
     max:1,
@@ -56,24 +60,38 @@ var AzureConnect = function(config) {
         pool.release(con);
         res.json({'success':false,'error':err});
       } else {
-        var qstr = req.query.query;
-        var rows = [];
-        var request = new tedious.Request(qstr, function(err,rc) {
-          if(err) {
-            console.log(err);
-            res.json({'success':false,'error':err});
-          } else {
-            console.log(rc+' rows');
-          }
+        try {
+          var qobj = JSON.parse(req.query.query);
+          console.log(qobj);
+          var rows = [];
+          var request = new tedious.Request(qobj.sql, function(err,rc) {
+            if(err) {
+              pool.release(con);
+              console.log(err);
+              res.json({'success':false,'error':err});
+            } else {
+              console.log(rc+' rows');
+            }
           //console.log(rows.length+' returned');
-          pool.release(con);
-          res.json(rows);
-        });
-        request.on('row', function(cols) {
-          rows.push({'cols':cols});
-        });
+            pool.release(con);
+            res.json(rows);
+          });
 
-        con.execSql(request);
+          if(qobj.params) {
+            qobj.params.forEach(function(param) {
+              console.log(param);
+              request.addParameter(param.name,type_map[param.type],param.value);
+            });
+          }
+
+          request.on('row', function(cols) {
+            rows.push({'cols':cols});
+          });
+          con.execSql(request);
+        } catch(err) {
+          pool.release(con);
+          res.json({'success':false,'error':err});
+        }
       }
     });
   };

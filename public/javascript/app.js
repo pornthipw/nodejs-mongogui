@@ -972,7 +972,7 @@ function CsvViewController($scope,$routeParams,Csv,Entry) {
         if(res.success) {
           angular.forEach($scope.document_list,function(doc) {
             Csv.update({id:doc._id},
-              angular.extend({},doc,{_id:undefined}),
+              angular.extend({},doc,{_id:undefined},{_sync_table:undefined}),
                 function(s_res) {
                   if(s_res.success) {
                     doc_saved++;
