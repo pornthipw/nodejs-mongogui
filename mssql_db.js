@@ -71,10 +71,14 @@ var AzureConnect = function(config) {
               res.json({'success':false,'error':err});
             } else {
               console.log(rc+' rows');
+              pool.release(con);
+              if(rows.length==0) {
+                res.json({'success':true});
+              } else {
+                res.json(rows);
+              }
             }
           //console.log(rows.length+' returned');
-            pool.release(con);
-            res.json(rows);
           });
 
           if(qobj.params) {

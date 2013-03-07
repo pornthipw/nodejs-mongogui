@@ -914,35 +914,6 @@ function CsvViewController($scope,$routeParams,Csv,Entry) {
     });
   });
   
-  /*
-  $scope.export_xml_data = function() {
-    var result='<?xml version="1.0"?>';
-    result+='<rows>';
-    var selected_fields = [];
-    angular.forEach($scope.csv.attrs, function(attr) {
-      if(!attr.hidden) {
-        selected_fields.push(attr);
-      }
-    });
-    angular.forEach($scope.document_list,function(doc) {
-      result+='<row id="'+doc._id+'">'
-      angular.forEach(selected_fields,function(attr) {
-        result+='<'+attr.name+'>';
-        result+=doc[attr.name];
-        result+='</'+attr.name+'>';
-      });
-      result+='</row>'
-    });
-    result+='</rows>';
-    var dataUrl = 'data:text/xml;charset=utf-8,'+encodeURI(result); 
-    var link = document.createElement('a');
-    var link_e = angular.element(link);
-    link_e.attr('href',dataUrl);
-    link_e.attr('download','export.xml');
-    link.click();
-  };
-  */
-
   $scope.function_list = Entry.query({
     query:'{"type":"function_entry"}'
   });
@@ -962,6 +933,26 @@ function CsvViewController($scope,$routeParams,Csv,Entry) {
         console.log(res);
     });
   };
+
+  
+  var save_doc_list = function(doc_list) {
+    for(var idx=0;idx<doc_list.length;idx++) {
+      if(!doc_list[idx]['_saved']) {
+        var doc = doc_list[idx];
+        Csv.update({id:doc._id},
+          angular.extend({},
+            doc,{
+              _id:undefined,
+              _sync_table:undefined}),
+          function(res) {
+            doc_list[idx]['_saved'] = true;
+            save_doc_list(doc_list);
+            $scope.document_saved+=1;
+        });
+        break;
+      }
+    }
+  };
   
   $scope.save_docs = function() {
     var doc_saved = 0;
@@ -970,6 +961,8 @@ function CsvViewController($scope,$routeParams,Csv,Entry) {
       angular.extend({},$scope.csv,{_id:undefined}),
       function(res) {
         if(res.success) {
+          save_doc_list($scope.document_list);
+          /*
           angular.forEach($scope.document_list,function(doc) {
             Csv.update({id:doc._id},
               angular.extend({},doc,{_id:undefined},{_sync_table:undefined}),
@@ -987,6 +980,7 @@ function CsvViewController($scope,$routeParams,Csv,Entry) {
                   }
             });
           });
+          */
         }
     });
   };

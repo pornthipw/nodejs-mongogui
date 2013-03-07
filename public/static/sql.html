@@ -13,37 +13,21 @@
 
    <div class="span10">
 
-    <div class="row-fluid" ng-hide="entry" ng-init="limit=10">
-     <a href="" ng-click="sqlPage=sqlPage-1">Previous</a>
-     <a href="" ng-click="sqlPage=sqlPage+1">Next</a>
-     {{result.length}}
-     <table class="table table-bordered table-condensed">
-      <tr>
-       <th ng-repeat="name in table.list">
-        {{name}}
-       </th>
-      </tr>
-      <tr ng-repeat="row in result|skip:sqlPage*limit|limitTo:limit">
-       <td ng-repeat="col in row.content">
-         {{col.value}}
-       </td>
-      </tr>
-     </table>
-    </div>
-
-    <div class="row-fluid" ng-show="entry">
-      <button class="btn" ng-click="entry=null">Back</button>
-      <ol>
-        <li ng-repeat="col in entry.cols">
-          <b>{{col.metadata.colName}}</b>
-          : {{col.value}}
-        </li>
-      </ol>
-    </div>
-   
-    <div class="row-fluid">
-     <a href="" ng-click="sync_all()">Synchronize</a>
-     {{synced_count}}/{{csv_list.length}}
+    <div class="row-fluid" ng-hide="entry">
+     <button class="btn btn-success" ng-click="all_select()">Refresh</button>
+     <span ng-bind="select_all_message"></span>
+     Page {{sqlPage}}/{{sqlTotalPage}} 
+     (<strong>{{result.length}}</strong> Records)
+     <div class="btn-group pull-right" ng-init="sqlPage=1">
+      <button class="btn" ng-disabled="sqlPage==1"
+        ng-click="sqlPage=sqlPage-1">
+        Previous
+      </button>
+      <button class="btn" ng-disabled="sqlPage==sqlTotalPage"
+        ng-click="sqlPage=sqlPage+1">
+        Next 
+      </button>
+     </div>
      <table class="table table-bordered table-condensed">
       <tr>
        <th></th>
@@ -51,7 +35,40 @@
         {{name}}
        </th>
       </tr>
-      <tr ng-repeat="csv in csv_list|limitTo:50">
+      <tr ng-repeat="row in result|skip:(sqlPage-1)*sqlLimit|limitTo:sqlLimit">
+       <td>
+        <a href="" ng-click="delete_sql(row.content)">Delete</a>
+       </td>
+       <td ng-repeat="col in row.content">
+         {{col.value}}
+       </td>
+      </tr>
+     </table>
+    </div>
+
+    <div class="row-fluid">
+     <a href="" ng-click="sync_all()">Synchronize</a>
+     ({{synced_count}}/{{csv_list.length}})
+     
+     Page {{csvPage}}/{{csvTotalPage}} 
+     <div class="btn-group pull-right" ng-init="csvPage=1">
+      <button class="btn" ng-disabled="csvPage==1"
+        ng-click="csvPage=csvPage-1">
+        Previous
+      </button>
+      <button class="btn" ng-disabled="csvPage==csvTotalPage"
+        ng-click="csvPage=csvPage+1">
+        Next 
+      </button>
+     </div>
+     <table class="table table-bordered table-condensed">
+      <tr>
+       <th></th>
+       <th ng-repeat="name in table.list">
+        {{name}}
+       </th>
+      </tr>
+      <tr ng-repeat="csv in csv_list|skip:(csvPage-1)*sqlLimit|limitTo:sqlLimit">
        <td>
         <a href="" ng-click="sync(csv)" 
            ng-hide="csv._sync_table[table.name]">Sync</a>

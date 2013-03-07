@@ -40,29 +40,28 @@ function SQL_MainController($scope) {
 
 function SQLController($scope,$routeParams,SQL,Csv) {
   $scope.synced_count=0;
+  $scope.sqlLimit = 10;
 
   var select_all = function() {
+    $scope.select_all_message = "Loading ....";
     var query_str = {
       sql:'select * from '+$routeParams.table
     };
     SQL.query({'query':JSON.stringify(query_str)},function(res){
       $scope.sample = res[0];
+      $scope.sqlTotalPage = Math.ceil(res.length/$scope.sqlLimit);
       var result = [];
       angular.forEach(res, function(row) {
         var obj = [];
         var pk = [];
         angular.forEach(row.cols, function(col) {
           if($scope.table.list.indexOf(col.metadata.colName)!=-1) { 
-            $scope.table.pk.forEach(function(key) {
-              if(key.name.indexOf(col.metadata.colName)!=-1) {
-                pk.push(col);
-              }
-            });
             obj.push(col);
           }
         });
-        result.push({'content':obj,'pk':pk});
+        result.push({'content':obj});
       });
+      $scope.select_all_message = "";
       $scope.result = result;
     });
   };
@@ -85,6 +84,7 @@ function SQLController($scope,$routeParams,SQL,Csv) {
       and_list.push(JSON.parse(sync_query));
       var qstr = {$and:and_list};
       Csv.query({query:JSON.stringify(qstr)},function(res) {
+        $scope.csvTotalPage = Math.ceil(res.length/$scope.sqlLimit);
         $scope.csv_list = res;
       });
       select_all();
@@ -107,6 +107,7 @@ function SQLController($scope,$routeParams,SQL,Csv) {
     });
     SQL.query({'query':JSON.stringify({
       'sql':sql_str,'params':params})},function(res){
+      console.log(res);
       if(res.length==0) {
         callback(false,null);
       } else {
@@ -115,17 +116,18 @@ function SQLController($scope,$routeParams,SQL,Csv) {
     });
   };
   
-  $scope.check = function(csv) {
+  var check = function(csv,callback) {
     entry_exists(csv, function(exists,res) {
       if(exists) {
         var synched=true;
         angular.forEach(res.cols, function(col) {
           if(csv[$routeParams.table+'_'+col.metadata.colName]) {
             if(csv[$routeParams.table+'_'+col.metadata.colName] != col.value) {
-              var synched=false;
+              synched=false;
             }
           }
         });
+        console.log(synched);
         if(synched) {
           if(!csv['_sync_table']) {
             csv['_sync_table'] = {};
@@ -137,49 +139,78 @@ function SQLController($scope,$routeParams,SQL,Csv) {
               function(c_res) {
               if(c_res.success) {
                 $scope.synced_count+=1;
+                if(callback) callback(synched,csv);
               }
             });
           }
+        } else {
+          if(callback) callback(synched,csv);
         }
+      } else {
+        if(callback) callback(false,null);
       }
     });
   };
   
   $scope.sync_all = function() {
-    angular.forEach($scope.csv_list, function(csv) {
-      $scope.sync(csv);
+    for(var idx=0;idx<$scope.csv_list.length;idx++) {
+      var c_csv = $scope.csv_list[idx];
+      if(!c_csv['_sync_skip'] && (!c_csv['_sync_table'] ||  
+        !c_csv['_sync_table'][$routeParams.table])) {
+        console.log('Check idx = '+idx);
+        $scope.sync(c_csv,function(success) {
+          if(success) {
+            console.log('Synched .. '+c_csv._id);
+          } else {
+            console.log('Skiped .. '+c_csv._id);
+            c_csv['_sync_skip'] = true;
+          }
+          $scope.sync_all();
+        });
+        break;
+      }
+    }
+  };
+  
+  $scope.sync = function(csv,cb) {
+    check(csv,function(synched, r_csv) {
+      console.log(synched);
+      if(!synched) {
+        if(!r_csv) {
+         // insert
+         console.log('insert');
+         $scope.insert(csv,function(c) {
+           if(c) {
+             $scope.update(csv,function(u) {
+               console.log('check');
+               check(csv,function(rc) {
+                 console.log('cb');
+                 if(cb) cb(true);
+               });
+             });
+           } else {
+             if(cb) cb(false);
+           }
+         });
+        } else {
+         console.log('update');
+         $scope.update(csv,function(u) {
+           check(csv,function(rc) {
+             if(cb) cb(true);
+           });
+         });
+        }
+      } else {
+        if(cb) cb(true);
+      }
     });
   };
   
-  $scope.sync = function(csv) {
-    if(csv['_sync_table']) {
-      $scope.check(csv);
-      if(!csv['_sync_table'][$routeParams.table]) {
-        entry_exists(csv, function(exists) {
-          if(!exists) {
-            $scope.insert(csv,function(c) {
-              $scope.update(csv);
-            });
-          } else {
-            $scope.update(csv);
-          }
-        });
-      }
-    } else {
-      entry_exists(csv, function(exists) {
-        if(!exists) {
-          $scope.insert(csv,function(c) {
-            $scope.update(csv);
-          });
-        } else {
-          console.log('Update CSV');
-          $scope.update(csv);
-        }
-      });
-    }
-  };
+  $scope.all_select = function() {
+    select_all();
+  }
 
-  $scope.update = function(csv) {
+  $scope.update = function(csv,callback) {
     var query = "UPDATE "+$routeParams.table+" SET ";
     var params = [];
     var set_key = [];
@@ -206,29 +237,60 @@ function SQLController($scope,$routeParams,SQL,Csv) {
       }
     });
 
-    angular.forEach(set_key, function(str, idx) {
-      query+=' '+str;
-      if(idx!=set_key.length-1) {
-        query+=',';
-      }
-    });
-    query+=' WHERE ';
+    if(set_key.length==0) {
+      callback(csv);
+    } else {
+      angular.forEach(set_key, function(str, idx) {
+        query+=' '+str;
+        if(idx!=set_key.length-1) {
+          query+=',';
+        }
+      });
+      query+=' WHERE ';
 
-    angular.forEach(p_key, function(str, idx) {
-      query+=' '+str;
-      if(idx!=p_key.length-1) {
-        query+=',';
-      }
-    });
-    query+=';';
+      angular.forEach(p_key, function(str, idx) {
+        query+=' '+str;
+        if(idx!=p_key.length-1) {
+          query+=',';
+        }
+      });
+      query+=';';
     
-    console.log(query);
-
-    SQL.query({'query':JSON.stringify({
-      'sql':query,'params':params})},function(res){
-       $scope.check(csv);
-    });
+      SQL.get({'query':JSON.stringify({
+        'sql':query,'params':params})},function(res){
+        console.log('Update Response ');
+        console.log(res);
+        if(res.success) {
+          callback(csv);
+        }
+      });
+    }
   };
+  
+  $scope.delete_sql = function(sql) {
+    var query = "DELETE FROM "+$routeParams.table+" WHERE ";
+    var params = [];
+    angular.forEach($scope.table.pk,function(key,idx) {
+      query+= key.name+'=@'+key.name;
+      if(idx<$scope.table.pk.length-1) {
+        query+=', ';
+      }
+      angular.forEach(sql, function(col) {
+        if(col.metadata.colName == key.name) {
+          params.push({
+            'name':key.name,
+            'type':key.type,
+            'value':col.value
+          });
+        }
+      });
+    });
+    query+=";";
+    SQL.get({'query':JSON.stringify({
+      'sql':query,'params':params})},function(res){
+      console.log(res);
+    });
+  }
 
   $scope.insert = function(csv,callback) {
     var query = "INSERT INTO "+$routeParams.table+" (";
@@ -253,27 +315,19 @@ function SQLController($scope,$routeParams,SQL,Csv) {
       }
     });
     query+=")";
-    SQL.query({'query':JSON.stringify({
+    SQL.get({'query':JSON.stringify({
       'sql':query,'params':params})},function(res){
+      console.log(res);
+      if(res) {
+        console.log(res);
+        if(!res.success) {
+          callback(null);
+        }
+      } 
       if(res.length==0) {
-        select_all();
+        console.log('2');
         callback(csv);
       }
     });
   };
-  
-  $scope.get = function(pk) {
-    var query = "select * from "+$routeParams.table+" WHERE ";
-    angular.forEach(pk,function(p,key) {
-      query+=p.metadata.colName+' = "'+p.value+'" ';
-      if(key<pk.length-1) {
-        query+=' AND ';
-      }
-    });
-    SQL.query({'query':query},function(res){
-      $scope.entry = res[0];
-      console.log($scope.entry);
-    });
-  };
-  
 };
