@@ -31,6 +31,11 @@ var sql_entry = [
    'list': ['CityID','CityDescription','ProvinceID'],
    'pk':['CityID']
   },
+  {
+   'name':'Title',
+   'list': ['TitleID','TitleDescription'],
+   'pk':['TitleID']
+  },
 ];
 
 function SQL_MainController($scope) {
@@ -41,6 +46,11 @@ function SQL_MainController($scope) {
 function SQLController($scope,$routeParams,SQL,Csv) {
   $scope.synced_count=0;
   $scope.sqlLimit = 10;
+  
+  $scope.select_entry = function(sql) {
+    $scope.sql_entry = sql;
+    console.log(sql);
+  };
 
   var select_all = function() {
     $scope.select_all_message = "Loading ....";
@@ -59,7 +69,7 @@ function SQLController($scope,$routeParams,SQL,Csv) {
             obj.push(col);
           }
         });
-        result.push({'content':obj});
+        result.push({'content':obj,'obj':row});
       });
       $scope.select_all_message = "";
       $scope.result = result;
@@ -123,6 +133,9 @@ function SQLController($scope,$routeParams,SQL,Csv) {
         angular.forEach(res.cols, function(col) {
           if(csv[$routeParams.table+'_'+col.metadata.colName]) {
             if(csv[$routeParams.table+'_'+col.metadata.colName] != col.value) {
+              csv['_sync_error'] = col.metadata.colName + ' ('+
+               csv[$routeParams.table+'_'+col.metadata.colName]+':'+
+               col.value;
               synched=false;
             }
           }
@@ -174,18 +187,15 @@ function SQLController($scope,$routeParams,SQL,Csv) {
   
   $scope.sync = function(csv,cb) {
     check(csv,function(synched, r_csv) {
-      console.log(synched);
+      console.log('Synched '+synched);
       if(!synched) {
         if(!r_csv) {
          // insert
-         console.log('insert');
          $scope.insert(csv,function(c) {
            if(c) {
              $scope.update(csv,function(u) {
-               console.log('check');
                check(csv,function(rc) {
-                 console.log('cb');
-                 if(cb) cb(true);
+                 if(cb) cb(rc);
                });
              });
            } else {
@@ -193,10 +203,9 @@ function SQLController($scope,$routeParams,SQL,Csv) {
            }
          });
         } else {
-         console.log('update');
          $scope.update(csv,function(u) {
            check(csv,function(rc) {
-             if(cb) cb(true);
+             if(cb) cb(rc);
            });
          });
         }

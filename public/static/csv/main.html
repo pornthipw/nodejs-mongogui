@@ -4,6 +4,7 @@
     <div class="span12" ng-init="index=0">
       <div class="row-fluid">
         <div class="span4">
+          {{type}}
           <div class="row-fluid">
             <div class="span12 well">
              <div class="input-append">
@@ -23,6 +24,14 @@
                ng-options="a.name for a in csv.attrs">
              </select>
             </div>
+
+            <div class="input-append">
+             <select ng-model="type"  class="input-medium" 
+               ng-change="test()"
+               ng-options="a.name for a in mapping_schema">
+             </select>
+            </div>
+
             <form ng-show="attribute">
               Description
               <input type="text" ng-model="attribute.description">

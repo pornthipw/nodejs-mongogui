@@ -6,6 +6,7 @@
    <div class="span2">
     <ul class="nav nav-list well">
      <li><a href="#/sql/Person">Person</a></li>
+     <li><a href="#/sql/Title">Title</a></li>
      <li><a href="#/sql/Province">Province</a></li>
      <li><a href="#/sql/City">City</a></li>
     </ul>
@@ -28,6 +29,19 @@
         Next 
       </button>
      </div>
+     <br>
+     Fields (
+     <span ng-repeat="col in sample.cols">
+       <small>
+        {{col.metadata.colName}}
+        <span ng-repeat="sql in sql_entry.cols"
+          ng-show="sql.metadata.colName==col.metadata.colName">
+          <b>{{sql.value}}</b>
+        </span>
+        <span ng-hide="$last">,</span>
+       </small>
+     </span>
+     )
      <table class="table table-bordered table-condensed">
       <tr>
        <th></th>
@@ -37,7 +51,8 @@
       </tr>
       <tr ng-repeat="row in result|skip:(sqlPage-1)*sqlLimit|limitTo:sqlLimit">
        <td>
-        <a href="" ng-click="delete_sql(row.content)">Delete</a>
+        <a href="" ng-click="delete_sql(row.content)">Delete</a>|
+        <a href="" ng-click="select_entry(row.obj)">Info</a>
        </td>
        <td ng-repeat="col in row.content">
          {{col.value}}
@@ -48,6 +63,7 @@
 
     <div class="row-fluid">
      <a href="" ng-click="sync_all()">Synchronize</a>
+     <span ng-bind="sync_all_message"></span>
      ({{synced_count}}/{{csv_list.length}})
      
      Page {{csvPage}}/{{csvTotalPage}} 
@@ -68,10 +84,13 @@
         {{name}}
        </th>
       </tr>
-      <tr ng-repeat="csv in csv_list|skip:(csvPage-1)*sqlLimit|limitTo:sqlLimit">
+      <tr ng-repeat="csv in csv_list|skip:(csvPage-1)*sqlLimit|limitTo:sqlLimit"
+        ng-class="{'warning':csv._sync_skip}">
+       
        <td>
-        <a href="" ng-click="sync(csv)" 
-           ng-hide="csv._sync_table[table.name]">Sync</a>
+        <a href="" ng-click="sync(csv)"  
+           ng-hide="csv._sync_table[table.name]||csv._sync_skip">Sync</a>
+        <span ng-show="csv._sync_skip">{{csv._sync_error}}</span>
        </td>
        <td ng-repeat="name in table.list">
         {{csv[table.name+'_'+name]}}

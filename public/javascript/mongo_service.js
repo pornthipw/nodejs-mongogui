@@ -1,6 +1,7 @@
 var app = angular.module('mongo_service', ['ngResource']);
 
 var prefix = '/apps/demo';
+var prefix1 = '/apps/npai';
 
 app.factory('Entry', function($resource) {
   var MongoDB = $resource(prefix + '/db/entry/:id', {    
@@ -10,11 +11,22 @@ app.factory('Entry', function($resource) {
   return MongoDB;
 });
 
+app.factory('PHPMyadmin', function($resource) {
+  var PHPMyadmin = $resource(prefix1 + '/?sql_query=:sql', {},
+  {
+    query: { method:'GET', isArray:true }
+  });
+  return PHPMyadmin;
+});
+
 app.factory('SQL', function($resource) {
   var SQL = $resource(prefix + '/query/:table', {    
     table: '@table'
   },
-  {update: { method:'PUT' }});
+  {
+    query: { method:'GET', isArray:false },
+    update: { method:'PUT' }
+  });
   return SQL;
 });
 

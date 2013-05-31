@@ -104,6 +104,11 @@ app.config(function($routeProvider) {
     templateUrl:'static/role_manager.html'
   });
   
+  $routeProvider.when('/test', {
+    controller:TestController, 
+    templateUrl:'static/test.html'
+  });
+
   $routeProvider.when('/', {
    // controller:CsvListController, 
    // templateUrl:'static/csv/index.html'
@@ -124,6 +129,48 @@ function UserCtrl($scope, User, Logout) {
       }
     });
   };
+}
+
+function TestController($scope, PHPMyadmin, SQL){
+  console.log("test");
+  /* Nook 
+  var sql_str = {
+    'sql_query':'select * from alldata.person limit 0, 100'
+  };
+
+  $scope.data = PHPMyadmin.query({sql_query:JSON.stringify(sql_str)
+    ,table:'person'}, function(res){
+      console.log(res);
+  });
+  */
+
+  var sql_str = {'sql':'select * from F21_06850.person limit 0, 1'};
+  $scope.data = PHPMyadmin.query(sql_str, function(res){
+    console.log(res);
+  });
+ 
+  $scope.mapping_schema = CSVMapping.schema;
+
+  $scope.test = function() {
+    var f = $scope.type['function'];
+    new f({
+      'csv':{'info':'','list':$scope.data},
+      'sql':SQL
+    }, function(success, model) {  
+      console.log(success);
+      console.log(model);
+    });
+  };
+
+  $scope.pai_mapping_schemai = PAIMapping.schema;
+  PAIMapping.map1(SQL, function(title_list) {
+   console.log(title_list); 
+  });
+  /*PaiTitleModel.list_all(PHPMyadmin, function(title_list) {
+   console.log(title_list); 
+  });
+  */
+
 }
 
 function RoleController($scope, Role, User, Logout, Admin) {   
@@ -287,8 +334,35 @@ function DocumentController($scope, $routeParams, $location, Entry,User, Logout)
 
 }
 
-function MainController($scope, Entry,MapReduce) {
+function MainController($scope, Entry,MapReduce,SQL) {
   var self = this;
+
+  var p_model = new ProvinceModel(); 
+  /*
+  p_model.json = {'cols':[]};
+  p_model.json.cols.push({'value':'77'});
+  p_model.json.cols.push({'value':'พรทิพย์'});
+  p_model.insert(SQL, function(res) {
+    console.log(res);
+  });
+  var csv = {};
+  p_model.json.cols[1].value = csv.col80;
+  p_model.insert();
+  */
+
+  
+  p_model.get(SQL,"01",function(exists) {
+    if(exists) {
+      p_model.get_cities(SQL, function(cities) {
+        console.log(cities);
+      });
+      p_model.json.cols[1].value = "กระบี่";
+      p_model.update(SQL, function(res) {
+        console.log(res);
+      });
+    }
+  });
+ 
   
   self.message = function(message) {
     $scope.message = message;
@@ -841,13 +915,39 @@ function CsvListController($scope,Csv) {
   $scope.raw_list = Csv.query({query:query_str});
 }
 
-function CsvUploadController($scope,Csv) {  
+function CsvUploadController($scope,Csv, SQL) {  
   $scope.saved_doc = 0;
   $scope.failed_doc = 0;
+  $scope.success_list = [];
+  $scope.fail_list = [];
+
+  $scope.test = function() {
+    var f = $scope.type['function'];
+    new f({
+      'csv':{'info':'','list':$scope.data.csv},
+      'sql':SQL
+    }, function(success, model) {  
+      console.log(success);
+      console.log(model);
+      if(success) {
+        $scope.success_list.push(model);
+      } else {
+        $scope.fail_list.push(model);
+      }
+    }); 
+  };      
+
   $('iframe#upload_target').load(function() {
     var contents = $('iframe#upload_target').contents();
     var data = $.parseJSON(contents.find("body")[0].innerHTML);
+    $scope.$apply(function() {
+      $scope.data = data;
+      $scope.mapping_schema = CSVMapping.schema;
+    });
     if(data.success) {
+      console.log(data);
+     
+      /*
       $scope.total_docs = data.csv.length;
       var r_obj = {'root':true,'name':$scope.theFile.name};
       Csv.save({},r_obj,function(res) {
@@ -880,6 +980,7 @@ function CsvUploadController($scope,Csv) {
            angular.extend({},r_obj,{_id:undefined}));
         }
       });
+      */
     } else {
       $scope.success = false;
       $scope.message = data.message;
@@ -986,13 +1087,24 @@ function CsvViewController($scope,$routeParams,Csv,Entry) {
   };
 };
 
-function CsvController($scope,$location,$routeParams,Csv) {  
+function CsvController($scope,$location,$routeParams,
+  Csv,SQL) {  
+  $scope.mapping_schema = CSVMapping.schema;
   $scope.csv = Csv.get({id:$routeParams.id},function(res) {
     var query_str = JSON.stringify({raw_id:res._id});
     $scope.document_list = Csv.query({query:query_str}, function(res) {
       $scope.document_size = res.length;
     });
   });
+
+
+  $scope.test = function() {
+    var f = $scope.type['function'];
+    new f({
+      'csv':{'info':$scope.csv,'list':$scope.document_list},
+      'sql':SQL
+    });
+  };
  
   $scope.delete_csv = function() {
     if($scope.document_size == 0) {

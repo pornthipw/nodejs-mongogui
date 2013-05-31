@@ -5,6 +5,8 @@ var AzureConnect = function(config) {
   
   var type_map = {
     'VarChar':tedious.TYPES.NVarChar,
+    'Int':tedious.TYPES.Int,
+    'BigInt':tedious.TYPES.BigInt,
   };
 
   var pool = generic_pool.Pool({
@@ -61,7 +63,9 @@ var AzureConnect = function(config) {
         res.json({'success':false,'error':err});
       } else {
         try {
+    
           var qobj = JSON.parse(req.query.query);
+          console.log(qobj.sql);
           console.log(qobj);
           var rows = [];
           var request = new tedious.Request(qobj.sql, function(err,rc) {
@@ -72,11 +76,7 @@ var AzureConnect = function(config) {
             } else {
               console.log(rc+' rows');
               pool.release(con);
-              if(rows.length==0) {
-                res.json({'success':true});
-              } else {
-                res.json(rows);
-              }
+              res.json({'success':true,'rows':rows});
             }
           //console.log(rows.length+' returned');
           });
@@ -91,8 +91,10 @@ var AzureConnect = function(config) {
           request.on('row', function(cols) {
             rows.push({'cols':cols});
           });
+
           con.execSql(request);
         } catch(err) {
+          console.log(err);
           pool.release(con);
           res.json({'success':false,'error':err});
         }
