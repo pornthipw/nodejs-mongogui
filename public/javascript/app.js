@@ -49,6 +49,7 @@ app.filter('hide', function() {
 });
 
 app.config(function($routeProvider) {
+/*
   $routeProvider.when('/csv',{
     controller:CsvListController, 
     templateUrl:'static/csv/index.html'
@@ -58,32 +59,36 @@ app.config(function($routeProvider) {
     controller:CsvViewController, 
     templateUrl:'static/csv/view.html'
   });
-
+*/
   $routeProvider.when('/csv/upload',{
     controller:CsvUploadController, 
     templateUrl:'static/csv/upload.html'
   });
-
+/*
   $routeProvider.when('/csv/:id',{
     controller:CsvController, 
     templateUrl:'static/csv/main.html'
   });
-
+*/
+/*
   $routeProvider.when('/plugin',{
     controller:PluginController, 
     templateUrl:'static/plugin.html'
   });
-
+*/
+/*
   $routeProvider.when('/function',{
     controller:FunctionController, 
     templateUrl:'static/function.html'
   });
-  
+ */ 
+ /*
   $routeProvider.when('/manager', {
     controller:SchemaManageController, 
     templateUrl:'static/schema_manager.html'
   });
-  
+ */ 
+/*
   $routeProvider.when('/schema/:id', {
     controller:SchemaController, 
     templateUrl:'static/schema.html'
@@ -93,12 +98,13 @@ app.config(function($routeProvider) {
     controller:SchemaController, 
     templateUrl:'static/schema.html'
   });
-  
+ */ 
+ /*
   $routeProvider.when('/document/schema/:schemaId/edit/:id', {
     controller:DocumentController, 
     templateUrl:'static/document.html'
   });
-  
+ */ 
   $routeProvider.when('/role', {
     controller:RoleController, 
     templateUrl:'static/role_manager.html'
@@ -133,16 +139,6 @@ function UserCtrl($scope, User, Logout) {
 
 function TestController($scope, PHPMyadmin, SQL){
   console.log("test");
-  /* Nook 
-  var sql_str = {
-    'sql_query':'select * from alldata.person limit 0, 100'
-  };
-
-  $scope.data = PHPMyadmin.query({sql_query:JSON.stringify(sql_str)
-    ,table:'person'}, function(res){
-      console.log(res);
-  });
-  */
 
   var sql_str = {'sql':'select * from F21_06850.person limit 0, 1'};
   $scope.data = PHPMyadmin.query(sql_str, function(res){
@@ -166,10 +162,6 @@ function TestController($scope, PHPMyadmin, SQL){
   PAIMapping.map1(SQL, function(title_list) {
    console.log(title_list); 
   });
-  /*PaiTitleModel.list_all(PHPMyadmin, function(title_list) {
-   console.log(title_list); 
-  });
-  */
 
 }
 
@@ -223,21 +215,13 @@ function SchemaListController($scope, Entry, $location) {
     $location.path('/manager');
   };
 };
-
+/*
 function SchemaController($scope, $routeParams, $location, Entry,User,MapReduce,Logout) {   
   $scope.limit = 10;
 
   Entry.get({id:$routeParams.id}, function(schema) {
     $scope.schema = schema;
     $scope.currentPage = 0;
-    /*
-    var query_str = {"$or":[]};
-    angular.forEach(schema.fields, function(field, index) {
-      var c_field = {};
-      c_field[field.name] = {"$exists":true};
-      query_str["$or"].push(c_field);
-    });
-    */
     console.log(schema);
     var query_str = {"schema":schema._id};
     $scope.document_list = Entry.query({
@@ -302,7 +286,8 @@ function SchemaController($scope, $routeParams, $location, Entry,User,MapReduce,
     };
     
 }
-
+*/
+/*
 function DocumentController($scope, $routeParams, $location, Entry,User, Logout) {   
   var self = this;
   self.message = function(message) {
@@ -333,7 +318,7 @@ function DocumentController($scope, $routeParams, $location, Entry,User, Logout)
   }   
 
 }
-
+*/
 function MainController($scope, Entry,MapReduce,SQL) {
   var self = this;
 
@@ -373,7 +358,6 @@ function MainController($scope, Entry,MapReduce,SQL) {
     }, 3000);
   };
   
-  
   $scope.plugin_list = Entry.query({
     query:'{"type":"plugin_entry"}'
   });
@@ -397,7 +381,7 @@ function MainController($scope, Entry,MapReduce,SQL) {
     });
   }
 }
-
+/*
 function FunctionController($scope, Entry) {
   var self = this;
   
@@ -469,7 +453,8 @@ function FunctionController($scope, Entry) {
   };
 
 }
-
+*/
+/*
 function PluginController($scope, Entry,MapReduce) {
   var self = this;
   
@@ -556,7 +541,8 @@ function PluginController($scope, Entry,MapReduce) {
     });
   }
 }
-
+*/
+/*
 function SchemaManageController($scope, Entry, Csv) {
   var self = this;
   
@@ -793,7 +779,7 @@ function SchemaManageController($scope, Entry, Csv) {
     });
   };
 }
-
+*/
 function UploadController($scope,$routeParams,Entry) {  
   $scope.limit = 50;
 
@@ -909,11 +895,12 @@ function UploadController($scope,$routeParams,Entry) {
     });
   }
 };
-
+/*
 function CsvListController($scope,Csv) {  
   var query_str = JSON.stringify({query:{root:true}});
   $scope.raw_list = Csv.query({query:query_str});
 }
+*/
 
 function CsvUploadController($scope,Csv, SQL) {  
   $scope.saved_doc = 0;
@@ -994,7 +981,7 @@ function CsvUploadController($scope,Csv, SQL) {
     });
   };
 };  
-
+/*
 function CsvViewController($scope,$routeParams,Csv,Entry) {  
   $scope.pageSize = 25;
 
@@ -1063,7 +1050,8 @@ function CsvViewController($scope,$routeParams,Csv,Entry) {
       function(res) {
         if(res.success) {
           save_doc_list($scope.document_list);
-          /*
+*/
+          /*//////////
           angular.forEach($scope.document_list,function(doc) {
             Csv.update({id:doc._id},
               angular.extend({},doc,{_id:undefined},{_sync_table:undefined}),
@@ -1081,12 +1069,14 @@ function CsvViewController($scope,$routeParams,Csv,Entry) {
                   }
             });
           });
-          */
+          *////////////
+/*
         }
     });
   };
 };
-
+*/
+/*
 function CsvController($scope,$location,$routeParams,
   Csv,SQL) {  
   $scope.mapping_schema = CSVMapping.schema;
@@ -1140,7 +1130,7 @@ function CsvController($scope,$location,$routeParams,
     });
   }
 }
-
+*/
 Array.prototype.remove = function(from, to) {
   var rest = this.slice((to || from) + 1 || this.length);
   this.length = from < 0 ? this.length + from : from;
