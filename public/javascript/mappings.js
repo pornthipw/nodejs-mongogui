@@ -93,23 +93,26 @@ CSVMapping.map3 = function(config, callback) {
   //console.log(config.csv.list);
   var SQL = config.sql;
   TitleModel.list(SQL, function(title_list) {
-    GenderModel.list(SQL, function(gender_list) {
+ //  GenderModel.list(SQL, function(gender_list) {
         angular.forEach(config.csv.list, function(row) {
           if(isValidThaiID(row[12].value)) {
             var p_model = new PersonModel();
             p_model.json = {cols:[]};
             var title_id = '?';
-            var gender_id = '?';
+            var gender_id = row[8].value;
             for(var idx=0;idx<title_list.rows.length;idx++) {
               if(row[5].value == title_list.rows[idx].cols[1].value) {
                 title_id = title_list.rows[idx].cols[0].value;
               }
             }
+
+            /*
             for(var idx=0;idx<gender_list.rows.length;idx++) {
               if(row[8].value == gender_list.rows[idx].cols[1].value) {
                 gender_id = gender_list.rows[idx].cols[0].value;
               }
             }
+            */
 
             p_model.set('title_id',title_id);
             p_model.set('gender_id',gender_id);
@@ -117,15 +120,22 @@ CSVMapping.map3 = function(config, callback) {
             p_model.set('firstname',row[6].value);
             p_model.set('lastname',row[7].value);
             p_model.set('religion',row[22].value);
-            p_model.set('mariagestatus',row[23].value);
+           // p_model.set('mariagestatus',row[23].value);
 
             p_model.save(SQL, function(res) {
-              console.log(res);
-             }); 
-              callback(res.success, p_model);
+              if(res.success) {
+                p_model.get(SQL, row[12].value, function(result) {
+                  console.log(p_model);
+                  callback(true,p_model);
+                });
+              }
+            }); 
+          } else {
+            console.log('Invalid CID '+row[12].value);
+            callback(false,row);
           }
         });
-    }); 
+   // }); 
   });
 };
 
@@ -171,6 +181,16 @@ CSVMapping.map4 = function(config) {
 CSVMapping.schema = [
  // {'name':'พม.- สรุปยอดผู้รับเบี้ยพิการ', 'function':CSVMapping.map1},
  // {'name':'กระทรวงสาธารณสุข - กายอุปกรณ์ ศรีสังวาลย์', 'function':CSVMapping.map2 },
-  {'name':'กระทรวงสาธารณสุข - ข้อมูลผู้ป่วย_รพสต.ถ้ำลอด', 'function':CSVMapping.map3 },
+  {
+   'name':'กระทรวงสาธารณสุข - ข้อมูลผู้ป่วย_รพสต.ถ้ำลอด', 
+   'function':CSVMapping.map3,
+   'description': 'จะดึงข้อมูลจาก CSV file ใน column ที่ 12 ที่เก็บข้อมูลบัตรประชาชน' + 
+      ' กับ Person.CID จากนั้น ดึงข้อมูลจาก Title.TitleID ที่มี Title.Description' +
+      ' ตรงกับ Column ที่ 5 ที่เก็บคำนำหน้าชื่อ จากนั้นจะบันทึกในคอลัมน์ Person.Title' +
+      ' สำหรับข้อมูลใน colume ที่ 6 ,7,8 และ 22 ที่เก๊บข้อมูล ชื่อ ,นามสกุล,เพศ และศาสนา ' +
+      ' จะบันทึกลงในคอลัมน์ Person.FirstName ,Person.LastName Person.Gender ' +
+      ' และPerson.Religion'+
+      ' '
+  },
   {'name':'กระทรวงศึกษาธิการ - สศศ1 โรงเรียนราชประชา 44', 'function':CSVMapping.map4 }
 ];

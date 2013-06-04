@@ -60,9 +60,15 @@ app.config(function($routeProvider) {
     templateUrl:'static/csv/view.html'
   });
 */
-  $routeProvider.when('/csv/upload',{
+
+  $routeProvider.when('/', {
     controller:CsvUploadController, 
     templateUrl:'static/csv/upload.html'
+  });
+
+  $routeProvider.when('/role', {
+    controller:RoleController, 
+    templateUrl:'static/role_manager.html'
   });
 /*
   $routeProvider.when('/csv/:id',{
@@ -105,22 +111,13 @@ app.config(function($routeProvider) {
     templateUrl:'static/document.html'
   });
  */ 
-  $routeProvider.when('/role', {
-    controller:RoleController, 
-    templateUrl:'static/role_manager.html'
-  });
-  
+  /*  
   $routeProvider.when('/test', {
     controller:TestController, 
     templateUrl:'static/test.html'
   });
+  */
 
-  $routeProvider.when('/', {
-   // controller:CsvListController, 
-   // templateUrl:'static/csv/index.html'
-    controller:MainController, 
-    templateUrl:'static/index.html'
-  });
 });
 
 
@@ -137,33 +134,6 @@ function UserCtrl($scope, User, Logout) {
   };
 }
 
-function TestController($scope, PHPMyadmin, SQL){
-  console.log("test");
-
-  var sql_str = {'sql':'select * from F21_06850.person limit 0, 1'};
-  $scope.data = PHPMyadmin.query(sql_str, function(res){
-    console.log(res);
-  });
- 
-  $scope.mapping_schema = CSVMapping.schema;
-
-  $scope.test = function() {
-    var f = $scope.type['function'];
-    new f({
-      'csv':{'info':'','list':$scope.data},
-      'sql':SQL
-    }, function(success, model) {  
-      console.log(success);
-      console.log(model);
-    });
-  };
-
-  $scope.pai_mapping_schemai = PAIMapping.schema;
-  PAIMapping.map1(SQL, function(title_list) {
-   console.log(title_list); 
-  });
-
-}
 
 function RoleController($scope, Role, User, Logout, Admin) {   
   var orig = null;
@@ -390,8 +360,8 @@ function CsvUploadController($scope,Csv, SQL) {
       'csv':{'info':'','list':$scope.data.csv},
       'sql':SQL
     }, function(success, model) {  
-      console.log(success);
-      console.log(model);
+     // console.log(success);
+     // console.log(model);
       if(success) {
         $scope.success_list.push(model);
       } else {

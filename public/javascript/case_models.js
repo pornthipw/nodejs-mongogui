@@ -2,6 +2,10 @@ function PersonModel() {
   var self = this;
   this.json = null;
   
+  this.table_name = function() {
+    return "Person";
+  }
+  
   this.set = function(colName, value) {
     switch(colName) {
       case 'cid': index = 0; break;
@@ -13,15 +17,17 @@ function PersonModel() {
       //case 'mariagestatus': index = 9; break;
       default:
         console.log('Not found '+colName);
-        index=0;
+        index=-1;
     };
 
-    for(var i=0;i<index;i++) {
-      if(!self.json.cols[i]) { 
-        self.json.cols[i] = {'value':undefined};
+    if(index!=-1) {
+      for(var i=0;i<index;i++) {
+        if(!self.json.cols[i]) { 
+          self.json.cols[i] = {'value':undefined};
+        }
       }
+      self.json.cols[index] = {'value':value};
     }
-    self.json.cols[index] = {'value':value};
   };
   
   this.assign_params = function() {
@@ -58,9 +64,11 @@ function PersonModel() {
     var query_str = JSON.stringify({
      sql:'select * from Person where CID = "'+id+'"'
     });
+    console.log(query_str);
     SQL.query({'query':query_str},function(res) {
+      console.log(res);
       if(res.rows.length==1) {
-        self.json = res[0];
+        self.json = res.rows[0];
         callback(true);
       } else {
         callback(false);

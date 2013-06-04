@@ -2,14 +2,6 @@
   <div class="span12">
     
     <div class="row-fluid">
-      <div class="span4 well">
-        <ul class="nav nav-pills nav-stacked">
-          <li class="nav-header">Plugin</li>
-          <li ng-repeat="pi in plugin_list" ng-class="{'active':pi._id == current_id}">
-            <a href="" ng-click="execute(pi)">{{pi.name}} </a>
-          </li>
-        </ul>
-      </div>
       
       <div class="span8">
         <div dynamic-template template="plugin_template"
