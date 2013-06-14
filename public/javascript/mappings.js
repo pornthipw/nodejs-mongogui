@@ -140,7 +140,7 @@ CSVMapping.map3 = function(config, callback) {
 };
 
 
-CSVMapping.map4 = function(config) { 
+CSVMapping.map4 = function(config,callback) { 
   //console.log(config.csv.info);
  //console.log(config.csv.list);
  var SQL = config.sql;
@@ -151,29 +151,42 @@ CSVMapping.map4 = function(config) {
       var result = row[1].value.split("  ");
       var firstname = result[0];
       var lastname = result[1];
-      var result_livenumber = row[3].value.split(" ");
-      var livehousenumber = result_livenumber[0];
-      var r2 = result_livenumber[1];
-      var r3 = result_livenumber[2];
-      var r4 = result_livenumber[3];
-      var livevillagename = r2+" "+r3;
-      console.log(livehousenumber);
+      console.log(firstname);
+      console.log(lastname);
+      //var result_livenumber = row[3].value.split(" ");
+      //var livehousenumber = result_livenumber[0];
+      //var r2 = result_livenumber[1];
+      //var r3 = result_livenumber[2];
+      //var r4 = result_livenumber[3];
+      //var livevillagename = r2+" "+r3;
+      //console.log(livehousenumber);
       //console.log(r2);
       //console.log(r3);
-      console.log(livevillagename);
-      console.log(r4);
-
+      //console.log(livevillagename);
+      //console.log(r4);
+       console.log(row[2].value);
       //var cid=csv.col4.replace(/-/g,'');
       p_model.set('cid',row[2].value);
       p_model.set('firstname',firstname);
       p_model.set('lastname',lastname);
-      p_model.set('livehousenumber',livehousenumber);
+     // p_model.set('livehousenumber',livehousenumber);
       //p_model.set('livemoonumber',);
       //p_model.set('livevillagename',);
-      //p_model.save(SQL, function(res) {
-      //  console.log(res);
-      //}); 
-      //callback(res.success, p_model);
+      
+      p_model.save(SQL, function(res) {
+        console.log(res);
+        if(res.success) {
+          p_model.get(SQL, row[2].value, function(result) {
+            console.log(p_model);
+            callback(true,p_model);
+          });
+        }
+      }); 
+      
+    } else {
+      console.log('Invalid CID '+row[2].value);
+      console.log(row);
+      callback(false,row);
     }
   });
 };

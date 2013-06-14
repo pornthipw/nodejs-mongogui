@@ -4,6 +4,9 @@
    <li>
     <a href="static/test_files/1.csv">ถ้ำลอด - ข้อมูลผู้ป่วย_รพสต.ถ้ำลอด</a>
    </li>
+   <li>
+    <a href="static/test_files/2.csv">โรงเรียนราชประชา 44 ปางมะผ้า - สศศ.</a>
+   </li>
   </ol>
 </div>
 
@@ -36,22 +39,32 @@
 
       <div class="row-fluid">
         <span ng-show="theFile">
-          <!-- {{theFile.name}}--> {{data.csv.length}}
+          <!-- {{theFile.name}}--> 
+         <span ng-show = "data.csv">จำนวน</span> 
+         <span ng-show = "data.csv" 
+            class="label label-success">{{data.csv.length}}</span>  
+         <span ng-show = "data.csv">แถว</span> 
         </span>
       </div>
      </div>
  
-     <div class="span6 well">
+     <div class="span6 well" ng-show = "data.csv">
        <!--List of Function-->
       <div class="row-fluid" ng-show="theFile">
        <div class="input-append">
-        <select ng-model="type" class="input-medium" 
+        <select ng-model="type" class="span8 input-medium" 
          ng-options="a.name for a in mapping_schema">
         </select>
         <button class="btn btn-success" ng-click="test()">Run</button>
+       </div>
+      </div>
+      <div class="row-fluid" ng-show="theFile">
+       <div class = "alert alert-info">
+        <b>คำเตือน!</b> กรุณาเลือกประเภทฟังก์ชั่นตามประเภทของไฟล์ 
+       </div>
       </div>
       <div class="row-fluid">
-       {{type.description}}
+        {{type.description}}
       </div>
      </div>
     </div>

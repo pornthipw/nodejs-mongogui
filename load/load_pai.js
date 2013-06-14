@@ -100,7 +100,26 @@ function synch() {
  });
 }
 
-synch();
+//synch();
+
+function synch_update(idx,title_list) {
+  title_map.map(title_list[idx].titlecode,function(title_value) {
+    console.log(title_value);  
+    if(idx != (title_list.length-1)) {
+      synch_update(idx+1, title_list);
+    }
+  });
+};
+ 
+function synch_title() {
+// php_util.query(php_url,'select * from alldata.co_title limit 500,2', 
+//   function(title_list) {
+ php_util.load_all(php_url,'alldata.co_title', function(title_list) {
+   synch_update(0, title_list);
+ });
+}
+
+synch_title();
 
 /*
 php_util.load_all(php_url,'alldata.co_title', function(title_php) {
@@ -114,10 +133,11 @@ php_util.load_all(php_url,'alldata.co_title', function(title_php) {
 });
 */
 
-/*
-map_entry(title_map_config, function(title_map) {
+
+/*map_entry(title_map_config, function(title_map) {
   synch({
    'title_map': title_map
   });
 });
 */
+
