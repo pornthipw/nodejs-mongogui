@@ -14,6 +14,7 @@ function PersonModel() {
       case 'lastname': index = 3; break;
       case 'gender_id': index = 5; break;
       case 'religion': index = 9; break;
+      case 'liveprovince': index = 20; break;
       //case 'mariagestatus': index = 9; break;
       default:
         console.log('Not found '+colName);
@@ -31,7 +32,8 @@ function PersonModel() {
   };
   
   this.assign_params = function() {
-    var attrs = 18;
+    //var attrs = 18;
+    var attrs = 30;
     for(var i=0;i<attrs;i++) {
       if(!self.json.cols[i]) {
         self.json.cols[i] = {value:undefined};
@@ -47,7 +49,8 @@ function PersonModel() {
       {'name':'religion', 'type':'VarChar', 'value':self.json.cols[9].value},
       {'name':'livemoonumber', 'type':'VarChar', 'value':self.json.cols[16].value},
       {'name':'livehousenumber', 'type':'VarChar', 'value':self.json.cols[15].value},
-      {'name':'livevillagename', 'type':'VarChar', 'value':self.json.cols[17].value}
+      {'name':'livevillagename', 'type':'VarChar', 'value':self.json.cols[17].value},
+      {'name':'liveprovince', 'type':'VarChar', 'value':self.json.cols[20].value}
     ];
     return params;
   };
@@ -66,7 +69,7 @@ function PersonModel() {
     });
     console.log(query_str);
     SQL.query({'query':query_str},function(res) {
-      console.log(res);
+      console.log("-->"+res);
       if(res.rows.length==1) {
         self.json = res.rows[0];
         callback(true);
@@ -103,7 +106,8 @@ function PersonModel() {
       +" Religion,"
       +" LiveHouseNumber,"
       +" LiveMooNumber,"
-      +" LiveVillageName)"
+      +" LiveVillageName,"
+      +" LiveProvince)"
       +" VALUES " 
       +" (@cid," 
       +"  @title," 
@@ -113,7 +117,8 @@ function PersonModel() {
       +"  @religion," 
       +"  @livehousenumber,"
       +"  @livemoonumber,"
-      +"  @livevillagename)";
+      +"  @livevillagename,"
+      +"  @liveprovince)";
     //console.log(query);
     var params = self.assign_params();
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
@@ -130,7 +135,8 @@ function PersonModel() {
       +" Religion = @religion,"
       +" LiveHouseNumber = @livehousenumber,"
       +" LiveMooNumber = @livemoonumber,"
-      +" LiveVillageName = @livevillagename"
+      +" LiveVillageName = @livevillagename,"
+      +" LiveProvince = @liveprovince"
       +" WHERE " 
       +" CID = @cid";
     var params = self.assign_params();

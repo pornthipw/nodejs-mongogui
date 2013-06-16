@@ -103,7 +103,7 @@ function RoleController($scope, Role, User, Logout, Admin) {
     var doc = angular.extend({}, orig, {_id:undefined});
     //console.log(doc);
     Admin.update({'id':orig._id}, doc, function(response) { 
-      console.log(response);
+      //console.log(response);
       if(response.success) {
         $scope.get_user(orig._id);
       }
@@ -125,8 +125,9 @@ function CsvUploadController($scope,Csv, SQL) {
       'csv':{'info':'','list':$scope.data.csv},
       'sql':SQL
     }, function(success, model) {  
-     // console.log(success);
-     // console.log(model);
+
+      //console.log(success);
+      //console.log(model);
       if(success) {
         $scope.success_list.push(model);
       } else {
@@ -143,7 +144,7 @@ function CsvUploadController($scope,Csv, SQL) {
       $scope.mapping_schema = CSVMapping.schema;
     });
     if(data.success) {
-      console.log(data);
+      //console.log(data);
     } else {
       $scope.success = false;
       $scope.message = data.message;

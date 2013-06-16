@@ -50,6 +50,7 @@ CSVMapping.map1 = function(config) {
     });
   });
 
+  //});
 };
 
 CSVMapping.map2 = function(config) { 
@@ -82,9 +83,19 @@ CSVMapping.map2 = function(config) {
 };
 
 function isValidThaiID(str) {
- // console.log(str);
+ //var pattern = /^(\d{13})?$/;
+ //console.log(str);
+ //return pattern.test(str);
+  
   var pattern = /^(\d{13})?$/;
-  return pattern.test(str);
+  m = str.replace(/\s/,'');
+  if(m.length==0) {
+    return false;
+  }  else {
+    console.log(m+' '+pattern.test(m));
+    return pattern.test(m);
+  }
+  
 }
 
 
@@ -144,6 +155,8 @@ CSVMapping.map4 = function(config,callback) {
   //console.log(config.csv.info);
  //console.log(config.csv.list);
  var SQL = config.sql;
+  
+  ProvinceModel.list(SQL, function(province_list) {
   angular.forEach(config.csv.list, function(row) {
     if(isValidThaiID(row[2].value)) {
       var p_model = new PersonModel();
@@ -151,8 +164,14 @@ CSVMapping.map4 = function(config,callback) {
       var result = row[1].value.split("  ");
       var firstname = result[0];
       var lastname = result[1];
+      var province = '?';
       console.log(firstname);
       console.log(lastname);
+      for(var idx=0;idx<province_list.rows.length;idx++) {
+        if(row[5].value == province_list.rows[idx].cols[1].value) {
+          province_id = province_list.rows[idx].cols[0].value;
+        }
+      }
       //var result_livenumber = row[3].value.split(" ");
       //var livehousenumber = result_livenumber[0];
       //var r2 = result_livenumber[1];
@@ -164,11 +183,12 @@ CSVMapping.map4 = function(config,callback) {
       //console.log(r3);
       //console.log(livevillagename);
       //console.log(r4);
-       console.log(row[2].value);
+      //console.log(row[2].value);
       //var cid=csv.col4.replace(/-/g,'');
       p_model.set('cid',row[2].value);
       p_model.set('firstname',firstname);
       p_model.set('lastname',lastname);
+      p_model.set('liveprovince',province_id);
      // p_model.set('livehousenumber',livehousenumber);
       //p_model.set('livemoonumber',);
       //p_model.set('livevillagename',);
@@ -188,6 +208,7 @@ CSVMapping.map4 = function(config,callback) {
       console.log(row);
       callback(false,row);
     }
+  });
   });
 };
 
