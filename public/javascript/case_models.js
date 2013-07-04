@@ -624,3 +624,309 @@ GeneralAttributesModel.push = function(SQL,key,attribute,value,callback) {
   });
 };
   
+function DisabilityEvaluationModel() {
+  var self = this;
+  this.json = null;
+  
+  this.table_name = function() {
+    return "DisabilityEvaluation";
+  }
+  
+  this.set = function(colName, val) {
+    switch(colName) {
+      case 'cid': index = 0; break;
+      case 'caseno': index = 1; break;
+      case 'disabilitycode': index = 2; break;
+      case 'recorderid': index = 3; break;
+      case 'evaldatetime': index = 4; break;
+      default:
+        console.log('Not found '+colName);
+        index=-1;
+    };
+
+    if(index!=-1) {
+      for(var i=0;i<index;i++) {
+        if(!self.json.cols[i]) { 
+          self.json.cols[i] = {'value':undefined};
+        }
+      }
+      self.json.cols[index] = {'value':val};
+    }
+  };
+  
+  this.assign_params = function() {
+    var attrs = 10;
+    for(var i=0;i<attrs;i++) {
+      if(!self.json.cols[i]) {
+        self.json.cols[i] = {value:undefined};
+      }
+    }
+
+    var params = [
+      {'name':'cid', 'type':'VarChar', 'value':self.json.cols[0].value},
+      {'name':'caseno', 'type':'VarChar', 'value':self.json.cols[1].value},
+      {'name':'disabilitycode', 'type':'VarChar', 'value':self.json.cols[2].value},
+      {'name':'recorderid', 'type':'VarChar', 'value':self.json.cols[3].value},
+      {'name':'evaldatetime', 'type':'VarChar', 'value':self.json.cols[4].value}
+    ];
+    return params;
+  };
+
+  this.list = function(SQL,callback) { 
+    var query_str = JSON.stringify({
+     sql:'select * from DisabilityEvaluation' 
+    });
+    SQL.query({'query':query_str},callback);
+  };
+
+
+  this.get = function(SQL, id, callback) { 
+    var query_str = JSON.stringify({
+     sql:'select * from DisabilityEvaluation where CID = "'+cid+'"'
+    });
+    console.log(query_str);
+    SQL.query({'query':query_str},function(res) {
+      //console.log("-->"+res);
+      if(res.rows.length==1) {
+        self.json = res.rows[0];
+        callback(true);
+      } else {
+        callback(false);
+      }
+    });
+  };
+
+  this.save = function(SQL,callback) {
+    console.log('CID = '+self.json.cols[0].value);
+    console.log('CaseNo = '+self.json.cols[1].value);
+    console.log('DisabilityCode = '+self.json.cols[2].value);
+    console.log('RecoderID = '+self.json.cols[3].value);
+    console.log('EvalDateTime = '+self.json.cols[4].value);
+    var query_str = JSON.stringify({
+     sql:'select * from DisabilityEvaluation where CID = "'+
+        self.json.cols[0].value+'" and CaseNo = "'+
+        self.json.cols[1].value+'" and DisabilityCode = "'+
+        self.json.cols[2].value+'" and RecorderID = "'+
+        self.json.cols[3].value+'"'
+    });
+   
+    SQL.query({'query':query_str},function(res) {
+      if(res.rows.length==0) {
+        self.insert(SQL, callback);
+      } else {
+        console.log('content updating');
+        console.log(res);
+        self.update(SQL, callback);
+      }
+    });
+  };
+
+  this.insert = function(SQL, callback) {
+    var query = "INSERT INTO DisabilityEvaluation" 
+      +" (CID,"
+      +" CaseNo,"
+      +" DisabilityCode,"
+      +" RecorderID,"
+      +" EvalDateTime)"
+      +" VALUES " 
+      +" (@cid," 
+      +"  @caseno," 
+      +"  @disabilitycode," 
+      +"  @recorderid," 
+      +"  @evaldatetime)";
+    //console.log(query);
+    var params = self.assign_params();
+    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+      function(res) {
+      console.log(res);
+      callback(res.success);
+    });
+  };
+
+  this.update = function(SQL, callback) {
+    var query = "UPDATE DisabilityEvaluation SET CaseNo=@caseno, "
+      +" DisabilityCode = @disabilitycode,"
+      +" RecorderID = @recorderid,"
+      +" EvalDateTime = @evaldatetime,"
+      +" WHERE " 
+      +" CID = @cid";
+    var params = self.assign_params();
+    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+      function(res) {
+      callback(res);
+    });
+  };
+};
+
+
+function DiagnosisEvaluationModel() {
+  var self = this;
+  this.json = null;
+  
+  this.table_name = function() {
+    return "DiagnosisEvaluation";
+  }
+  
+  this.set = function(colName, val) {
+    switch(colName) {
+      case 'cid': index = 0; break;
+      case 'caseno': index = 1; break;
+      case 'disabilitycode': index = 2; break;
+      case 'recorderid': index = 3; break;
+      case 'evaldatetime': index = 4; break;
+      default:
+        console.log('Not found '+colName);
+        index=-1;
+    };
+
+    if(index!=-1) {
+      for(var i=0;i<index;i++) {
+        if(!self.json.cols[i]) { 
+          self.json.cols[i] = {'value':undefined};
+        }
+      }
+      self.json.cols[index] = {'value':val};
+    }
+  };
+  
+  this.assign_params = function() {
+    var attrs = 10;
+    for(var i=0;i<attrs;i++) {
+      if(!self.json.cols[i]) {
+        self.json.cols[i] = {value:undefined};
+      }
+    }
+
+  var params = [
+    {'name':'cid', 'type':'VarChar', 'value':self.json.cols[0].value},
+    {'name':'discode', 'type':'VarChar', 'value':self.json.cols[1].value},
+    {'name':'diagcode', 'type':'VarChar', 'value':self.json.cols[2].value},
+    {'name':'satffid', 'type':'VarChar', 'value':self.json.cols[3].value},
+    {'name':'evaldatetime', 'type':'VarChar', 'value':self.json.cols[4].value},
+    {'name':'datedx', 'type':'VarChar', 'value':self.json.cols[5].value}
+  ];
+    return params;
+  };
+
+  this.list = function(SQL,callback) { 
+    var query_str = JSON.stringify({
+     sql:'select * from DiagnosisEvaluation' 
+    });
+    SQL.query({'query':query_str},callback);
+  };
+
+
+  this.get = function(SQL, id, callback) { 
+    var query_str = JSON.stringify({
+     sql:'select * from DiagnosisEvaluation where CID = "'+cid+'"'
+    });
+    console.log(query_str);
+    SQL.query({'query':query_str},function(res) {
+      //console.log("-->"+res);
+      if(res.rows.length==1) {
+        self.json = res.rows[0];
+        callback(true);
+      } else {
+        callback(false);
+      }
+    });
+  };
+
+  this.save = function(SQL,callback) {
+    console.log('CID = '+self.json.cols[0].value);
+    console.log('DISCode = '+self.json.cols[1].value);
+    console.log('DIAGCode = '+self.json.cols[2].value);
+    console.log('StaffID = '+self.json.cols[3].value);
+    console.log('EvalDateTime = '+self.json.cols[4].value);
+    console.log('DATEDX = '+self.json.cols[4].value);
+    var query_str = JSON.stringify({
+     sql:'select * from DiagnosisEvaluation where CID = "'+
+        self.json.cols[0].value+'" and DISCode = "'+
+        self.json.cols[1].value+'" and DIAGCode = "'+
+        self.json.cols[2].value+'" and StaffID = "'+
+        self.json.cols[3].value+'" and EvalDateTime = "'+
+        self.json.cols[4].value+'" and DATEDX = "'+
+        self.json.cols[5].value+'"'
+    });
+   
+    SQL.query({'query':query_str},function(res) {
+      if(res.rows.length==0) {
+        self.insert(SQL, callback);
+      } else {
+        console.log('content updating');
+        console.log(res);
+        self.update(SQL, callback);
+      }
+    });
+  };
+
+  this.insert = function(SQL, callback) {
+   var query = "INSERT INTO DiagnosisEvaluation" 
+     +" (CID,"
+     +" DISCode,"
+     +" DIAGCode,"
+     +" StaffID,"
+     +" EvalDateTime,"
+     +" DATDX)"
+     +" VALUES " 
+     +" (@cid," 
+     +"  @discode," 
+     +"  @diagcode," 
+     +"  @satffid," 
+     +"  @evaldatetime,";
+     +"  @datedx)";
+    //console.log(query);
+    var params = self.assign_params();
+    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+      function(res) {
+      console.log(res);
+      callback(res.success);
+    });
+  };
+
+  this.update = function(SQL, callback) {
+    var query = "UPDATE DiagnosisEvaluation SET DISCode=@discode, "
+      +" DIAGCode = @diagcode,"
+      +" StaffID = @staffid,"
+      +" EvalDateTime = @evaldatetime,"
+      +" DATEDX = @datedx,"
+      +" WHERE " 
+      +" CID = @cid";
+    var params = self.assign_params();
+    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+      function(res) {
+      callback(res);
+    });
+  };
+};
+
+
+DiagnosisEvaluationModel.push = function(SQL,cid,discode,diagcode,diagcode,staffid,evaldatetime,datedx,callback) {
+   var query = "INSERT INTO DiagnosisEvaluation" 
+     +" (CID,"
+     +" DISCode,"
+     +" DIAGCode,"
+     +" StaffID,"
+     +" EvalDateTime,"
+     +" DATDX)"
+     +" VALUES " 
+     +" (@cid," 
+     +"  @discode," 
+     +"  @diagcode," 
+     +"  @satffid," 
+     +"  @evaldatetime,";
+     +"  @datedx)";
+  var params = [
+    {'name':'cid', 'type':'VarChar', 'value':self.json.cols[0].value},
+    {'name':'discode', 'type':'VarChar', 'value':self.json.cols[1].value},
+    {'name':'diagcode', 'type':'VarChar', 'value':self.json.cols[2].value},
+    {'name':'satffid', 'type':'VarChar', 'value':self.json.cols[3].value},
+    {'name':'evaldatetime', 'type':'VarChar', 'value':self.json.cols[4].value},
+    {'name':'datedx', 'type':'VarChar', 'value':self.json.cols[5].value}
+  ];
+  SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    function(res) {
+    callback(res);
+  });
+};
+  
