@@ -17,8 +17,11 @@ function PersonModel() {
       case 'livehousenumber': index = 13; break;
       case 'livemoonumber': index = 14; break;
       case 'livevillagename': index = 15; break;
+      case 'livetumbon': index = 18; break;
       case 'livecity': index = 19; break;
       case 'liveprovince': index = 20; break;
+      case 'livepostcode': index = 21; break;
+      case 'daterecord': index = 46; break;
       //case 'mariagestatus': index = 9; break;
       default:
         console.log('Not found '+colName);
@@ -37,7 +40,7 @@ function PersonModel() {
   
   this.assign_params = function() {
     //var attrs = 18;
-    var attrs = 30;
+    var attrs = 50;
     for(var i=0;i<attrs;i++) {
       if(!self.json.cols[i]) {
         self.json.cols[i] = {value:undefined};
@@ -54,8 +57,11 @@ function PersonModel() {
       {'name':'livehousenumber', 'type':'VarChar', 'value':self.json.cols[13].value},
       {'name':'livemoonumber', 'type':'VarChar', 'value':self.json.cols[14].value},
       {'name':'livevillagename', 'type':'VarChar', 'value':self.json.cols[15].value},
+      {'name':'livetumbon', 'type':'VarChar', 'value':self.json.cols[18].value},
       {'name':'livecity', 'type':'VarChar', 'value':self.json.cols[19].value},
-      {'name':'liveprovince', 'type':'VarChar', 'value':self.json.cols[20].value}
+      {'name':'liveprovince', 'type':'VarChar', 'value':self.json.cols[20].value},
+      {'name':'livepostcode', 'type':'VarChar', 'value':self.json.cols[21].value},
+      {'name':'daterecord', 'type':'VarChar', 'value':self.json.cols[46].value}
     ];
     return params;
   };
@@ -112,8 +118,11 @@ function PersonModel() {
       +" LiveHouseNumber,"
       +" LiveMooNumber,"
       +" LiveVillageName,"
+      +" LiveTumbon,"
       +" LiveCity,"
-      +" LiveProvince)"
+      +" LiveProvince,"
+      +" LivePostCode,"
+      +" DateRecorde)"
       +" VALUES " 
       +" (@cid," 
       +"  @title," 
@@ -124,8 +133,11 @@ function PersonModel() {
       +"  @livehousenumber,"
       +"  @livemoonumber,"
       +"  @livevillagename,"
+      +"  @livetumbon,"
       +"  @livecity,"
-      +"  @liveprovince)";
+      +"  @liveprovince,"
+      +"  @livepostcode,"
+      +"  @daterecord)";
     //console.log(query);
     var params = self.assign_params();
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
@@ -143,8 +155,11 @@ function PersonModel() {
       +" LiveHouseNumber = @livehousenumber,"
       +" LiveMooNumber = @livemoonumber,"
       +" LiveVillageName = @livevillagename,"
+      +" LiveTumbon = @livetumbon,"
       +" LiveCity = @livecity,"
-      +" LiveProvince = @liveprovince"
+      +" LiveProvince = @liveprovince,"
+      +" LivePostCode = @livepostcode,"
+      +" DateRecorde = @daterecord"
       +" WHERE " 
       +" CID = @cid";
     var params = self.assign_params();
@@ -236,6 +251,20 @@ function ProvinceModel(){
 ProvinceModel.list = function(SQL,callback) { 
   var query_str = JSON.stringify({
    sql:'select * from Province' 
+  });
+  SQL.query({'query':query_str},callback);
+};
+
+ProvinceModel.get_cities = function(SQL, province_id, callback) {
+  var query_str = JSON.stringify({
+    sql:'select * from City where ProvinceID = "'+province_id+'"'
+  });
+  SQL.query({'query':query_str},callback);
+};
+
+ProvinceModel.get_tumbons = function(SQL, city_id, callback) {
+  var query_str = JSON.stringify({
+    sql:'select * from Tumbon where CityID = "'+city_id+'"'
   });
   SQL.query({'query':query_str},callback);
 };
