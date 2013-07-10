@@ -102,6 +102,13 @@ app.put('/admin/users/:id', userprofile.update_user);
 
 //app.get('/query/:table',mssql.query);
 app.get('/query',mssql.query);
+app.post('/query',mssql.query_post);
+/*
+app.get('/query',function(req,res) {
+  console.log('Hello');
+  res.send('<h1>Query</h1>');
+});
+*/
 
 app.get('/db/:collection/:id?', mongo.query);
 app.post('/db/:collection', mongo.insert);

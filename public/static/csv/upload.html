@@ -159,6 +159,13 @@
         <span ng-repeat="(key,value) in row">
           <span class="text-info">{{key}}</span> {{value.value}}
         </span>
+        <div>
+         <ul>
+          <li ng-repeat="message in row.message_list">
+           {{message}}
+          </li>
+         </ul>
+        </div>
        </td>
       </tr>
      </table>

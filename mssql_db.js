@@ -13,7 +13,7 @@ var AzureConnect = function(config) {
     name:'mssqldb',
     max:1,
     create: function(callback) {
-      //console.log(config);
+      console.log(config);
       con = new tedious.Connection(config);
       con.on('connect', function(err) {
         console.log('Connected');
@@ -56,6 +56,52 @@ var AzureConnect = function(config) {
   };
   */
   
+  this.query_post = function(req,res) {
+    pool.acquire(function(err,con) {
+      if(err) {
+        pool.release(con);
+        res.json({'success':false,'error':err});
+      } else {
+        try {
+          var qobj = JSON.parse(req.body.query);
+          console.log(qobj.sql);
+          console.log(qobj);
+          var rows = [];
+          var request = new tedious.Request(qobj.sql, function(err,rc) {
+            if(err) {
+              pool.release(con);
+              console.log(err);
+              res.json({'success':false,'error':err});
+            } else {
+              console.log(rc+' rows');
+              pool.release(con);
+              res.json({'success':true,'rows':rows});
+            }
+          //console.log(rows.length+' returned');
+          });
+
+          if(qobj.params) {
+            qobj.params.forEach(function(param) {
+              console.log(param);
+              request.addParameter(param.name,type_map[param.type],param.value);
+            });
+          }
+
+          request.on('row', function(cols) {
+            rows.push({'cols':cols});
+          });
+
+          con.execSql(request);
+        } catch(err) {
+          console.log(err);
+          pool.release(con);
+          res.json({'success':false,'error':err});
+        }
+      }
+    });
+  };
+
+
   this.query = function(req,res) {
     pool.acquire(function(err,con) {
       if(err) {
@@ -101,7 +147,6 @@ var AzureConnect = function(config) {
       }
     });
   };
-  
 };
 
 exports.azure_connect = AzureConnect;

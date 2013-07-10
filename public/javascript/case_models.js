@@ -12,6 +12,7 @@ function PersonModel() {
       case 'title_id': index = 1; break;
       case 'firstname': index = 2; break;
       case 'lastname': index = 3; break;
+      case 'dob': index = 4; break;
       case 'gender_id': index = 5; break;
       case 'religion': index = 9; break;
       case 'livehousenumber': index = 13; break;
@@ -21,7 +22,8 @@ function PersonModel() {
       case 'livecity': index = 19; break;
       case 'liveprovince': index = 20; break;
       case 'livepostcode': index = 21; break;
-      case 'daterecord': index = 46; break;
+      case 'host': index = 43; break;
+      case 'daterecord': index = 47; break;
       //case 'mariagestatus': index = 9; break;
       default:
         console.log('Not found '+colName);
@@ -52,6 +54,7 @@ function PersonModel() {
       {'name':'title', 'type':'VarChar', 'value':self.json.cols[1].value},
       {'name':'firstname', 'type':'VarChar', 'value':self.json.cols[2].value},
       {'name':'lastname', 'type':'VarChar', 'value':self.json.cols[3].value},
+      {'name':'dob', 'type':'VarChar', 'value':self.json.cols[4].value},
       {'name':'gender', 'type':'VarChar', 'value':self.json.cols[5].value},
       {'name':'religion', 'type':'VarChar', 'value':self.json.cols[9].value},
       {'name':'livehousenumber', 'type':'VarChar', 'value':self.json.cols[13].value},
@@ -61,7 +64,8 @@ function PersonModel() {
       {'name':'livecity', 'type':'VarChar', 'value':self.json.cols[19].value},
       {'name':'liveprovince', 'type':'VarChar', 'value':self.json.cols[20].value},
       {'name':'livepostcode', 'type':'VarChar', 'value':self.json.cols[21].value},
-      {'name':'daterecord', 'type':'VarChar', 'value':self.json.cols[46].value}
+      {'name':'host', 'type':'VarChar', 'value':self.json.cols[43].value},
+      {'name':'daterecord', 'type':'VarChar', 'value':self.json.cols[47].value}
     ];
     return params;
   };
@@ -113,6 +117,7 @@ function PersonModel() {
       +" Title,"
       +" FirstName,"
       +" LastName,"
+      +" DOB,"
       +" Gender,"
       +" Religion,"
       +" LiveHouseNumber,"
@@ -122,12 +127,14 @@ function PersonModel() {
       +" LiveCity,"
       +" LiveProvince,"
       +" LivePostCode,"
+      +" Host,"
       +" DateRecorde)"
       +" VALUES " 
       +" (@cid," 
       +"  @title," 
       +"  @firstname," 
       +"  @lastname," 
+      +"  @dob," 
       +"  @gender," 
       +"  @religion," 
       +"  @livehousenumber,"
@@ -137,6 +144,7 @@ function PersonModel() {
       +"  @livecity,"
       +"  @liveprovince,"
       +"  @livepostcode,"
+      +"  @host,"
       +"  @daterecord)";
     //console.log(query);
     var params = self.assign_params();
@@ -150,6 +158,7 @@ function PersonModel() {
     var query = "UPDATE Person SET Title=@title, "
       +" FirstName = @firstname,"
       +" LastName = @lastname,"
+      +" DOB = @dob,"
       +" Gender = @gender,"
       +" Religion = @religion,"
       +" LiveHouseNumber = @livehousenumber,"
@@ -159,6 +168,7 @@ function PersonModel() {
       +" LiveCity = @livecity,"
       +" LiveProvince = @liveprovince,"
       +" LivePostCode = @livepostcode,"
+      +" Host = @host,"
       +" DateRecorde = @daterecord"
       +" WHERE " 
       +" CID = @cid";
@@ -957,7 +967,7 @@ function FamilyModel() {
       case 'livecity': index = 23; break;
       case 'liveprovince': index = 24; break;
       case 'livepostcode': index = 25; break;
-      case 'carerstattus': index = 42; break;
+      case 'carerstatus': index = 42; break;
       case 'datetimeupdate': index = 43; break;
       default:
         console.log('Not found '+colName);
@@ -975,7 +985,7 @@ function FamilyModel() {
   };
   
   this.assign_params = function() {
-    var attrs = 20;
+    var attrs = 50;
     for(var i=0;i<attrs;i++) {
       if(!self.json.cols[i]) {
         self.json.cols[i] = {value:undefined};
@@ -1000,7 +1010,7 @@ function FamilyModel() {
     {'name':'liveprovince', 'type':'VarChar', 'value':self.json.cols[22].value},
     {'name':'livepostcode', 'type':'VarChar', 'value':self.json.cols[23].value},
     {'name':'carerstatus', 'type':'VarChar', 'value':self.json.cols[42].value},
-    {'name':'datetimeupdate', 'type':'DateTime', 'value':self.json.cols[43].value}
+    {'name':'datetimeupdate', 'type':'VarChar', 'value':self.json.cols[43].value}
   ];
     return params;
   };
@@ -1015,7 +1025,7 @@ function FamilyModel() {
 
   this.get = function(SQL, id, callback) { 
     var query_str = JSON.stringify({
-     sql:'select * from Family where CID = "'+cid+'"'
+     sql:'select * from Family where CID = "'+id+'"'
     });
     console.log(query_str);
     SQL.query({'query':query_str},function(res) {
@@ -1036,7 +1046,8 @@ function FamilyModel() {
     });
    
     SQL.query({'query':query_str},function(res) {
-      if(res.rows.length==0) {
+      if(res.rows.length==0) { 
+        console.log("insert");
         self.insert(SQL, callback);
       } else {
         console.log('content updating');
@@ -1047,7 +1058,6 @@ function FamilyModel() {
   };
 
   this.insert = function(SQL, callback) {
-    //console.log(query);
     var query = "INSERT INTO Family" 
       +" (FMemberCID,"
       +" CID,"
@@ -1086,9 +1096,11 @@ function FamilyModel() {
       +"  @livepostcode,"
       +"  @carerstatus,"
       +"  @datetimeupdate)";
+    console.log(query);
     var params = self.assign_params();
-    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
+      console.log('xxx');
       console.log(res);
       callback(res.success);
     });
@@ -1153,7 +1165,7 @@ function ExistingWelfareModel() {
   this.set = function(colName, val) {
     switch(colName) {
       case 'cid': index = 0; break;
-      case 'insuranceCardID': index = 1; break;
+      case 'insurancecardid': index = 3; break;
       default:
         console.log('Not found '+colName);
         index=-1;
@@ -1179,7 +1191,7 @@ function ExistingWelfareModel() {
 
     var params = [
       {'name':'cid', 'type':'VarChar', 'value':self.json.cols[0].value},
-      {'name':'insranceCardID', 'type':'VarChar', 'value':self.json.cols[1].value}
+      {'name':'insurancecardid', 'type':'VarChar', 'value':self.json.cols[3].value}
     ];
     return params;
   };
@@ -1194,7 +1206,7 @@ function ExistingWelfareModel() {
 
   this.get = function(SQL, id, callback) { 
     var query_str = JSON.stringify({
-     sql:'select * from ExistingWelfare where cid = "'+id+'"'
+     sql:'select * from ExistingWelfare where CID = "'+id+'"'
     });
     console.log(query_str);
     SQL.query({'query':query_str},function(res) {
@@ -1211,9 +1223,9 @@ function ExistingWelfareModel() {
   this.save = function(SQL,callback) {
     console.log('CID = '+self.json.cols[0].value);
     var query_str = JSON.stringify({
-     sql:'select * from ExistingWelfare where cid = "'+
+     sql:'select * from ExistingWelfare where CID = "'+
         self.json.cols[0].value+'" and insuranceCardID = "'+
-        self.json.cols[1].value+'"'
+        self.json.cols[3].value+'"'
     });
    
     SQL.query({'query':query_str},function(res) {
@@ -1387,7 +1399,7 @@ EducationLevelCModel.list = function(SQL,callback) {
 function WelfareCategoryModel() {
 }
 
-WelfareCategoryModel.list = function(SQL,cellback) {
+WelfareCategoryModel.list = function(SQL,callback) {
   console.log(SQL);
   var query_str = JSON.stringify({
    sql:'select * from WelfareCategory' 
@@ -1448,7 +1460,7 @@ function WelfareVSPersonModel() {
 
   this.get = function(SQL, id, callback) { 
     var query_str = JSON.stringify({
-     sql:'select * from WelfareVSPerson where cid = "'+id+'"'
+     sql:'select * from WelfareVSPerson where CID = "'+id+'"'
     });
     console.log(query_str);
     SQL.query({'query':query_str},function(res) {
@@ -1465,7 +1477,7 @@ function WelfareVSPersonModel() {
   this.save = function(SQL,callback) {
     console.log('CID = '+self.json.cols[0].value);
     var query_str = JSON.stringify({
-     sql:'select * from WelfareVSPerson where cid = "'+
+     sql:'select * from WelfareVSPerson where CID = "'+
         self.json.cols[0].value+'" and welfareid = "'+
         self.json.cols[1].value+'"'
     });
@@ -1514,7 +1526,7 @@ function WelfareVSPersonModel() {
 function DisabilityTypeModel() {
 }
 
-DisabilityTypeModel.list = function(SQL,cellback) {
+DisabilityTypeModel.list = function(SQL,callback) {
   console.log(SQL);
   var query_str = JSON.stringify({
    sql:'select * from DisabilityType' 
@@ -1617,7 +1629,7 @@ function ServiceProvisionDetailModel() {
       +" CID)"
       +" VALUES " 
       +" (@psnumber," 
-      +"  @actcode,";
+      +"  @actcode,"
       +"  @cid)";
     //eonsole.log(query);
     var params = self.assign_params();
@@ -1645,7 +1657,7 @@ function ServiceProvisionDetailModel() {
 function DiseaseDataModel() {
 }
 
-DiseaseDataModel.list = function(SQL,cellback) {
+DiseaseDataModel.list = function(SQL,callback) {
   console.log(SQL);
   var query_str = JSON.stringify({
    sql:'select * from DiseaseData' 
@@ -1727,10 +1739,10 @@ function ServiceProvisionModel() {
   };
 
   this.save = function(SQL,callback) {
-    console.log('CID = '+self.json.cols[0].value);
+    console.log('CID = '+self.json.cols[5].value);
     var query_str = JSON.stringify({
      sql:'select * from ServiceProvision where cid = "'+
-        self.json.cols[0].value+'" and hostid = "'+
+        self.json.cols[5].value+'" and hostid = "'+
         self.json.cols[1].value+'"'
     });
    
@@ -1754,9 +1766,9 @@ function ServiceProvisionModel() {
       +" CID)"
       +" VALUES " 
       +" (@psnumber," 
-      +"  @hostid,";
-      +"  @psdatetime,";
-      +"  @caseno,";
+      +"  @hostid,"
+      +"  @psdatetime,"
+      +"  @caseno,"
       +"  @cid)";
     //eonsole.log(query);
     var params = self.assign_params();
@@ -1788,7 +1800,7 @@ function ServiceProvisionModel() {
 function MaterialTypeModel() {
 }
 
-MaterialTypeModel.list = function(SQL,cellback) {
+MaterialTypeModel.list = function(SQL,callback) {
   console.log(SQL);
   var query_str = JSON.stringify({
    sql:'select * from MaterialType' 
@@ -1799,14 +1811,13 @@ MaterialTypeModel.list = function(SQL,cellback) {
 function ActivityModel() {
 }
 
-ActivityModel.list = function(SQL,cellback) {
+ActivityModel.list = function(SQL,callback) {
   console.log(SQL);
   var query_str = JSON.stringify({
    sql:'select * from Activity' 
   });
   SQL.query({'query':query_str},callback);
 };
-
 
 function TempHNModel() {
   var self = this;
@@ -1818,9 +1829,9 @@ function TempHNModel() {
   
   this.set = function(colName, val) {
     switch(colName) {
-      case 'HN': index = 0; break;
-      case 'date': index = 1; break;
-      case 'HostID': index = 2; break;
+      case 'hn': index = 0; break;
+      case 'daterecord': index = 1; break;
+      case 'hostid': index = 2; break;
       case 'cid': index = 3; break;
       default:
         console.log('Not found '+colName);
@@ -1847,7 +1858,7 @@ function TempHNModel() {
 
     var params = [
       {'name':'hn', 'type':'VarChar', 'value':self.json.cols[0].value},
-      {'name':'date', 'type':'VarChar', 'value':self.json.cols[1].value},
+      {'name':'daterecord', 'type':'VarChar', 'value':self.json.cols[1].value},
       {'name':'hostid', 'type':'VarChar', 'value':self.json.cols[2].value},
       {'name':'cid', 'type':'VarChar', 'value':self.json.cols[3].value}
     ];
@@ -1879,11 +1890,9 @@ function TempHNModel() {
   };
 
   this.save = function(SQL,callback) {
-    console.log('CID = '+self.json.cols[0].value);
+    console.log('CID = '+self.json.cols[3].value);
     var query_str = JSON.stringify({
-     sql:'select * from Temp_HN where cid = "'+
-        self.json.cols[0].value+'" and hostid = "'+
-        self.json.cols[1].value+'"'
+     sql:'select * from Temp_HN where cid = "'+self.json.cols[3].value+'"'
     });
    
     SQL.query({'query':query_str},function(res) {
@@ -1900,18 +1909,19 @@ function TempHNModel() {
   this.insert = function(SQL, callback) {
     var query = "INSERT INTO Temp_HN" 
       +" (HN,"
-      +" date,"
+      +" daterecord,"
       +" HostID,"
       +" cid)"
       +" VALUES " 
       +" (@hn," 
-      +"  @date,";
-      +"  @hostid,";
+      +"  @daterecord,"
+      +"  @hostid,"
       +"  @cid)";
     //eonsole.log(query);
     var params = self.assign_params();
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
+      //console.log("--->");
       console.log(res);
       callback(res.success);
     });
@@ -1920,11 +1930,11 @@ function TempHNModel() {
   this.update = function(SQL, callback) {
     var query = "UPDATE Temp_HN SET"
       +" HN=@hn, "
-      +" date=@date,"
+      +" daterecord=@daterecord,"
       +" HostID=@hostid,"
       +" cid=@cid"
       +" WHERE " 
-      +" CID = @cid";
+      +" cid = @cid";
     var params = self.assign_params();
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
@@ -1933,6 +1943,30 @@ function TempHNModel() {
   };
 };
 
+TempHNModel.push = function(SQL,hn,daterecord,hostid,cid,callback) {
+  var query = "INSERT INTO Temp_HN" 
+    +" (HN,"
+    +" daterecord,"
+    +" HostID,"
+    +" cid)"
+    +" VALUES " 
+    +" (@hn," 
+    +"  @daterecord," 
+    +"  @hostid,"
+    +"  @cid)";
+
+    var params = [
+      {'name':'hn', 'type':'VarChar', 'value':self.json.cols[0].value},
+      {'name':'daterecord', 'type':'VarChar', 'value':self.json.cols[1].value},
+      {'name':'hostid', 'type':'VarChar', 'value':self.json.cols[2].value},
+      {'name':'cid', 'type':'VarChar', 'value':self.json.cols[3].value}
+    ];
+
+  SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    function(res) {
+    callback(res);
+  });
+};
 
 function TempVacine01yearModel() {
   var self = this;
@@ -2088,28 +2122,28 @@ function TempVacine01yearModel() {
       +" villagename)"
       +" VALUES " 
       +" (@number," 
-      +"  @hn,";
-      +"  @cid,";
-      +"  @name,";
-      +"  @age_year,";
-      +"  @age_month,";
-      +"  @bcg,";
-      +"  @hbv1,";
-      +"  @hbv2,";
-      +"  @hbv3,";
-      +"  @dtp1,";
-      +"  @dtp2,";
-      +"  @dtp3,";
-      +"  @opv1,";
-      +"  @opv2,";
-      +"  @opv3,";
-      +"  @measle_mmr,";
-      +"  @dtphb1,";
-      +"  @dtphb2,";
-      +"  @dtphb3,";
-      +"  @address,";
-      +"  @moo,";
-      +"  @villagename)";
+      +"  @hn,"
+      +"  @cid,"
+      +"  @name,"
+      +"  @age_year,"
+      +"  @age_month,"
+      +"  @bcg,"
+      +"  @hbv1,"
+      +"  @hbv2,"
+      +"  @hbv3,"
+      +"  @dtp1,"
+      +"  @dtp2,"
+      +"  @dtp3,"
+      +"  @opv1,"
+      +"  @opv2,"
+      +"  @opv3,"
+      +"  @measle_mmr,"
+      +"  @dtphb1,"
+      +"  @dtphb2,"
+      +"  @dtphb3,"
+      +"  @address,"
+      +"  @moo,"
+      +"  @villagename)"
     //eonsole.log(query);
     var params = self.assign_params();
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
