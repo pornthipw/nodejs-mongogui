@@ -1023,9 +1023,13 @@ function FamilyModel() {
   };
 
 
-  this.get = function(SQL, id, callback) { 
+  this.get = function(SQL, id, fmember,callback) { 
     var query_str = JSON.stringify({
-     sql:'select * from Family where CID = "'+id+'"'
+     //sql:'select * from Family where CID = "'+id+'"'
+     sql:'select * from Family where CID = "'+
+        id+'" and FMemberCID = "'+
+        fmember+'"'
+     
     });
     console.log(query_str);
     SQL.query({'query':query_str},function(res) {
@@ -1040,10 +1044,14 @@ function FamilyModel() {
   };
 
   this.save = function(SQL,callback) {
-    console.log('CID = '+self.json.cols[0].value);
+    console.log('CID = '+self.json.cols[1].value);
     var query_str = JSON.stringify({
-     sql:'select * from Family where CID = "'+self.json.cols[0].value+'"'
+     //sql:'select * from Family where CID = "'+self.json.cols[0].value+'"'
+     sql:'select * from Family where CID = "'+
+        self.json.cols[1].value+'" and FMemberCID = "'+
+        self.json.cols[0].value+'"'
     });
+    console.log(query_str);
    
     SQL.query({'query':query_str},function(res) {
       if(res.rows.length==0) { 
@@ -1123,7 +1131,9 @@ function FamilyModel() {
       +" CarerStatus = @carerstatus,"
       +" DateTimeUpdate = @datetimeupdate"
       +" WHERE " 
-      +" CID = @cid";
+      //+" CID = @cid";
+      +" CID = @cid"
+      +" and FMemberCID = @fmembercid";
     var params = self.assign_params();
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
@@ -1223,9 +1233,7 @@ function ExistingWelfareModel() {
   this.save = function(SQL,callback) {
     console.log('CID = '+self.json.cols[0].value);
     var query_str = JSON.stringify({
-     sql:'select * from ExistingWelfare where CID = "'+
-        self.json.cols[0].value+'" and insuranceCardID = "'+
-        self.json.cols[3].value+'"'
+     sql:'select * from ExistingWelfare where CID = "'+self.json.cols[0].value+'"'
     });
    
     SQL.query({'query':query_str},function(res) {
@@ -1339,9 +1347,7 @@ function EducationChildModel() {
   this.save = function(SQL,callback) {
     console.log('CID = '+self.json.cols[0].value);
     var query_str = JSON.stringify({
-     sql:'select * from EducationChild where cid = "'+
-        self.json.cols[0].value+'" and educationstatusid = "'+
-        self.json.cols[1].value+'"'
+     sql:'select * from EducationChild where cid = "'+self.json.cols[0].value+'"'
     });
    
     SQL.query({'query':query_str},function(res) {
@@ -1362,9 +1368,9 @@ function EducationChildModel() {
       +" VALUES " 
       +" (@cid," 
       +"  @educationstatusid)";
-    //console.log(query);
+    console.log(query);
     var params = self.assign_params();
-    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       console.log(res);
       callback(res.success);
@@ -1876,6 +1882,10 @@ function TempHNModel() {
   this.get = function(SQL, id, callback) { 
     var query_str = JSON.stringify({
      sql:'select * from Temp_HN  where cid = "'+id+'"'
+     /*sql:'select * from Temp_HN where HN = "'+
+        self.json.cols[0].value+'" and daterecord = "'+
+        self.json.cols[1].value+'"'
+     */
     });
     console.log(query_str);
     SQL.query({'query':query_str},function(res) {
@@ -1893,6 +1903,10 @@ function TempHNModel() {
     console.log('CID = '+self.json.cols[3].value);
     var query_str = JSON.stringify({
      sql:'select * from Temp_HN where cid = "'+self.json.cols[3].value+'"'
+     /*sql:'select * from Temp_HN where HN = "'+
+        self.json.cols[0].value+'" and daterecord = "'+
+        self.json.cols[1].value+'"'
+     */
     });
    
     SQL.query({'query':query_str},function(res) {
@@ -1935,6 +1949,8 @@ function TempHNModel() {
       +" cid=@cid"
       +" WHERE " 
       +" cid = @cid";
+      //+" HN = @hn"
+      //+" and daterecord = @daterecord";
     var params = self.assign_params();
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
@@ -2188,4 +2204,252 @@ function TempVacine01yearModel() {
   };
 };
 
+
+function Temp_CIDModel() {
+  var self = this;
+  this.json = null;
+  
+  this.table_name = function() {
+    return "Temp_CID";
+  }
+  
+  this.set = function(colName, val) {
+    switch(colName) {
+      case 'cid': index = 0; break;
+      case 'hostid': index = 1; break;
+      default:
+        console.log('Not found '+colName);
+        index=-1;
+    };
+
+    if(index!=-1) {
+      for(var i=0;i<index;i++) {
+        if(!self.json.cols[i]) { 
+          self.json.cols[i] = {'value':undefined};
+        }
+      }
+      self.json.cols[index] = {'value':val};
+    }
+  };
+  
+  this.assign_params = function() {
+    var attrs = 10;
+    for(var i=0;i<attrs;i++) {
+      if(!self.json.cols[i]) {
+        self.json.cols[i] = {value:undefined};
+      }
+    }
+
+    var params = [
+      {'name':'cid', 'type':'VarChar', 'value':self.json.cols[0].value},
+      {'name':'hostid', 'type':'VarChar', 'value':self.json.cols[1].value},
+    ];
+    return params;
+  };
+
+  this.list = function(SQL,callback) { 
+    var query_str = JSON.stringify({
+     sql:'select * from Temp_CID' 
+    });
+    SQL.query({'query':query_str},callback);
+  };
+
+
+  this.get = function(SQL, id, callback) { 
+    var query_str = JSON.stringify({
+     sql:'select * from Temp_CID  where cid = "'+id+'"'
+     /*sql:'select * from Temp_HN where HN = "'+
+        self.json.cols[0].value+'" and daterecord = "'+
+        self.json.cols[1].value+'"'
+     */
+    });
+    console.log(query_str);
+    SQL.query({'query':query_str},function(res) {
+      //console.log("-->"+res);
+      if(res.rows.length==1) {
+        self.json = res.rows[0];
+        callback(true);
+      } else {
+        callback(false);
+      }
+    });
+  };
+
+  this.save = function(SQL,callback) {
+    console.log('CID = '+self.json.cols[3].value);
+    var query_str = JSON.stringify({
+     sql:'select * from Temp_CID where cid = "'+self.json.cols[3].value+'"'
+     /*sql:'select * from Temp_HN where HN = "'+
+        self.json.cols[0].value+'" and daterecord = "'+
+        self.json.cols[1].value+'"'
+     */
+    });
+   
+    SQL.query({'query':query_str},function(res) {
+      if(res.rows.length==0) {
+        self.insert(SQL, callback);
+      } else {
+        console.log('content updating');
+        console.log(res);
+        self.update(SQL, callback);
+      }
+    });
+  };
+
+  this.insert = function(SQL, callback) {
+    var query = "INSERT INTO Temp_CID" 
+      +" (CID,"
+      +" HostID)"
+      +" VALUES " 
+      +" (@cid," 
+      +"  @hostid)";
+    //eonsole.log(query);
+    var params = self.assign_params();
+    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+      function(res) {
+      //console.log("--->");
+      console.log(res);
+      callback(res.success);
+    });
+  };
+
+  this.update = function(SQL, callback) {
+    var query = "UPDATE Temp_CID SET"
+      +" CID=@cid, "
+      +" Host=@hostid"
+      +" WHERE " 
+      +" CID = @cid";
+      //+" HN = @hn"
+      //+" and daterecord = @daterecord";
+    var params = self.assign_params();
+    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+      function(res) {
+      callback(res);
+    });
+  };
+};
+
+function Temp_disburseModel() {
+  var self = this;
+  this.json = null;
+  
+  this.table_name = function() {
+    return "Temp_disburse";
+  }
+  
+  this.set = function(colName, val) {
+    switch(colName) {
+      case 'cid': index = 0; break;
+      case 'MaterialCode': index = 1; break;
+      default:
+        console.log('Not found '+colName);
+        index=-1;
+    };
+
+    if(index!=-1) {
+      for(var i=0;i<index;i++) {
+        if(!self.json.cols[i]) { 
+          self.json.cols[i] = {'value':undefined};
+        }
+      }
+      self.json.cols[index] = {'value':val};
+    }
+  };
+  
+  this.assign_params = function() {
+    var attrs = 10;
+    for(var i=0;i<attrs;i++) {
+      if(!self.json.cols[i]) {
+        self.json.cols[i] = {value:undefined};
+      }
+    }
+
+    var params = [
+      {'name':'cid', 'type':'VarChar', 'value':self.json.cols[0].value},
+      {'name':'materialcode', 'type':'VarChar', 'value':self.json.cols[1].value},
+    ];
+    return params;
+  };
+
+  this.list = function(SQL,callback) { 
+    var query_str = JSON.stringify({
+     sql:'select * from Temp_disburse' 
+    });
+    SQL.query({'query':query_str},callback);
+  };
+
+
+  this.get = function(SQL, id, callback) { 
+    var query_str = JSON.stringify({
+     sql:'select * from Temp_disburse  where cid = "'+id+'"'
+     /*sql:'select * from Temp_HN where HN = "'+
+        self.json.cols[0].value+'" and daterecord = "'+
+        self.json.cols[1].value+'"'
+     */
+    });
+    console.log(query_str);
+    SQL.query({'query':query_str},function(res) {
+      //console.log("-->"+res);
+      if(res.rows.length==1) {
+        self.json = res.rows[0];
+        callback(true);
+      } else {
+        callback(false);
+      }
+    });
+  };
+
+  this.save = function(SQL,callback) {
+    console.log('CID = '+self.json.cols[3].value);
+    var query_str = JSON.stringify({
+     sql:'select * from Temp_disburse where cid = "'+self.json.cols[3].value+'"'
+     /*sql:'select * from Temp_HN where HN = "'+
+        self.json.cols[0].value+'" and daterecord = "'+
+        self.json.cols[1].value+'"'
+     */
+    });
+   
+    SQL.query({'query':query_str},function(res) {
+      if(res.rows.length==0) {
+        self.insert(SQL, callback);
+      } else {
+        console.log('content updating');
+        console.log(res);
+        self.update(SQL, callback);
+      }
+    });
+  };
+
+  this.insert = function(SQL, callback) {
+    var query = "INSERT INTO Temp_disburse" 
+      +" (CID,"
+      +" MaterialCode)"
+      +" VALUES " 
+      +" (@cid," 
+      +"  @materialcode)";
+    //eonsole.log(query);
+    var params = self.assign_params();
+    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+      function(res) {
+      //console.log("--->");
+      console.log(res);
+      callback(res.success);
+    });
+  };
+
+  this.update = function(SQL, callback) {
+    var query = "UPDATE Temp_disburse SET"
+      +" CID=@cid, "
+      +" MaterialCode=@materialcode"
+      +" WHERE " 
+      +" CID = @cid";
+      //+" HN = @hn"
+      //+" and daterecord = @daterecord";
+    var params = self.assign_params();
+    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+      function(res) {
+      callback(res);
+    });
+  };
+};
 

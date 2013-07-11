@@ -92,61 +92,9 @@
       </div>
      </div>
     </div>
-        <!--Result-->
-    <div class="row-fluid">
-      <span ng-switch on="success">
-       <span ng-switch-when="true">
-        <span class="label label-success" ng-show="total_docs>0">
-         {{saved_doc}}/{{total_docs}} document saved.
-        </span> 
-        <br>
-        <span class="label label-important" ng-show="failed_doc > 0">
-         {{failed_doc}} error while saving document.
-        </span>
-       </span>          
-       <span ng-switch-when="false">
-        <i class="icon-info-sign"></i>
-         There are error of uploading file.
-       </span>          
-      </span>
-    </div>
+    <!--Result-->
     
     <!--Result MSSQL-->
-    <div class="row-fluid">
-     <div class="span6" ng-show="success_list.length>0">
-      <p class="lead">Success List  {{success_list.length}}</p>
-      <table class="table table-condensed">
-       <tr ng-repeat="doc in success_list">
-       
-        <td ng-repeat="cols in doc.json">
-         <h3>{{doc.table_name()}}</h3>
-         <ul>
-          <li ng-repeat="content in cols" ng-show="content.value">
-           {{content.metadata.colName}} = 
-           {{content.value}}
-          </li>
-         </ul>
-        {{doc.gen_attr_log}}
-        </td>
-       </tr>
-      </table>
-     </div>
-
-     <div class="span6" ng-show="fail_list.length>0">
-       <p class="lead">Fail List  {{fail_list.length}}</p>
-       <table class="table table-condensed">
-        <tr ng-repeat="fail in fail_list">
-         <td>
-          <ul class="unstyled">
-           <li ng-repeat="(key,value) in fail">
-            {{key}} = {{value.value}}
-           </li>
-          </ul>
-         </td>
-        </tr>
-       </table>
-     </div>
-    </div>
 
     <!--CSV-->
     <div class="row-fluid">
@@ -161,8 +109,13 @@
         </span>
         <div>
          <ul>
+          <!--
           <li ng-repeat="message in row.message_list">
            {{message}}
+          </li>
+          -->
+          <li ng-repeat="message in row.message_list">
+           <b>{{message.table_name}}</b> : {{message.message}}
           </li>
          </ul>
         </div>

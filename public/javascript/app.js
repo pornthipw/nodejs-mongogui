@@ -127,12 +127,13 @@ function CsvUploadController($scope,Csv, SQL) {
     }, function(success, model) {  
 
       //console.log(success);
-      console.log(model);
-      if(success) {
+      //console.log(model);
+      /*if(success) {
         $scope.success_list.push(model);
       } else {
         $scope.fail_list.push(model);
       }
+      */
     }); 
   };      
 
