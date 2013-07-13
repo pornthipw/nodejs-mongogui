@@ -125,6 +125,7 @@ function CsvUploadController($scope,Csv, SQL) {
       'csv':{'info':'','list':$scope.data.csv},
       'sql':SQL
     }, function(success, model) {  
+      
 
       //console.log(success);
       //console.log(model);
@@ -156,6 +157,7 @@ function CsvUploadController($scope,Csv, SQL) {
     $scope.$apply(function() {
       $scope.success = true;
       $scope.theFile = element.files[0];
+      $scope.data = [];
     });
   };
 };  

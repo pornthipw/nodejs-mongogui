@@ -18,6 +18,7 @@ function PersonModel() {
       case 'livehousenumber': index = 13; break;
       case 'livemoonumber': index = 14; break;
       case 'livevillagename': index = 15; break;
+      case 'livealley': index = 16; break;
       case 'livetumbon': index = 18; break;
       case 'livecity': index = 19; break;
       case 'liveprovince': index = 20; break;
@@ -60,6 +61,7 @@ function PersonModel() {
       {'name':'livehousenumber', 'type':'VarChar', 'value':self.json.cols[13].value},
       {'name':'livemoonumber', 'type':'VarChar', 'value':self.json.cols[14].value},
       {'name':'livevillagename', 'type':'VarChar', 'value':self.json.cols[15].value},
+      {'name':'livealley', 'type':'VarChar', 'value':self.json.cols[16].value},
       {'name':'livetumbon', 'type':'VarChar', 'value':self.json.cols[18].value},
       {'name':'livecity', 'type':'VarChar', 'value':self.json.cols[19].value},
       {'name':'liveprovince', 'type':'VarChar', 'value':self.json.cols[20].value},
@@ -123,6 +125,7 @@ function PersonModel() {
       +" LiveHouseNumber,"
       +" LiveMooNumber,"
       +" LiveVillageName,"
+      +" LiveAlley,"
       +" LiveTumbon,"
       +" LiveCity,"
       +" LiveProvince,"
@@ -140,17 +143,18 @@ function PersonModel() {
       +"  @livehousenumber,"
       +"  @livemoonumber,"
       +"  @livevillagename,"
+      +"  @livealley,"
       +"  @livetumbon,"
       +"  @livecity,"
       +"  @liveprovince,"
       +"  @livepostcode,"
       +"  @host,"
       +"  @daterecord)";
-    //console.log(query);
     var params = self.assign_params();
-    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    console.log('+insert CID ('+self.json.cols[0].value+')');
+    SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
-      callback(res.success);
+      callback(res);
     });
   };
 
@@ -164,6 +168,7 @@ function PersonModel() {
       +" LiveHouseNumber = @livehousenumber,"
       +" LiveMooNumber = @livemoonumber,"
       +" LiveVillageName = @livevillagename,"
+      +" LiveAlley = @livealley,"
       +" LiveTumbon = @livetumbon,"
       +" LiveCity = @livecity,"
       +" LiveProvince = @liveprovince,"
@@ -173,7 +178,7 @@ function PersonModel() {
       +" WHERE " 
       +" CID = @cid";
     var params = self.assign_params();
-    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       callback(res);
     });
@@ -208,9 +213,9 @@ function ProvinceModel(){
     var query = "UPDATE Province SET ProvinceDescription=@desc WHERE " 
       +" ProvinceID = @id";
     var params = self.assign_params();
-    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
-      callback(res.success);
+      callback(res);
     });
   };
   
@@ -220,7 +225,7 @@ function ProvinceModel(){
     var params = self.assign_params();
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
-      callback(res.success);
+      callback(res);
     });
   };
   
@@ -299,7 +304,7 @@ function GenderModel(){
     var params = self.assign_params();
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
-      callback(res.success);
+      callback(res);
     });
   };
   
@@ -309,7 +314,7 @@ function GenderModel(){
     var params = self.assign_params();
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
-      callback(res.success);
+      callback(res);
     });
   };
   
@@ -363,7 +368,7 @@ function MariageStatusModel(){
     var params = self.assign_params();
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
-      callback(res.success);
+      callback(res);
     });
   };
   
@@ -373,7 +378,7 @@ function MariageStatusModel(){
     var params = self.assign_params();
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
-      callback(res.success);
+      callback(res);
     });
   };
   
@@ -442,7 +447,7 @@ function HostModel(){
     var params = self.assign_params();
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
-      callback(res.success);
+      callback(res);
     });
   };
   
@@ -459,7 +464,7 @@ function HostModel(){
     var params = self.assign_params();
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
-      callback(res.success);
+      callback(res);
     });
   };
   
@@ -597,7 +602,7 @@ function GeneralAttributesModel() {
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       console.log(res);
-      callback(res.success);
+      callback(res);
     });
   };
 
@@ -690,9 +695,15 @@ function DisabilityEvaluationModel() {
   };
 
 
-  this.get = function(SQL, id, callback) { 
+  this.get = function(SQL,id,callback) { 
     var query_str = JSON.stringify({
-     sql:'select * from DisabilityEvaluation where CID = "'+cid+'"'
+     sql:'select * from DisabilityEvaluation where CID = "'+id+'"'
+     /*sql:'select * from DisabilityEvaluation where CID = "'+
+        id+'" and CaseNo = "'+
+        self.json.cols[1].value+'" and DisabilityCode = "'+
+        self.json.cols[2].value+'" and RecorderID = "'+
+        self.json.cols[3].value+'"'
+     */
     });
     console.log(query_str);
     SQL.query({'query':query_str},function(res) {
@@ -710,18 +721,23 @@ function DisabilityEvaluationModel() {
     console.log('CID = '+self.json.cols[0].value);
     console.log('CaseNo = '+self.json.cols[1].value);
     console.log('DisabilityCode = '+self.json.cols[2].value);
-    console.log('RecoderID = '+self.json.cols[3].value);
-    console.log('EvalDateTime = '+self.json.cols[4].value);
+    //console.log('RecoderID = '+self.json.cols[3].value);
+    //console.log('EvalDateTime = '+self.json.cols[4].value);
     var query_str = JSON.stringify({
      sql:'select * from DisabilityEvaluation where CID = "'+
+       self.json.cols[0].value+'"'
+     
+     /*sql:'select * from DisabilityEvaluation where CID = "'+
         self.json.cols[0].value+'" and CaseNo = "'+
         self.json.cols[1].value+'" and DisabilityCode = "'+
         self.json.cols[2].value+'" and RecorderID = "'+
         self.json.cols[3].value+'"'
+     */
     });
-   
+
     SQL.query({'query':query_str},function(res) {
       if(res.rows.length==0) {
+        console.log(res);
         self.insert(SQL, callback);
       } else {
         console.log('content updating');
@@ -744,12 +760,12 @@ function DisabilityEvaluationModel() {
       +"  @disabilitycode," 
       +"  @recorderid," 
       +"  @evaldatetime)";
-    //console.log(query);
+    console.log(query);
     var params = self.assign_params();
-    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       console.log(res);
-      callback(res.success);
+      callback(res);
     });
   };
 
@@ -757,11 +773,15 @@ function DisabilityEvaluationModel() {
     var query = "UPDATE DisabilityEvaluation SET CaseNo=@caseno, "
       +" DisabilityCode = @disabilitycode,"
       +" RecorderID = @recorderid,"
-      +" EvalDateTime = @evaldatetime,"
+      +" EvalDateTime = @evaldatetime"
       +" WHERE " 
-      +" CID = @cid";
+      +" CID = @cid"
+      +" and CaseNo = @caseno"
+      +" and RecorderID = @recorderid"
+      +" and DisabilityCode = @disabilitycode";
+    console.log(query);
     var params = self.assign_params();
-    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       callback(res);
     });
@@ -890,7 +910,7 @@ function DiagnosisEvaluationModel() {
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       console.log(res);
-      callback(res.success);
+      callback(res);
     });
   };
 
@@ -910,36 +930,6 @@ function DiagnosisEvaluationModel() {
   };
 };
 
-
-DiagnosisEvaluationModel.push = function(SQL,cid,discode,diagcode,diagcode,staffid,evaldatetime,datedx,callback) {
-   var query = "INSERT INTO DiagnosisEvaluation" 
-     +" (CID,"
-     +" DISCode,"
-     +" DIAGCode,"
-     +" StaffID,"
-     +" EvalDateTime,"
-     +" DATDX)"
-     +" VALUES " 
-     +" (@cid," 
-     +"  @discode," 
-     +"  @diagcode," 
-     +"  @satffid," 
-     +"  @evaldatetime,";
-     +"  @datedx)";
-  var params = [
-    {'name':'cid', 'type':'VarChar', 'value':self.json.cols[0].value},
-    {'name':'discode', 'type':'VarChar', 'value':self.json.cols[1].value},
-    {'name':'diagcode', 'type':'VarChar', 'value':self.json.cols[2].value},
-    {'name':'satffid', 'type':'VarChar', 'value':self.json.cols[3].value},
-    {'name':'evaldatetime', 'type':'VarChar', 'value':self.json.cols[4].value},
-    {'name':'datedx', 'type':'VarChar', 'value':self.json.cols[5].value}
-  ];
-  SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
-    function(res) {
-    callback(res);
-  });
-};
-  
 
 function FamilyModel() {
   var self = this;
@@ -1110,7 +1100,7 @@ function FamilyModel() {
       function(res) {
       console.log('xxx');
       console.log(res);
-      callback(res.success);
+      callback(res);
     });
   };
 
@@ -1131,7 +1121,6 @@ function FamilyModel() {
       +" CarerStatus = @carerstatus,"
       +" DateTimeUpdate = @datetimeupdate"
       +" WHERE " 
-      //+" CID = @cid";
       +" CID = @cid"
       +" and FMemberCID = @fmembercid";
     var params = self.assign_params();
@@ -1256,10 +1245,10 @@ function ExistingWelfareModel() {
       +"  @insurancecardid)";
     //console.log(query);
     var params = self.assign_params();
-    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       console.log(res);
-      callback(res.success);
+      callback(res);
     });
   };
 
@@ -1373,7 +1362,7 @@ function EducationChildModel() {
     SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       console.log(res);
-      callback(res.success);
+      callback(res);
     });
   };
 
@@ -1511,7 +1500,7 @@ function WelfareVSPersonModel() {
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       console.log(res);
-      callback(res.success);
+      callback(res);
     });
   };
 
@@ -1554,6 +1543,7 @@ function ServiceProvisionDetailModel() {
       case 'psnumber': index = 0; break;
       case 'actcode': index = 1; break;
       case 'cid': index = 4; break;
+      case 'caseno': index = 5; break;
       default:
         console.log('Not found '+colName);
         index=-1;
@@ -1580,7 +1570,8 @@ function ServiceProvisionDetailModel() {
     var params = [
       {'name':'psnumber', 'type':'VarChar', 'value':self.json.cols[0].value},
       {'name':'actcode', 'type':'VarChar', 'value':self.json.cols[1].value},
-      {'name':'cid', 'type':'VarChar', 'value':self.json.cols[4].value}
+      {'name':'cid', 'type':'VarChar', 'value':self.json.cols[4].value},
+      {'name':'caseno', 'type':'VarChar', 'value':self.json.cols[5].value}
     ];
     return params;
   };
@@ -1610,10 +1601,12 @@ function ServiceProvisionDetailModel() {
   };
 
   this.save = function(SQL,callback) {
-    console.log('CID = '+self.json.cols[0].value);
+    console.log('CID = '+self.json.cols[4].value);
     var query_str = JSON.stringify({
      sql:'select * from ServiceProvisionDetails where cid = "'+
-        self.json.cols[4].value+'" and actcode = "'+
+        self.json.cols[4].value+'" and caseno = "'+
+        self.json.cols[5].value+'" and psnumber = "'+
+        self.json.cols[0].value+'" and actcode = "'+
         self.json.cols[1].value+'"'
     });
    
@@ -1632,17 +1625,19 @@ function ServiceProvisionDetailModel() {
     var query = "INSERT INTO ServiceProvisionDetails" 
       +" (PSNumber,"
       +" ACTCode,"
+      +" CaseNo,"
       +" CID)"
       +" VALUES " 
       +" (@psnumber," 
       +"  @actcode,"
+      +"  @caseno,"
       +"  @cid)";
     //eonsole.log(query);
     var params = self.assign_params();
-    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       console.log(res);
-      callback(res.success);
+      callback(res);
     });
   };
 
@@ -1650,10 +1645,15 @@ function ServiceProvisionDetailModel() {
     var query = "UPDATE ServiceProvisionDetails SET"
       +" PSNumber=@psnumber, "
       +" ACTCode=@actcode "
+      +" CaseNo=@caseno "
+      +" CID=@cid "
       +" WHERE " 
-      +" CID = @cid";
+      +" CID = @cid"
+      +" ACTCode=@actcode"
+      +" CaseNo=@caseno"
+      +" PSNumber=@psnumber";
     var params = self.assign_params();
-    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       callback(res);
     });
@@ -1778,10 +1778,10 @@ function ServiceProvisionModel() {
       +"  @cid)";
     //eonsole.log(query);
     var params = self.assign_params();
-    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       console.log(res);
-      callback(res.success);
+      callback(res);
     });
   };
 
@@ -1816,6 +1816,17 @@ MaterialTypeModel.list = function(SQL,callback) {
 
 function ActivityModel() {
 }
+
+function MaterialModel() {
+}
+
+MaterialModel.list = function(SQL,callback) {
+  console.log(SQL);
+  var query_str = JSON.stringify({
+   sql:'select * from Material' 
+  });
+  SQL.query({'query':query_str},callback);
+};
 
 ActivityModel.list = function(SQL,callback) {
   console.log(SQL);
@@ -1933,11 +1944,11 @@ function TempHNModel() {
       +"  @cid)";
     //eonsole.log(query);
     var params = self.assign_params();
-    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       //console.log("--->");
       console.log(res);
-      callback(res.success);
+      callback(res);
     });
   };
 
@@ -1949,10 +1960,11 @@ function TempHNModel() {
       +" cid=@cid"
       +" WHERE " 
       +" cid = @cid";
+      //+" and daterecord = @daterecode";
       //+" HN = @hn"
       //+" and daterecord = @daterecord";
     var params = self.assign_params();
-    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       callback(res);
     });
@@ -2165,7 +2177,7 @@ function TempVacine01yearModel() {
     SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       console.log(res);
-      callback(res.success);
+      callback(res);
     });
   };
 
@@ -2242,7 +2254,7 @@ function Temp_CIDModel() {
 
     var params = [
       {'name':'cid', 'type':'VarChar', 'value':self.json.cols[0].value},
-      {'name':'hostid', 'type':'VarChar', 'value':self.json.cols[1].value},
+      {'name':'hostid', 'type':'VarChar', 'value':self.json.cols[1].value}
     ];
     return params;
   };
@@ -2305,11 +2317,11 @@ function Temp_CIDModel() {
       +"  @hostid)";
     //eonsole.log(query);
     var params = self.assign_params();
-    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       //console.log("--->");
       console.log(res);
-      callback(res.success);
+      callback(res);
     });
   };
 
@@ -2340,7 +2352,11 @@ function Temp_disburseModel() {
   this.set = function(colName, val) {
     switch(colName) {
       case 'cid': index = 0; break;
-      case 'MaterialCode': index = 1; break;
+      case 'materialcode': index = 1; break;
+      case 'number': index = 2; break;
+      case 'money': index = 3; break;
+      case 'd_disburse': index = 4; break;
+      case 'd_record': index = 5; break;
       default:
         console.log('Not found '+colName);
         index=-1;
@@ -2367,6 +2383,10 @@ function Temp_disburseModel() {
     var params = [
       {'name':'cid', 'type':'VarChar', 'value':self.json.cols[0].value},
       {'name':'materialcode', 'type':'VarChar', 'value':self.json.cols[1].value},
+      {'name':'number', 'type':'VarChar', 'value':self.json.cols[2].value},
+      {'name':'money', 'type':'VarChar', 'value':self.json.cols[3].value},
+      {'name':'d_disburse', 'type':'VarChar', 'value':self.json.cols[4].value},
+      {'name':'d_record', 'type':'VarChar', 'value':self.json.cols[5].value}
     ];
     return params;
   };
@@ -2400,9 +2420,9 @@ function Temp_disburseModel() {
   };
 
   this.save = function(SQL,callback) {
-    console.log('CID = '+self.json.cols[3].value);
+    console.log('CID = '+self.json.cols[0].value);
     var query_str = JSON.stringify({
-     sql:'select * from Temp_disburse where cid = "'+self.json.cols[3].value+'"'
+     sql:'select * from Temp_disburse where cid = "'+self.json.cols[0].value+'"'
      /*sql:'select * from Temp_HN where HN = "'+
         self.json.cols[0].value+'" and daterecord = "'+
         self.json.cols[1].value+'"'
@@ -2423,24 +2443,36 @@ function Temp_disburseModel() {
   this.insert = function(SQL, callback) {
     var query = "INSERT INTO Temp_disburse" 
       +" (CID,"
-      +" MaterialCode)"
+      +" MaterialCode,"
+      +" Number,"
+      +" Money,"
+      +" d_disburse,"
+      +" d_record)"
       +" VALUES " 
       +" (@cid," 
-      +"  @materialcode)";
+      +"  @materialcode,"
+      +"  @number,"
+      +"  @money,"
+      +"  @d_disburse,"
+      +"  @d_record)";
     //eonsole.log(query);
     var params = self.assign_params();
-    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
-      //console.log("--->");
+      console.log("--->");
       console.log(res);
-      callback(res.success);
+      callback(res);
     });
   };
 
   this.update = function(SQL, callback) {
     var query = "UPDATE Temp_disburse SET"
       +" CID=@cid, "
-      +" MaterialCode=@materialcode"
+      +" MaterialCode=@materialcode,"
+      +" Number=@number,"
+      +" Money=@money,"
+      +" d_disburse=@d_disburse,"
+      +" d_record=@d_record"
       +" WHERE " 
       +" CID = @cid";
       //+" HN = @hn"

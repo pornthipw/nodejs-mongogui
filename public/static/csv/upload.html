@@ -22,14 +22,33 @@
    <li>
     <a href="static/test_files/smis_s58013001_2554_1-1.csv">กระทรวงพัฒนาสังคมฯ-สำนักงานเขตพื้นที่การศึกษา-studentmis5813001_2554-1</a>
    </li>
+<!--
    <li>
     <a href="static/test_files/publichealth_sumrong_vaccine0_1.csv">กระทรวงสาธารณสุข-รพสต.สำโรงใต้-วัคซีน 0-1 ปี</a>
    </li>
    <li>
     <a href="static/test_files/publichealth_sumrong_vaccine4_5.csv">กระทรวงสาธารณสุข-รพสต.สำโรงใต้-วัคซีน 4-5 ปี</a>
    </li>
+-->
    <li>
     <a href="static/test_files/map10_publichealth_tumlodhospital_678_april.csv">กระทรวงสาธารณสุข-รพสต.ถ้ำลอด-งานค่ารักษาเลข 6 7 8_เมษายน  </a>
+   </li>
+<!--
+   <li>
+    <a href="static/test_files/map11.csv">กระทรวงสาธารณสุข-รพสต.ถ้ำลอด-ข้อมูลตรวจ</a>
+-->
+   </li>
+   <li>
+    <a href="static/test_files/map12.csv">กายอุปกรณ์แม่ลาน้อย  </a>
+   </li>
+   <li>
+    <a href="static/test_files/map13.csv">กายอุปกรณ์ศรีสังวาลย์  </a>
+   </li>
+   <li>
+    <a href="static/test_files/map14.csv">อบต.แม่นาเติง </a>
+   </li>
+   <li>
+    <a href="static/test_files/map15.csv">อบต.สบปอง </a>
    </li>
   </ol>
 </div>
@@ -102,23 +121,44 @@
     </div>
     <div class="row-fluid">
      <table class="table table-condensed">
-      <tr ng-repeat="row in data.csv">
+      <tr ng-repeat="row in data.csv" >
        <td>
         <span ng-repeat="(key,value) in row">
           <span class="text-info">{{key}}</span> {{value.value}}
         </span>
+        <!--
         <div>
          <ul>
-          <!--
-          <li ng-repeat="message in row.message_list">
-           {{message}}
-          </li>
-          -->
           <li ng-repeat="message in row.message_list">
            <b>{{message.table_name}}</b> : {{message.message}}
           </li>
          </ul>
         </div>
+        --->
+
+        <!--แสดงผลข้อมูลจากฐานข้อมูล 
+        ================================================== -->
+        <div ng-show = "row.message_list[0]" class="page-header">
+          <h1>Result:</h1>
+        </div>
+        
+        <table class="table table-striped" ng-show="row.message_list[0]">
+          <!--<caption>.....</caption>-->
+          <thead>
+            <tr>
+             <th> Table Name </th>
+             <th> Data Elements  </th>
+            </tr> 
+          </thead> 
+          <tr ng-repeat="message in row.message_list">
+            <td><b>{{message.table_name}}</b></td> 
+            <td>{{message.message}}</td>
+          </tr> 
+        </table>
+        
+        
+        <!---->
+
        </td>
       </tr>
      </table>

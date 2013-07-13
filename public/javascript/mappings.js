@@ -66,7 +66,7 @@ function get_education_id(education_name) {
   var id_6_list = ['ปวส.'];
   var id_7_list = ['ประถมศึกษา'];
   var id_8_list = ['ไม่ได้ศึกษา'];
-  var id_9_list = ['อบ.1'];
+  var id_9_list = ['อบ.1','อนุบาล 1'];
   var id_10_list = ['เตรียมอนุบาล'];
   if(id_1_list.indexOf(education_name)!=-1) {
     return '04';
@@ -100,7 +100,6 @@ function get_education_id(education_name) {
   }
   return undefined;
 }
-
 
 function get_welfare_id(welfare_name) {
   var id_1_list = ['เด็กยากจน (มากเป็นพิเศษ)','เด็กยากจน'];
@@ -140,13 +139,69 @@ function get_disability_id(disability_name) {
   if(id_6_list.indexOf(disability_name)!=-1) {
     return '60';
   }
+  if(id_7_list.indexOf(disability_name)!=-1) {
+    return '60';
+  }
   if(id_8_list.indexOf(disability_name)!=-1) {
     return '80';
   }
   return undefined;
 }
 
-
+function get_material_id(material_name) {
+  var id_1_list = ['8.7.6 ไม้ค้ำยันรักแร้แบบอลูมิเนียม'];
+  var id_2_list = ['8.7.7 ไม้เท้าอลูมิเนียมแบบสามขา'];
+  var id_3_list = ['8.2.9 เท้าเทียมที่ต้องใส่ร่วมกับขาเทียมแบบต่าง ๆ'];
+  var id_4_list = ['8.2.18 เบ้าขาเทียมใต้เข่า'];
+  var id_5_list = ['8.2.23 แป้นสายเข็มขัด'];
+  var id_6_list = ['8.2.22 สายเข็มขัดเทียม'];
+  var id_7_list = ['8.9.2 รถนั่งคนพิการชนิดพับได้ทำด้วยโลหะ'];
+  var id_8_list = ['8.1.8 เบ้าแขนเทียมใต้ศอก'];
+  var id_9_list = ['วัสดุสิ้นเปลืองในการผลิตกายอุปกรณ์/ซ่อมอุปกรณ์'];
+  var id_10_list = ['สายสวนปัสสาวะแบบสวนด้วยตนเอง'];
+  if(id_1_list.indexOf(material_name)!=-1) {
+    return '990001';
+  }
+  if(id_2_list.indexOf(material_name)!=-1) {
+    return '990002';
+  }
+  if(id_3_list.indexOf(material_name)!=-1) {
+    return '820900';
+  }
+  if(id_3_list.indexOf(material_name)!=-1) {
+    return '820900';
+  }
+  if(id_4_list.indexOf(material_name)!=-1) {
+    return '821800';
+  }
+  if(id_5_list.indexOf(material_name)!=-1) {
+    return '822300';
+  }
+  if(id_6_list.indexOf(material_name)!=-1) {
+    return '822200';
+  }
+  if(id_7_list.indexOf(material_name)!=-1) {
+    return '990003';
+  }
+  if(id_8_list.indexOf(material_name)!=-1) {
+    return '810800';
+  }
+  if(id_9_list.indexOf(material_name)!=-1) {
+    return '990004';
+  }
+  if(id_10_list.indexOf(material_name)!=-1) {
+    return '990005';
+  }
+  return undefined;
+}
+/*
+function isValidThaiID(str) {
+ //var pattern = /^(\d{13})?$/;
+ //console.log(str);
+ //return pattern.test(str);
+  return undefined;
+}
+*/
 function isValidThaiID(str) {
  //var pattern = /^(\d{13})?$/;
  //console.log(str);
@@ -249,7 +304,6 @@ CSVMapping.map1 = function(config, callback) {
                       t_model.get(SQL, row[12].value, function(res) {
                         var e_model = new ExistingWelfareModel();
                         e_model.json = {cols:[]};
-
                         e_model.set('insurancecardid',get_insurance_id(row[14].value));
                         e_model.set('cid',row[12].value);
                         e_model.save(SQL, function(res) {
@@ -396,7 +450,7 @@ CSVMapping.map2 = function(config,callback) {
       
                   p_model.save(SQL, function(res) {
                     console.log('P_model.save ');
-                    //console.log(res);
+                    console.log(res);
                     if(res.success) {
                       var table_str = "Person(ตารางข้อมูลผู้ด้อยโอกาส)"; 
                       var message_str = 'เลขที่บัตรประชาชน: '+row[2].value
@@ -504,18 +558,23 @@ CSVMapping.map3 = function(config,callback) {
       var city_id = '?';
       var tumbon_id = '?';
       var host_id = '02010448';
-            row[2].value = row[2].value.replace(/\s+/,' ');
-            var result = row[2].value.split(" ");
-            var firstname = result[0];
-            var lastname = result[1];
-            row[6].value = row[6].value.replace(/\s+/,' ');
-            var fresult = row[6].value.split(" ");
-            var ffirstname = fresult[0];
-            var flastname = fresult[1];
-            row[7].value = row[7].value.replace(/\s+/,' ');
-            var mresult = row[7].value.split(" ");
-            var mfirstname = mresult[0];
-            var mlastname = mresult[1];
+      row[2].value = row[2].value.replace(/\s+/,' ');
+      var result = row[2].value.split(" ");
+      var firstname = result[0];
+      var lastname = result[1];
+      row[6].value = row[6].value.replace(/\s+/,' ');
+      var fresult = row[6].value.split(" ");
+      var ffirstname = fresult[0];
+      var flastname = fresult[1];
+      row[7].value = row[7].value.replace(/\s+/,' ');
+      var mresult = row[7].value.split(" ");
+      var mfirstname = mresult[0];
+      var mlastname = mresult[1];
+      //console.log(tumbons);
+      var result_livenumber = row[8].value.split(" ");
+      var livehousenumber = result_livenumber[0];
+      var livemoonumber = result_livenumber[1];
+      var livevillagename = result_livenumber[2];
       for(var idx=0;idx<province_list.rows.length;idx++) {
         if(row[11].value == province_list.rows[idx].cols[1].value) {
           province_id = province_list.rows[idx].cols[0].value;
@@ -531,11 +590,13 @@ CSVMapping.map3 = function(config,callback) {
                     }
                   }
                   
-                  console.log(tumbons);
+                  //console.log(tumbons);
+                  /*
                   var result_livenumber = row[8].value.split(" ");
                   var livehousenumber = result_livenumber[0];
                   var livemoonumber = result_livenumber[1];
                   var livevillagename = result_livenumber[2];
+                  */
                   p_model.set('cid',cid);
                   p_model.set('firstname',firstname);
                   p_model.set('lastname',lastname);
@@ -556,31 +617,34 @@ CSVMapping.map3 = function(config,callback) {
                         +' ชื่อ-สกุล: '+firstname+' '+lastname;
                       row.message_list.push({'table_name':table_str, 'message':message_str});
                       p_model.get(SQL, cid, function(result) {
-                        var d_model = new DisabilityEvaluationModel();
-                        d_model.json = {cols:[]};
-                        d_model.set('disabilitycode',get_disability_id(row[13].value));
-                        d_model.set('cid',cid);
-                        d_model.save(SQL, function(res) {
+                        var sp_model = new ServiceProvisionModel();
+                        sp_model.json = {cols:[]};
+                        sp_model.set('psnumber','1');
+                        sp_model.set('hostid',host_id);
+                        sp_model.set('cid',cid);
+                        sp_model.set('caseno','1');
+                        sp_model.save(SQL, function(res) {
                          if(res.success) {
-                          var table_str = "DisabilityEvaluation(ตารางความบกพร่อง)"; 
-                          var message_str = ' รหัสความบกพร่อง: '+get_disability_id(row[13].value)
+                          var table_str = "ServiceProvision(ตารางการบริการ)"; 
+                          var message_str = ' Host: '+host_id
                             +' เลขที่บัตรประชาชน: '+cid;
                           row.message_list.push({'table_name':table_str, 'message':message_str});
-                          d_model.get(SQL, cid,function(result) {
-                           var sp_model = new ServiceProvisionModel();
-                           sp_model.json = {cols:[]};
-                           sp_model.set('psnumber','1');
-                           sp_model.set('hostid',host_id);
-                           sp_model.set('cid',cid);
-                           sp_model.set('caseno','1');
-                           sp_model.save(SQL, function(res) {
+                          sp_model.get(SQL, cid,function(result) {
+                           var d_model = new DisabilityEvaluationModel();
+                           d_model.json = {cols:[]};
+                           d_model.set('disabilitycode',get_disability_id(row[13].value));
+                           d_model.set('cid',cid);
+                           d_model.set('caseno','1');
+                           d_model.set('recorderid','1');
+                           d_model.save(SQL, function(res) {
                             if(res.success) {
-                             var table_str = "ServiceProvision(ตารางการบริการ)"; 
-                             var message_str = ' Host: '+host_id
-                               +' เลขที่บัตรประชาชน: '+cid;
-                             row.message_list.push({'table_name':table_str, 'message':message_str});
-                             sp_model.get(SQL, cid,function(result) {
-                             });
+                              var table_str = "DisabilityEvaluation(ตารางความบกพร่อง)"; 
+                              var message_str = ' รหัสความบกพร่อง: '+get_disability_id(row[13].value)
+                                +' เลขที่บัตรประชาชน: '+cid;
+                              row.message_list.push({'table_name':table_str, 'message':message_str});
+                              d_model.get(SQL, cid,function(result) {
+
+                              });
                             }
                            });
                           });
@@ -588,8 +652,8 @@ CSVMapping.map3 = function(config,callback) {
                         });
                       });
                       
-                      if (row[6].value.replace(/\s+/,'')){
-                        saveFamily(SQL,[row[2].value,ffirstname, flastname,'1'],
+                      if(row[6].value.replace(/\s+/,'').length != 0) {
+                        saveFamily(SQL,[cid,ffirstname, flastname,'1'],
                           function(res) {
                             if(res.success) {
                               var table_str = "Family(ตารางผู้ดูแล)"; 
@@ -598,8 +662,8 @@ CSVMapping.map3 = function(config,callback) {
                             }
                         });
                       }
-                      if (row[7].value.replace(/\s+/,'')){
-                        saveFamily(SQL,[row[2].value, mfirstname, mlastname,'2'],
+                      if(row[7].value.replace(/\s+/,'').length != 0) {
+                        saveFamily(SQL,[cid, mfirstname, mlastname,'2'],
                           function(res) {
                             if(res.success) {
                               var table_str = "Family"; 
@@ -652,6 +716,7 @@ CSVMapping.map4 = function(config, callback) {
             p_model.set('lastname',row[3].value);
             p_model.set('livehousenumber',row[5].value);
             p_model.set('livemoonumber',row[6].value);
+            p_model.set('dob',row[8].value+'/'+row[9].value+'/'+row[10].value);
             p_model.set('host',host_id);
             row.message_list = [];
            // p_model.set('mariagestatus',row[23].value);
@@ -663,24 +728,24 @@ CSVMapping.map4 = function(config, callback) {
                   +' ชื่อ-สกุล: '+row[2].value+' '+row[3].value;
                 row.message_list.push({'table_name':table_str, 'message':message_str});
                 p_model.get(SQL, cid, function(result) {
-                  console.log(p_model);
                   var spd_model = new ServiceProvisionDetailModel();
                   spd_model.json = {cols:[]};
                   spd_model.set('psnumber','1');
                   spd_model.set('actcode','ILL101003000000');
                   spd_model.set('cid',cid);
+                  spd_model.set('caseno','1');
                   spd_model.save(SQL, function(res) {
+                    console.log(res);
                     if(res.success) {
-                      var table_str = "ServiceProvisionDetail(ตารางข้อมูลเบี้ยยังชีพ)"; 
-                      var message_str = 'ACTCode: ILL101003000000'
+                      var table_str = "ServiceProvisionDetail(ตารางข้อมูลรายละเอียดการให้บริการ)"; 
+                      var message_str = '(ข้อมูลการให้บริการ): ILL101003000000'
                         +' รหัสบัตรประชาชน: '+cid;
                       row.message_list.push({'table_name':table_str, 'message':message_str});
-                      spd_model.get(SQL, row[2].value, 
-                        function(result) {
+                      spd_model.get(SQL, cid, function(result) {
                           //callback(true,p_model);
-                          callback(true,sp_model);
+                          //callback(true,sp_model);
                             //callback(true,d_model);
-                         });
+                      });
                     }
                   });
                 });
@@ -709,6 +774,12 @@ CSVMapping.map5 = function(config,callback) {
       var city_id = '?';
       var tumbon_id = '?';
       var host_id = '06002051';
+      var day_month = row[8].value.split("/");
+      console.log(day_month[1]);
+      console.log(day_month[0]);
+      var year = parseInt(row[9].value)-543;
+      var dob = day_month[1]+'/'+day_month[0]+'/'+year.toString();
+      console.log(dob);
       //console.log(lastname);
       row[24].value = row[24].value.replace(/\s+/,' ');
       var fresult = row[24].value.split(" ");
@@ -759,11 +830,11 @@ CSVMapping.map5 = function(config,callback) {
                   p_model.set('livetumbon',tumbon_id);
                   p_model.set('livehousenumber',row[16].value);
                   p_model.set('livemoonumber',row[18].value);
-                  p_model.set('liveallery',row[17].value);
+                  //p_model.set('liveallery',row[17].value);
                   p_model.set('livepostcode',row[23].value);
                   p_model.set('livevillagename',row[14].value);
                   p_model.set('host',host_id);
-                  //p_model.set('dob',row[8].value+row[9].value);
+                  p_model.set('dob',dob.toString());
                   row.message_list = [];
       
                   p_model.save(SQL, function(res) {
@@ -778,8 +849,8 @@ CSVMapping.map5 = function(config,callback) {
                         d_model.json = {cols:[]};
                         var now = new Date();
                         d_model.set('disabilitycode',get_disability_id(row[11].value));
-                        d_model.set('cid',row[2].value);
-                        d_model.set('caseno',1);
+                        d_model.set('cid',cid);
+                        d_model.set('caseno','1');
                         d_model.set('recorderid',now);
                         d_model.save(SQL, function(res) {
                          if(res.success) {
@@ -787,7 +858,7 @@ CSVMapping.map5 = function(config,callback) {
                           var message_str = ' รหัสความบกพร่อง: '+get_disability_id(row[11].value)
                             +' เลขที่บัตรประชาชน: '+cid;
                           row.message_list.push({'table_name':table_str, 'message':message_str});
-                          d_model.get(SQL, row[2].value,function(result) {
+                          d_model.get(SQL, cid,function(result) {
                           });
                          }
                         }); 
@@ -851,10 +922,11 @@ CSVMapping.map6 = function(config,callback) {
       var mresult = row[26].value.split(" ");
       var mfirstname = mresult[0];
       var mlastname = mresult[1];
-      row[27].value = row[27].value.replace(/\s+/,' ');
+      /*row[27].value = row[27].value.replace(/\s+/,' ');
       var oresult = row[27].value.split(" ");
       var ofirstname = oresult[0];
       var olastname = oresult[1];
+      */
 
       var gender_result = row[7].value;
       if (gender_result == 'ช') {
@@ -891,7 +963,20 @@ CSVMapping.map6 = function(config,callback) {
             +' ชื่อ-สกุล: '+row[3].value+' '+row[4].value;
           row.message_list.push({'table_name':table_str, 'message':message_str});
           p_model.get(SQL, cid, function(result) {
-            console.log(p_model);
+            var edu_model = new EducationChildModel();
+            edu_model.json = {cols:[]};
+            edu_model.set('educationstatusid',get_education_id(row[5].value));
+            edu_model.set('cid',cid);
+            edu_model.save(SQL, function(res) {
+              if(res.success) {
+                var table_str = "EducationChild(ตารางข้อมูลการศึกษา)"; 
+                var message_str = ' รหัสระดับการศึกษา: '+get_education_id(row[5].value);
+                row.message_list.push({'table_name':table_str, 'message':message_str});
+                edu_model.get(SQL, row[12].value, function(res) {
+                  console.log(p_model);
+               });
+              }
+            });
           });
           
           if (row[25].value.replace(/\s+/,'')){
@@ -914,6 +999,7 @@ CSVMapping.map6 = function(config,callback) {
                 }
             });
           }
+          /*
           if (row[27].value.replace(/\s+/,'')){
             saveFamily(SQL,[cid,ofirstname, olastname,'13'],
               function(res) {
@@ -924,6 +1010,7 @@ CSVMapping.map6 = function(config,callback) {
                 }
             });
           }
+          */
           
         }
       });
@@ -947,12 +1034,12 @@ CSVMapping.map7 = function(config,callback) {
     if(isValidThaiID(cid)) {
       var p_model = new PersonModel();
       p_model.json = {cols:[]};
-      row[9].value = row[9].value.replace(/\s+/,' ');
-      var fresult = row[9].value.split(" ");
+      row[11].value = row[11].value.replace(/\s+/,' ');
+      var fresult = row[11].value.split(" ");
       var ffirstname = fresult[0];
       var flastname = fresult[1];
-      row[10].value = row[10].value.replace(/\s+/,' ');
-      var mresult = row[10].value.split(" ");
+      row[12].value = row[12].value.replace(/\s+/,' ');
+      var mresult = row[12].value.split(" ");
       var mfirstname = mresult[0];
       var mlastname = mresult[1];
       var gender_result = row[7].value;
@@ -976,7 +1063,7 @@ CSVMapping.map7 = function(config,callback) {
       p_model.set('lastname',row[4].value);
       p_model.set('liveprovince','58');
       p_model.set('host',host_id);
-      p_model.set('dob',col[8].value);
+      //p_model.set('dob',col[8].value);
       //p_model.set('studentif',col[1].value);
 
       row.message_list = [];
@@ -996,8 +1083,7 @@ CSVMapping.map7 = function(config,callback) {
             edu_model.save(SQL, function(res) {
               if(res.success) {
                 var table_str = "EducationChild(ตารางข้อมูลการศึกษา)"; 
-                var message_str = ' รหัสระดับการศึกษา: '+get_education_id(row[5].value)
-                  +' เลขที่บัตรประชาชน: '+row[12].value;
+                var message_str = ' รหัสระดับการศึกษา: '+get_education_id(row[5].value);
                 row.message_list.push({'table_name':table_str, 'message':message_str});
                 edu_model.get(SQL, cid ,function(result) {
                   console.log(result);
@@ -1007,7 +1093,7 @@ CSVMapping.map7 = function(config,callback) {
                   sp_model.set('hostid',host_id);
                   sp_model.set('cid',cid);
                   sp_model.set('caseno','1');
-                  sp_model.set('psdatetime','2');
+                  //sp_model.set('psdatetime','2');
                   sp_model.save(SQL, function(res) {
                     if(res.success) {
                       var table_str = "ServiceProvision(ตารางการบริการ)"; 
@@ -1015,9 +1101,9 @@ CSVMapping.map7 = function(config,callback) {
                         +' เลขที่บัตรประชาชน: '+cid;
                       row.message_list.push({'table_name':table_str, 'message':message_str});
                       sp_model.get(SQL, cid,function(result) {
-                        callback(true,edu_model);
-                        callback(true,t_model);
-                        callback(true,sp_model);
+                        //callback(true,edu_model);
+                        //callback(true,t_model);
+                        //callback(true,sp_model);
                       });
                     }
                   });
@@ -1151,8 +1237,10 @@ CSVMapping.map10 = function(config,callback) {
       var discode_result = row[5].value;
 
       for(var idx=0;idx<dis_list.rows.length;idx++) {
+       var found_dis = false;
        if(discode_result == dis_list.rows[idx].cols[1].value) {
          discode = dis_list.rows[idx].cols[0].value;
+         found_dis = true;
        }
       }
 
@@ -1174,14 +1262,14 @@ CSVMapping.map10 = function(config,callback) {
             //var now = '10/07/2013';
             var t_model = new TempHNModel();
             t_model.json = {cols:[]};
-            t_model.set('hn',row[2].value);
+            t_model.set('hn',row[1].value);
             t_model.set('daterecord',now);
             t_model.set('hostid',host_id);
             t_model.set('cid',cid);
             t_model.save(SQL, function(res) {
              if(res.success) {
               var table_str = "TempHNModel"; 
-              var message_str = ' HN: '+row[2].value
+              var message_str = ' HN: '+row[1].value
                +' Host: '+host_id
                +' เลขที่บัตรประชาชน: '+cid;
               row.message_list.push({'table_name':table_str, 'message':message_str});
@@ -1199,6 +1287,9 @@ CSVMapping.map10 = function(config,callback) {
                    +' เลขที่บัตรประชาชน: '+cid;
                  row.message_list.push({'table_name':table_str, 'message':message_str});
                  sp_model.get(SQL, cid,function(result) {
+                   
+                  if(found_dis) {
+                   console.log('Found Discode '+discode);
                    var dis_model = new DiagnosisEvaluationModel();
                    dis_model.json = {cols:[]};
                    dis_model.set('discode',discode);
@@ -1216,6 +1307,9 @@ CSVMapping.map10 = function(config,callback) {
                        });
                      }
                    });
+                  }else{
+                    console.log('Not found '+ discode_result + ' CID('+cid+')');
+                  }
                  });
                 }
                });
@@ -1235,6 +1329,274 @@ CSVMapping.map10 = function(config,callback) {
  });
 };
 
+//กายอุปกรณ์ศรีสังวาลย์
+CSVMapping.map13 = function(config,callback) { 
+  var SQL = config.sql;
+  MaterialModel.list(SQL, function(material_list) {
+  angular.forEach(config.csv.list, function(row) {
+    var cid=row[12].value;
+    if(isValidThaiID(cid)) {
+      var p_model = new PersonModel();
+      p_model.json = {cols:[]};
+      var result = row[6].value.split(" ");
+      var firstname = result[0];
+      var lastname = result[1];
+      var d_result = row[25].value.split(" ");
+      var d_disburse = d_result[0];
+      var dr_result = row[26].value.split(" ");
+      var d_record = dr_result[0];
+      var host_id = '10719';
+      var actcode_id = '?';
+      var material_result = get_material_id(row[22].value);
+      
+      for(var idx=0;idx<material_list.rows.length;idx++) {
+        if(material_result == material_list.rows[idx].cols[0].value) {
+          actcode_id = material_list.rows[idx].cols[5].value;
+        }
+      }
+      
+      p_model.set('cid',cid);
+      p_model.set('firstname',firstname);
+      p_model.set('lastname',lastname);
+      p_model.set('liveprovince','56');
+      row.message_list = [];
+
+      p_model.save(SQL, function(res) {
+        console.log('saved '+cid);
+        console.log(res);
+        if(res.success) {
+          var table_str = "Person(ตารางข้อมูลผู้ด้อยโอกาส)"; 
+          var message_str = '(ข้อมูลเด็กด้อยโอกาส) '+cid
+            +' ชื่อ-สกุล: '+firstname+' '+lastname;
+          row.message_list.push({'table_name':table_str, 'message':message_str});
+          p_model.get(SQL, cid, function(result) {
+            console.log('Get pmodel');
+            console.log(result);
+            var now = new Date();
+            var t_model = new TempHNModel();
+            t_model.json = {cols:[]};
+            t_model.set('hn',row[9].value);
+            t_model.set('daterecord',now);
+            t_model.set('hostid',host_id);
+            t_model.set('cid',cid);
+            t_model.save(SQL, function(res) {
+              if(res.success) {
+                var table_str = "TempHNModel"; 
+                var message_str = ' HN: '+row[9].value
+                  +' Host: '+host_id
+                  +' เลขที่บัตรประชาชน: '+cid;
+                row.message_list.push({'table_name':table_str, 'message':message_str});
+                t_model.get(SQL, cid, function(result) {
+                  var e_model = new ExistingWelfareModel();
+                  e_model.json = {cols:[]};
+                  e_model.set('insurancecardid','0100');
+                  e_model.set('cid',cid);
+                  e_model.save(SQL, function(res) {
+                    if(res.success) {
+                      var table_str = "ExistingWelfare(ตารางข้อมูลสิทธิ์)"; 
+                      var message_str = ' (ข้อมูลสิทธิ์) 0100' 
+                        +' เลขทีบัตรประชาชน: '+cid;
+                      row.message_list.push({'table_name':table_str, 'message':message_str});
+                      e_model.get(SQL, cid, function(result) {
+                       
+                        var disburse_model = new Temp_disburseModel();
+                        disburse_model.json = {cols:[]};
+                        console.log(get_material_id(row[22].value));
+                        console.log(row[22].value);
+                        console.log(get_material_id(row[22].value));
+                        disburse_model.set('cid',cid);
+                        disburse_model.set('materialcode',get_material_id(row[22].value));
+                        disburse_model.set('number',row[23].value);
+                        disburse_model.set('money',row[24].value);
+                        disburse_model.set('d_disburse',d_disburse);
+                        disburse_model.set('d_record',d_record);
+                        disburse_model.save(SQL, function(res) {
+                          if(res.success) {
+                            var table_str = "Temp_disburse(ตารางข้อมูลสิทธิ์)";
+                            var message_str = ' (ข้อมูลการเบิกอุปกรณ์) '+get_material_id(row[22].value)
+                              +' '+row[23].value +' '+row[24].value;
+                            row.message_list.push({'table_name':table_str, 'message':message_str});
+                            disburse_model.get(SQL, cid, function(result) {
+                              var spd_model = new ServiceProvisionDetailModel();
+                              spd_model.json = {cols:[]};
+                              spd_model.set('psnumber','1');
+                              spd_model.set('actcode',actcode_id);
+                              spd_model.set('cid',cid);
+                              spd_model.set('caseno','1');
+                              spd_model.save(SQL, function(res) {
+                                if(res.success) {
+                                  var table_str = "ServiceProvisionDetail(ตารางข้อมูลกิจกรรม)"; 
+                                  var message_str = '(ข้อมูลกิจกรรม)'+actcode_id
+                                    +' รหัสบัตรประชาชน: '+cid;
+                                  row.message_list.push({'table_name':table_str, 'message':message_str});
+                                  spd_model.get(SQL, cid, 
+                                    function(result) {
+
+                                  });
+                                }
+                              });
+                            });
+                          }
+                        });
+                      
+                      });
+                    }
+                  });
+                });
+              }
+            });
+            
+          });
+        }
+      });
+
+    } else {
+      console.log('Invalid CID '+cid);
+      //console.log(row);
+      callback(false,row);
+    }
+  });
+  });
+}
+
+//กายอุปกรณ์แม่ลาน้อย
+CSVMapping.map12 = function(config,callback) { 
+  var SQL = config.sql;
+  MaterialModel.list(SQL, function(material_list) {
+  angular.forEach(config.csv.list, function(row) {
+    var cid=row[13].value;
+    if(isValidThaiID(cid)) {
+      var p_model = new PersonModel();
+      p_model.json = {cols:[]};
+      var result = row[7].value.split(" ");
+      var firstname = result[0];
+      var lastname = result[1];
+      var d_result = row[26].value.split(" ");
+      //console.log(d_result);
+      var d_disburse = d_result[0];
+      d_disburse = d_result[0];
+      //console.log(d_disburse);
+      var dr_result = row[27].value.split(" ");
+      var d_record = dr_result[0];
+      var host_id = '11205';
+      var actcode_id = '?';
+      var material_result = get_material_id(row[23].value);
+      
+      var found_actcode = false;
+      for(var idx=0;idx<material_list.rows.length;idx++) {
+        if(material_result == material_list.rows[idx].cols[0].value) {
+          actcode_id = material_list.rows[idx].cols[5].value;
+          found_actcode = true;
+        }
+      }
+      
+      p_model.set('cid',cid);
+      p_model.set('firstname',firstname);
+      p_model.set('lastname',lastname);
+      p_model.set('liveprovince','56');
+      row.message_list = [];
+
+      p_model.save(SQL, function(res) {
+        console.log('saved '+cid);
+        console.log(res);
+        if(res.success) {
+          var table_str = "Person(ตารางข้อมูลผู้ด้อยโอกาส)"; 
+          var message_str = '(ข้อมูลเด็กด้อยโอกาส) '+cid
+            +' ชื่อ-สกุล: '+firstname+' '+lastname;
+          row.message_list.push({'table_name':table_str, 'message':message_str});
+          p_model.get(SQL, cid, function(result) {
+            console.log('Get pmodel');
+            console.log(result);
+            var now = new Date();
+            var t_model = new TempHNModel();
+            t_model.json = {cols:[]};
+            t_model.set('hn',row[10].value);
+            t_model.set('daterecord',now);
+            t_model.set('hostid',host_id);
+            t_model.set('cid',cid);
+            t_model.save(SQL, function(res) {
+              if(res.success) {
+                var table_str = "TempHNModel"; 
+                var message_str = ' HN: '+row[10].value
+                   +' Host: '+host_id
+                   +' เลขที่บัตรประชาชน: '+cid;
+                row.message_list.push({'table_name':table_str, 'message':message_str});
+                t_model.get(SQL, cid, function(result) {
+                  var e_model = new ExistingWelfareModel();
+                  e_model.json = {cols:[]};
+                  e_model.set('insurancecardid','0100');
+                  e_model.set('cid',cid);
+                  e_model.save(SQL, function(res) {
+                    if(res.success) {
+                      var table_str = "ExistingWelfare(ตารางข้อมูลสิทธิ์)"; 
+                      var message_str = ' (ข้อมูลสิทธิ์) 0100' 
+                        +' เลขทีบัตรประชาชน: '+cid;
+                      row.message_list.push({'table_name':table_str, 'message':message_str});
+                      e_model.get(SQL, cid, function(result) {
+                       
+                        var disburse_model = new Temp_disburseModel();
+                        disburse_model.json = {cols:[]};
+                        disburse_model.set('cid',cid);
+                        disburse_model.set('materialcode',get_material_id(row[23].value));
+                        disburse_model.set('number',row[24].value);
+                        disburse_model.set('money',row[25].value);
+                        disburse_model.set('d_disburse',d_disburse);
+                        disburse_model.set('d_record',d_record);
+                        disburse_model.save(SQL, function(res) {
+                          if(res.success) {
+                            var table_str = "Temp_disburse(ตารางข้อมูลการเบิกอุปกรณ์)";
+                            var message_str = ' (ข้อมูลการเบิกอุปกรณ์) '+get_material_id(row[23].value)
+                              +'จำนวน: '+row[24].value +' ราคา:'+row[25].value;
+                            row.message_list.push({'table_name':table_str, 'message':message_str});
+                            disburse_model.get(SQL, cid, function(result) {
+                             if(found_actcode) {
+                              console.log('Found Material '+material_result+' '+actcode_id +' CID('+cid+') ');
+                              var spd_model = new ServiceProvisionDetailModel();
+                              spd_model.json = {cols:[]};
+                              spd_model.set('psnumber','1');
+                              spd_model.set('actcode',actcode_id);
+                              spd_model.set('cid',cid);
+                              spd_model.set('caseno','1');
+                              spd_model.save(SQL, function(res) {
+                                if(res.success) {
+                                  var table_str = "ServiceProvisionDetail(ตารางข้อมูลกิจกรรม)"; 
+                                  var message_str = '(ข้อมูลกิจกรรม)'+actcode_id
+                                    +' รหัสบัตรประชาชน: '+cid;
+                                  row.message_list.push({'table_name':table_str, 'message':message_str});
+                                  spd_model.get(SQL, cid, 
+                                    function(result) {
+
+                                  });
+                                }
+                              });
+                             }else{
+                               console.log('Not found '+ material_result + ' CID('+cid+')');
+                             }
+                            });
+                          }
+                        });
+                      
+                      });
+                    }
+                  });
+                });
+              }
+            });
+            
+          });
+        }
+      });
+
+    } else {
+      console.log('Invalid CID '+cid);
+      //console.log(row);
+      callback(false,row);
+    }
+  });
+  });
+}
+
+//อบต.แม่นาเติง
 CSVMapping.map14 = function(config,callback) { 
  var SQL = config.sql;
   ProvinceModel.list(SQL, function(province_list) {
@@ -1315,9 +1677,9 @@ CSVMapping.map14 = function(config,callback) {
                           row.message_list.push({'table_name':table_str, 'message':message_str});
                           edu_model.get(SQL, cid, function(result) {
                            console.log(result);
-                           callback(true,t_model);
-                           callback(true,sp_model);
-                           callback(true,edu_model);
+                           //callback(true,t_model);
+                           //callback(true,sp_model);
+                           //callback(true,edu_model);
                           });
                          }
                         });
@@ -1342,116 +1704,146 @@ CSVMapping.map14 = function(config,callback) {
     }
   });
  });
+ //});
 };
 
 
 CSVMapping.map15 = function(config,callback) { 
  var SQL = config.sql;
   ProvinceModel.list(SQL, function(province_list) {
+  TitleModel.list(SQL, function(title_list) {
   angular.forEach(config.csv.list, function(row) {
-    var cid=row[1].value.replace(/-/g,'');
-      var p_model = new PersonModel();
-      p_model.json = {cols:[]};
+  //  var cid=row[1].value.replace(/-/g,'');
+ //   var cid='C'+md5(row[1].value.replace(/-/g,'')).substring(0,12);
+    var p_model = new PersonModel();
+    p_model.json = {cols:[]};
 
-      var host_id = '6580702';
-      var province_id = '?';
-      var city_id = '?';
-      var tumbon_id = '?';
-      row[1].value = row[1].value.replace(/\s+/,' ');
-      var result = row[1].value.split(" ");
-      var firstname = result[0];
-      var lastname = result[1];
-      var v = md5(firstname+' '+lastname);
-      row[4].value = row[4].value.replace(/\s+/,' ');
-      var r = row[4].value.split(" ");
-      var livehousenumber = r[0]; 
-      var livemoonumber = r[1]; 
-      var tumbon = r[2]; 
-      var city = r[3]; 
-      var liveprovince_result = 'แม่ฮ่องสอน';
+    var host_id = '6580702';
+    var province_id = '?';
+    var title_id = '?';
+    var city_id = '?';
+    var tumbon_id = '?';
+    row[1].value = row[1].value.replace(/\s+/,' ');
+    var result = row[1].value.split(" ");
+    var title = result[0];
+    var firstname = result[1];
+    var lastname = result[2];
+    var v = md5(firstname+' '+lastname);
+    var cid = 'C'+v.substring(0,12);
+    console.log('Performing '+cid);
+    //row[4].value = row[4].value.replace(/\s+/,' ');
+    //var tumbon=r4.replace(/ต./g,'');
+    var rr1 = row[4].value.replace(/ต. /,'ต.');
+    var rr2 = rr1.replace(/ม. /,'ม.');
+    console.log("-->");
+    console.log(rr2);
+    var r = rr2.split(" ");
+    console.log("---->");
+    console.log(r);
+    //var r = row[4].value.split(" ");
+    var livehousenumber = r[0]; 
+    var livemoonumber = r[1]; 
+    //var tumbon = r[2].replace(/ต./,''); 
+    var tumbon = r[2]; 
+    var city = r[4]; 
+    var liveprovince_result = 'แม่ฮ่องสอน';
 
-      row[3].value = row[3].value.replace(/\s+/,' ');
-      var oresult = row[3].value.split(" ");
-      var ofirstname = oresult[0];
-      var olastname = oresult[1];
+    row[3].value = row[3].value.replace(/\s+/,' ');
+    var oresult = row[3].value.split(" ");
+    var ofirstname = oresult[0];
+    var olastname = oresult[1];
 
-      for(var idx=0;idx<province_list.rows.length;idx++) {
-        if(liveprovince_result  == province_list.rows[idx].cols[1].value) {
-          province_id = province_list.rows[idx].cols[0].value;
-          ProvinceModel.get_cities(SQL, province_id, function(cities) {
-            for (var idx=0;idx<cities.rows.length;idx++) {
-              if (cities.rows[idx].cols[1].value == city) {
-                city_id = cities.rows[idx].cols[0].value; 
-                ProvinceModel.get_tumbons(SQL, city_id, function(tumbons) {
-                  for (var idx=0;idx<tumbons.rows.length;idx++) {
-                    if (tumbons.rows[idx].cols[1].value == tumbon ) {
-                      tumbon_id = tumbons.rows[idx].cols[0].value; 
-                      console.log(tumbon_id);
-                    }
-                  }
+    for(var idx=0;idx<title_list.rows.length;idx++) {
+      if(title == title_list.rows[idx].cols[1].value) {
+        title_id = title_list.rows[idx].cols[0].value;
+      }
+    }
 
-                  p_model.set('cid','C'+v.substring(0,12));
-                  p_model.set('firstname',firstname);
-                  p_model.set('lastname',lastname);
-                  p_model.set('host',host_id);
-                  p_model.set('dob',row[2].value);
-                  p_model.set('livehousenumber',livehousenumber);
-                  p_model.set('livemoonumber',livemoonumber);
-                  p_model.set('liveprovince',province_id);
-                  p_model.set('livecity',city_id);
-                  p_model.set('livetumbon',tumbon_id);
-                  p_model.set('daterecorde','11/06/2011');
-                  row.message_list = [];
-                  //p_model.set('livehousenumber',col[5].value);
-                  //p_model.set('livemoonumber',col[6].value);
-      
+    for(var idx_1=0;idx_1<province_list.rows.length;idx_1++) {
+      if(liveprovince_result  == province_list.rows[idx_1].cols[1].value) {
+        province_id = province_list.rows[idx_1].cols[0].value;
+        ProvinceModel.get_cities(SQL, province_id, function(cities) {
+          var found_city = false;
+          for (var idx_2=0;idx_2<cities.rows.length;idx_2++) {
+            if (cities.rows[idx_2].cols[1].value == city) {
+              city_id = cities.rows[idx_2].cols[0].value; 
+              found_city = true;
+            }
+          }
 
-                  p_model.save(SQL, function(res) {
-                   if(res.success) {
-                    var table_str = "Person(ตารางข้อมูลผู้ด้อยโอกาส)"; 
-                    var message_str = 'เลขที่บัตรประชาชน: '+cid
-                       +' ชื่อ-สกุล: '+firstname+' '+lastname;
-                    row.message_list.push({'table_name':table_str, 'message':message_str});
-                    p_model.get(SQL, cid, function(result) {
-                     console.log(p_model);
-                     var sp_model = new ServiceProvisionModel();
-                     sp_model.json = {cols:[]};
-                     sp_model.set('psnumber','1');
-                     sp_model.set('hostid',host_id);
-                     sp_model.set('cid',cid);
-                     sp_model.set('psdatetime','10/06/2011');
-                     sp_model.set('caseno','1');
-                     sp_model.save(SQL, function(res) {
-                      if(res.success) {
-                       var table_str = "ServiceProvision(ตารางการบริการ)"; 
-                       var message_str = ' Host: '+host_id
-                         +' เลขที่บัตรประชาชน: '+cid;
-                       row.message_list.push({'table_name':table_str, 'message':message_str});
-                       sp_model.get(SQL, cid,function(result) {
-                       });
-                      }
+          if(found_city) {
+            console.log('Found City '+city+' '+city_id +' CID('+cid+') ');
+            ProvinceModel.get_tumbons(SQL, city_id, function(tumbons) {
+              for (var idx_3=0;idx_3<tumbons.rows.length;idx_3++) {
+                if (tumbons.rows[idx_3].cols[1].value == tumbon ) {
+                  tumbon_id = tumbons.rows[idx_3].cols[0].value; 
+                  console.log(tumbon_id);
+                }
+              }
+
+              p_model.set('cid',cid);
+              p_model.set('firstname',firstname);
+              p_model.set('lastname',lastname);
+              p_model.set('host',host_id);
+              p_model.set('dob',row[2].value);
+              p_model.set('livehousenumber',livehousenumber);
+              p_model.set('livemoonumber',livemoonumber);
+              p_model.set('liveprovince',province_id);
+              p_model.set('livecity',city_id);
+              p_model.set('livetumbon',tumbon_id);
+              p_model.set('title',title_id);
+                //p_model.set('daterecorde','11/06/2011');
+              row.message_list = [];
+                //p_model.set('livehousenumber',col[5].value);
+                //p_model.set('livemoonumber',col[6].value);
+              p_model.save(SQL, function(res) {
+               console.log('saved cid '+cid);
+               console.log(res);
+               if(res.success) {
+                var table_str = "Person(ตารางข้อมูลผู้ด้อยโอกาส)"; 
+                var message_str = 'เลขที่บัตรประชาชน: '+cid
+                    +' ชื่อ-สกุล: '+firstname+' '+lastname;
+                row.message_list.push({'table_name':table_str, 'message':message_str});
+                p_model.get(SQL, cid, function(result) {
+                  var sp_model = new ServiceProvisionModel();
+                  sp_model.json = {cols:[]};
+                  sp_model.set('psnumber','1');
+                  sp_model.set('hostid',host_id);
+                  sp_model.set('cid',cid);
+                  sp_model.set('psdatetime','10/06/2011');
+                  sp_model.set('caseno','1');
+                     
+                  sp_model.save(SQL, function(res) {
+                    if(res.success) {
+                      var table_str = "ServiceProvision(ตารางการบริการ)"; 
+                      var message_str = ' Host: '+host_id
+                        +' เลขที่บัตรประชาชน: '+cid;
+                      row.message_list.push({'table_name':table_str, 'message':message_str});
+                     sp_model.get(SQL, cid,function(result) {
                      });
-                    });
-
-                    if (row[3].value.replace(/\s+/,'')){
-                      saveFamily(SQL,[cid,ofirstname, olastname,'1'],
-                        function(res) {
-                          if(res.success) {
-                            var table_str = "Family(ตารางผู้ดูแล)"; 
-                            var message_str = '(อื่นๆ) '+ ofirstname+ ' '+olastname;
-                            row.message_list.push({'table_name':table_str, 'message':message_str});
-                          }
-                      });
                     }
-                   }
                   });
                 });
+               }
+              });
+
+              if(row[3].value.replace(/\s+/,'').length != 0) {
+                saveFamily(SQL,[cid,ofirstname, olastname,'1'],function(res) {
+                  if(res.success) {
+                    var table_str = "Family(ตารางผู้ดูแล)"; 
+                    var message_str = '(อื่นๆ) '+ ofirstname+ ' '+olastname;
+                    row.message_list.push({'table_name':table_str, 'message':message_str});
+                  }
+                });
               }
-            }
-          });
-        }
+            });
+          } else {
+            console.log('Not found '+ city + ' CID('+cid+')');
+          }
+        });
       } 
-      
+    }  
+   });
   });
  });
 };
@@ -1506,6 +1898,7 @@ CSVMapping.schema = [
    'name':'กระทรวงศึกษาธิการ - สนง.เขคพื้นที่การศึกษา- studentmis5813001_2554-1', 
    'function':CSVMapping.map7 
   },
+  /*
   {
    'name':'กระทรวงสาธารณสุข - รพ.สตสำโรงใต้- วัคซีน 0-1ปี ', 
    'function':CSVMapping.map8 
@@ -1514,14 +1907,17 @@ CSVMapping.schema = [
    'name':'กระทรวงสาธารณสุข - รพ.สตสำโรงใต้- วัคซีน 4-5ปี ', 
    'function':CSVMapping.map9 
   },
+  */
   {
    'name':'กระทรวงสาธารณสุข - รพ.สตถ้ำลอด- งานค่ารักษาเลข678', 
    'function':CSVMapping.map10 
   },
+  /*
   {
    ' name':'สาธารณสุข_รพ.สตถ้ำลอด_exportข้อมูลตรวจ' , 
    'function':CSVMapping.map11 
   },
+  */
   {
    'name':'กระทรวงสาธารณสุข - กายอุปกรณ์- กายอุปกรณ์ แม่ลาน้อย ', 
    'function':CSVMapping.map12 
