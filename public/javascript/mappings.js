@@ -116,9 +116,9 @@ function get_welfare_id(welfare_name) {
 function get_disability_id(disability_name) {
   var id_1_list = ['1','ทางการมองเห็น'];
   var id_2_list = ['2','ทางการได้ยินหรือสื่อความหมาย'];
-  var id_3_list = ['4','ทางกายหรือการเคลื่อนไหว'];
-  var id_4_list = ['7'];
-  var id_5_list = ['3','5','ทางสติปัญญาหรือการเรียนรู้'];
+  var id_3_list = ['4','ทางกายหรือการเคลื่อนไหว','ทางการเคลื่อนไหวหรือร่างกาย'];
+  var id_4_list = ['7','ทางจิต'];
+  var id_5_list = ['3','5','ทางสติปัญญาหรือการเรียนรู้','ทางสติปัญญา','ทางการเรียนรู้'];
   var id_6_list = ['8'];
   var id_7_list = ['9'];
   if(id_1_list.indexOf(disability_name)!=-1) {
@@ -226,9 +226,24 @@ function saveFamily(SQL,list,callback) {
  f_model.set('firstname',list[1]);
  f_model.set('lastname',list[2]);
  f_model.set('carerstatus',list[3]);
+ f_model.set('liveprovince',list[4]);
+ f_model.set('livehousenumber',list[5]);
+ f_model.set('livemoonumber',list[6]);
+ f_model.set('livepostcode',list[7]);
  f_model.save(SQL,callback);
 }
 
+function saveDisabilityEvaluation(SQL,list,callback) {
+ var d_model = new DisabilityEvaluationModel();
+ d_model.json = {cols:[]};
+ d_model.set('disabilitycode',list[1]);
+ d_model.set('cid',list[0]);
+ d_model.set('caseno',list[2]);
+ d_model.set('recorderid',list[3]);
+ d_model.set('evaldatetime',list[4]);
+ d_model.save(SQL,callback);
+
+}
 
 CSVMapping.map1 = function(config, callback) { 
   var SQL = config.sql;
@@ -613,10 +628,12 @@ CSVMapping.map3 = function(config,callback) {
                           sp_model.get(SQL, cid,function(result) {
                            var d_model = new DisabilityEvaluationModel();
                            d_model.json = {cols:[]};
+                           var now = new Date();
                            d_model.set('disabilitycode',get_disability_id(row[13].value));
                            d_model.set('cid',cid);
                            d_model.set('caseno','1');
                            d_model.set('recorderid','1');
+                           d_model.set('evaldatetime',now);
                            d_model.save(SQL, function(res) {
                             if(res.success) {
                               var table_str = "DisabilityEvaluation(ตารางประเภทความบกพร่อง)"; 
@@ -829,7 +846,8 @@ CSVMapping.map5 = function(config,callback) {
                         d_model.set('disabilitycode',get_disability_id(row[11].value));
                         d_model.set('cid',cid);
                         d_model.set('caseno','1');
-                        d_model.set('recorderid',now);
+                        d_model.set('recorderid','1');
+                        d_model.set('evaldatetime',now);
                         d_model.save(SQL, function(res) {
                          if(res.success) {
                           var table_str = "DisabilityEvaluation(ตารางข้อมูลประเภทความบกพร่อง)"; 
@@ -950,14 +968,14 @@ CSVMapping.map6 = function(config,callback) {
                 var message_str = ' (ข้อมูลระดับการศึกษา) '+get_education_id(row[5].value);
                 row.message_list.push({'table_name':table_str, 'message':message_str});
                 edu_model.get(SQL, row[12].value, function(res) {
-                  console.log(p_model);
+                  //console.log(p_model);
                });
               }
             });
           });
-          
+
           if (row[25].value.replace(/\s+/,'').length != 0){
-            saveFamily(SQL,[cid,ffirstname, flastname,'1'],
+            saveFamily(SQL,[cid,ffirstname, flastname,'1','58',row[19].value,row[20].value,row[24].value],
               function(res) {
                 if(res.success) {
                   var table_str = "Family(ตารางผู้ดูแล)"; 
@@ -967,7 +985,7 @@ CSVMapping.map6 = function(config,callback) {
             });
           }
           if (row[26].value.replace(/\s+/,'').length != 0){
-            saveFamily(SQL,[cid,mfirstname, mlastname,'2'],
+            saveFamily(SQL,[cid,mfirstname, mlastname,'2','58',row[19].value,row[20].value,row[24].value],
               function(res) {
                 if(res.success) {
                   var table_str = "Family(ตารางผู้ดูแล)"; 
@@ -1414,7 +1432,7 @@ CSVMapping.map13 = function(config,callback) {
                           }
                         });
                        } else {
-                         console.log('Not found '+ discode_result + ' CID('+cid+')');
+                         console.log('Not found '+ material_result + ' CID('+cid+')');
                        } 
                       });
                     }
@@ -1424,6 +1442,90 @@ CSVMapping.map13 = function(config,callback) {
             });
             
           });
+
+          if (row[13].value.replace(/\s+/,'').length != 0){
+            var now = new Date();
+            var param = 'ทางการมองเห็น';
+            saveDisabilityEvaluation(SQL,[cid,get_disability_id(param),'1','1',now],
+              function(res) {
+                if(res.success) {
+                  var table_str = "DisabilityEvaluation(ตารางประเภทความบกพร่อง)"; 
+                  var message_str = '(ข้อมูลประเภทความบกพร่อง) '
+                    +get_disability_id(param);
+                  row.message_list.push({'table_name':table_str, 'message':message_str});
+                }
+            });
+          }
+
+          if (row[14].value.replace(/\s+/,'').length != 0){
+            var now = new Date();
+            var param = 'ทางการได้ยินหรือสื่อความหมาย';
+            saveDisabilityEvaluation(SQL,[cid,get_disability_id(param),'1','1',now],
+              function(res) {
+                if(res.success) {
+                  var table_str = "DisabilityEvaluation(ตารางประเภทความบกพร่อง)"; 
+                  var message_str = '(ข้อมูลประเภทความบกพร่อง) '
+                    +get_disability_id(param);
+                  row.message_list.push({'table_name':table_str, 'message':message_str});
+                }
+            });
+          }
+
+          if (row[15].value.replace(/\s+/,'').length != 0){
+            var now = new Date();
+            var param = 'ทางการเคลื่อนไหวหรือร่างกาย';
+            saveDisabilityEvaluation(SQL,[cid,get_disability_id(param),'1','1',now],
+              function(res) {
+                if(res.success) {
+                  var table_str = "DisabilityEvaluation(ตารางประเภทความบกพร่อง)"; 
+                  var message_str = '(ข้อมูลประเภทความบกพร่อง) '
+                    +get_disability_id(param);
+                  row.message_list.push({'table_name':table_str, 'message':message_str});
+                }
+            });
+          }
+
+          if (row[16].value.replace(/\s+/,'').length != 0){
+            var now = new Date();
+            var param = 'ทางจิต';
+            saveDisabilityEvaluation(SQL,[cid,get_disability_id(param),'1','1',now],
+              function(res) {
+                if(res.success) {
+                  var table_str = "DisabilityEvaluation(ตารางประเภทความบกพร่อง)"; 
+                  var message_str = '(ข้อมูลประเภทความบกพร่อง) '
+                    +get_disability_id(param);
+                  row.message_list.push({'table_name':table_str, 'message':message_str});
+                }
+            });
+          }
+
+          if (row[17].value.replace(/\s+/,'').length != 0){
+            var now = new Date();
+            var param = 'ทางสติปัญญา';
+            saveDisabilityEvaluation(SQL,[cid,get_disability_id(param),'1','1',now],
+              function(res) {
+                if(res.success) {
+                  var table_str = "DisabilityEvaluation(ตารางประเภทความบกพร่อง)"; 
+                  var message_str = '(ข้อมูลประเภทความบกพร่อง) '
+                    +get_disability_id(param);
+                  row.message_list.push({'table_name':table_str, 'message':message_str});
+                }
+            });
+          }
+
+          if (row[18].value.replace(/\s+/,'').length != 0){
+            var now = new Date();
+            var param = 'ทางการเรียนรู้';
+            saveDisabilityEvaluation(SQL,[cid,get_disability_id(param),'1','1',now],
+              function(res) {
+                if(res.success) {
+                  var table_str = "DisabilityEvaluation(ตารางประเภทความบกพร่อง)"; 
+                  var message_str = '(ข้อมูลประเภทความบกพร่อง) '
+                    +get_disability_id(param);
+                  row.message_list.push({'table_name':table_str, 'message':message_str});
+                }
+            });
+          }
         }
       });
 
@@ -1555,8 +1657,92 @@ CSVMapping.map12 = function(config,callback) {
                 });
               }
             });
-            
           });
+
+          if (row[14].value.replace(/\s+/,'').length != 0){
+            var now = new Date();
+            var param = 'ทางการมองเห็น';
+            saveDisabilityEvaluation(SQL,[cid,get_disability_id(param),'1','1',now],
+              function(res) {
+                if(res.success) {
+                  var table_str = "DisabilityEvaluation(ตารางประเภทความบกพร่อง)"; 
+                  var message_str = '(ข้อมูลประเภทความบกพร่อง) '
+                    +get_disability_id(param);
+                  row.message_list.push({'table_name':table_str, 'message':message_str});
+                }
+            });
+          }
+
+          if (row[15].value.replace(/\s+/,'').length != 0){
+            var now = new Date();
+            var param = 'ทางการได้ยินหรือสื่อความหมาย';
+            saveDisabilityEvaluation(SQL,[cid,get_disability_id(param),'1','1',now],
+              function(res) {
+                if(res.success) {
+                  var table_str = "DisabilityEvaluation(ตารางประเภทความบกพร่อง)"; 
+                  var message_str = '(ข้อมูลประเภทความบกพร่อง) '
+                    +get_disability_id(param);
+                  row.message_list.push({'table_name':table_str, 'message':message_str});
+                }
+            });
+          }
+
+          if (row[16].value.replace(/\s+/,'').length != 0){
+            var now = new Date();
+            var param = 'ทางการเคลื่อนไหวหรือร่างกาย';
+            saveDisabilityEvaluation(SQL,[cid,get_disability_id(param),'1','1',now],
+              function(res) {
+                if(res.success) {
+                  var table_str = "DisabilityEvaluation(ตารางประเภทความบกพร่อง)"; 
+                  var message_str = '(ข้อมูลประเภทความบกพร่อง) '
+                    +get_disability_id(param);
+                  row.message_list.push({'table_name':table_str, 'message':message_str});
+                }
+            });
+          }
+
+          if (row[17].value.replace(/\s+/,'').length != 0){
+            var now = new Date();
+            var param = 'ทางจิต';
+            saveDisabilityEvaluation(SQL,[cid,get_disability_id(param),'1','1',now],
+              function(res) {
+                if(res.success) {
+                  var table_str = "DisabilityEvaluation(ตารางประเภทความบกพร่อง)"; 
+                  var message_str = '(ข้อมูลประเภทความบกพร่อง) '
+                    +get_disability_id(param);
+                  row.message_list.push({'table_name':table_str, 'message':message_str});
+                }
+            });
+          }
+
+          if (row[18].value.replace(/\s+/,'').length != 0){
+            var now = new Date();
+            var param = 'ทางสติปัญญา';
+            saveDisabilityEvaluation(SQL,[cid,get_disability_id(param),'1','1',now],
+              function(res) {
+                if(res.success) {
+                  var table_str = "DisabilityEvaluation(ตารางประเภทความบกพร่อง)"; 
+                  var message_str = '(ข้อมูลประเภทความบกพร่อง) '
+                    +get_disability_id(param);
+                  row.message_list.push({'table_name':table_str, 'message':message_str});
+                }
+            });
+          }
+
+          if (row[19].value.replace(/\s+/,'').length != 0){
+            var now = new Date();
+            var param = 'ทางการเรียนรู้';
+            saveDisabilityEvaluation(SQL,[cid,get_disability_id(param),'1','1',now],
+              function(res) {
+                if(res.success) {
+                  var table_str = "DisabilityEvaluation(ตารางประเภทความบกพร่อง)"; 
+                  var message_str = '(ข้อมูลประเภทความบกพร่อง) '
+                    +get_disability_id(param);
+                  row.message_list.push({'table_name':table_str, 'message':message_str});
+                }
+            });
+          }
+
         }
       });
 
