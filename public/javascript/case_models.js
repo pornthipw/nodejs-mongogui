@@ -24,6 +24,7 @@ function PersonModel() {
       case 'liveprovince': index = 20; break;
       case 'livepostcode': index = 21; break;
       case 'host': index = 43; break;
+      case 'studentid': index = 46; break;
       case 'daterecord': index = 47; break;
       //case 'mariagestatus': index = 9; break;
       default:
@@ -67,6 +68,7 @@ function PersonModel() {
       {'name':'liveprovince', 'type':'VarChar', 'value':self.json.cols[20].value},
       {'name':'livepostcode', 'type':'VarChar', 'value':self.json.cols[21].value},
       {'name':'host', 'type':'VarChar', 'value':self.json.cols[43].value},
+      {'name':'studentid', 'type':'VarChar', 'value':self.json.cols[46].value},
       {'name':'daterecord', 'type':'VarChar', 'value':self.json.cols[47].value}
     ];
     return params;
@@ -131,6 +133,7 @@ function PersonModel() {
       +" LiveProvince,"
       +" LivePostCode,"
       +" Host,"
+      +" studentid,"
       +" DateRecorde)"
       +" VALUES " 
       +" (@cid," 
@@ -149,6 +152,7 @@ function PersonModel() {
       +"  @liveprovince,"
       +"  @livepostcode,"
       +"  @host,"
+      +"  @studentid,"
       +"  @daterecord)";
     var params = self.assign_params();
     console.log('+insert CID ('+self.json.cols[0].value+')');
@@ -174,6 +178,7 @@ function PersonModel() {
       +" LiveProvince = @liveprovince,"
       +" LivePostCode = @livepostcode,"
       +" Host = @host,"
+      +" studentid = @studentid,"
       +" DateRecorde = @daterecord"
       +" WHERE " 
       +" CID = @cid";

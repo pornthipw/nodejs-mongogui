@@ -120,7 +120,7 @@ function get_disability_id(disability_name) {
   var id_4_list = ['7'];
   var id_5_list = ['3','5','ทางสติปัญญาหรือการเรียนรู้'];
   var id_6_list = ['8'];
-  var id_8_list = ['9'];
+  var id_7_list = ['9'];
   if(id_1_list.indexOf(disability_name)!=-1) {
     return '10';
   }
@@ -140,9 +140,6 @@ function get_disability_id(disability_name) {
     return '60';
   }
   if(id_7_list.indexOf(disability_name)!=-1) {
-    return '60';
-  }
-  if(id_8_list.indexOf(disability_name)!=-1) {
     return '80';
   }
   return undefined;
@@ -297,9 +294,7 @@ CSVMapping.map1 = function(config, callback) {
                     if(res.success) {
                       //row.message_list.push('Save 1 TempHNModel '+row[2].value+' '+host_id+' '+row[12].value);;
                       var table_str = "TempHNModel"; 
-                      var message_str = ' HN: '+row[2].value
-                        +' Host: '+host_id
-                        +' เลขที่บัตรประชาชน: '+row[12].value;
+                      var message_str = '(ข้อมูลHN) '+row[2].value+' Host: '+host_id;
                       row.message_list.push({'table_name':table_str, 'message':message_str});
                       t_model.get(SQL, row[12].value, function(res) {
                         var e_model = new ExistingWelfareModel();
@@ -309,8 +304,7 @@ CSVMapping.map1 = function(config, callback) {
                         e_model.save(SQL, function(res) {
                           if(res.success) {
                             var table_str = "ExistingWelfare(ตารางข้อมูลสิทธิ์)"; 
-                            var message_str = ' รหัสข้อมูลสิทธิ์: '+get_insurance_id(row[14].value) 
-                              +' เลขทีบัตรประชาชน: '+row[12].value;
+                            var message_str = '(ข้อมูลสิทธิ์) '+get_insurance_id(row[14].value); 
                             row.message_list.push({'table_name':table_str, 'message':message_str});
                             e_model.get(SQL, row[12].value, function(res) {
                               var edu_model = new EducationChildModel();
@@ -320,8 +314,7 @@ CSVMapping.map1 = function(config, callback) {
                               edu_model.save(SQL, function(res) {
                                 if(res.success) {
                                   var table_str = "EducationChild(ตารางข้อมูลการศึกษา)"; 
-                                  var message_str = ' รหัสระดับการศึกษา: '+get_education_id(row[18].value)
-                                    +' เลขที่บัตรประชาชน: '+row[12].value;
+                                  var message_str = '(ข้อมูลระดับการศึกษา) '+get_education_id(row[18].value);
                                   row.message_list.push({'table_name':table_str, 'message':message_str});
                                   edu_model.get(SQL, row[12].value, function(res) {
                                     var sp_model = new ServiceProvisionModel();
@@ -333,8 +326,7 @@ CSVMapping.map1 = function(config, callback) {
                                     sp_model.save(SQL, function(res) {
                                       if(res.success) {
                                         var table_str = "ServiceProvision(ตารางการบริการ)"; 
-                                        var message_str = ' Host: '+host_id
-                                          +' เลขที่บัตรประชาชน: '+row[12].value;
+                                        var message_str = '(ข้อมูลการบริการ) Host: '+host_id;
                                         row.message_list.push({'table_name':table_str, 'message':message_str});
                                         sp_model.get(SQL, row[12].value,function(res) {
                                           //callback(true,t_model);
@@ -465,8 +457,7 @@ CSVMapping.map2 = function(config,callback) {
                         edu_model.save(SQL, function(edu_res) {
                          if(edu_res.success) {
                           var table_str = "EducationChild(ตารางข้อมูลการศึกษา)"; 
-                          var message_str = ' รหัสระดับการศึกษา: '+get_education_id(row[10].value);
-                             +' เลขที่บัตรประชาชน: '+row[2].value;
+                          var message_str = '(ข้อมูลระดับการศึกษา) '+get_education_id(row[10].value);
                           row.message_list.push({'table_name':table_str, 'message':message_str});
                           edu_model.get(SQL, row[2].value,function(edu_result) {
                             //console.log(res);
@@ -476,9 +467,8 @@ CSVMapping.map2 = function(config,callback) {
                             w_model.set('cid',row[2].value);
                             w_model.save(SQL, function(w_res) {
                              if(w_res.success) {
-                              var table_str = "WelfareVSPerson(ตารางข้อมูลเด็กด้อยโอกาส)"; 
-                              var message_str = ' รหัสเด็กด้อยโอกาส: '+get_welfare_id(row[13].value)
-                                +' เลขที่บัตรประชาชน: '+row[2].value;
+                              var table_str = "WelfareVSPerson(ตารางข้อมูลประเภทเด็กด้อยโอกาส)"; 
+                              var message_str = '(ข้อมูลประเภทเด็กด้อยโอกาส) '+get_welfare_id(row[13].value);
                               row.message_list.push({'table_name':table_str, 'message':message_str});
                               w_model.get(SQL, row[2].value, function(w_result) {
                                 var sp_model = new ServiceProvisionModel();
@@ -490,8 +480,7 @@ CSVMapping.map2 = function(config,callback) {
                                 sp_model.save(SQL, function(sp_res) {
                                  if(sp_res.success) {
                                   var table_str = "ServiceProvision(ตารางการบริการ)"; 
-                                  var message_str = ' Host: '+host_id
-                                    +' เลขที่บัตรประชาชน: '+row[2].value;
+                                  var message_str = '(ข้อมูลHost) '+host_id;
                                   row.message_list.push({'table_name':table_str, 'message':message_str});
                                   sp_model.get(SQL, row[2].value,function(sp_result) {
                                   });
@@ -590,13 +579,6 @@ CSVMapping.map3 = function(config,callback) {
                     }
                   }
                   
-                  //console.log(tumbons);
-                  /*
-                  var result_livenumber = row[8].value.split(" ");
-                  var livehousenumber = result_livenumber[0];
-                  var livemoonumber = result_livenumber[1];
-                  var livevillagename = result_livenumber[2];
-                  */
                   p_model.set('cid',cid);
                   p_model.set('firstname',firstname);
                   p_model.set('lastname',lastname);
@@ -626,8 +608,7 @@ CSVMapping.map3 = function(config,callback) {
                         sp_model.save(SQL, function(res) {
                          if(res.success) {
                           var table_str = "ServiceProvision(ตารางการบริการ)"; 
-                          var message_str = ' Host: '+host_id
-                            +' เลขที่บัตรประชาชน: '+cid;
+                          var message_str = '(ข้อมูลHost) '+host_id;
                           row.message_list.push({'table_name':table_str, 'message':message_str});
                           sp_model.get(SQL, cid,function(result) {
                            var d_model = new DisabilityEvaluationModel();
@@ -638,9 +619,8 @@ CSVMapping.map3 = function(config,callback) {
                            d_model.set('recorderid','1');
                            d_model.save(SQL, function(res) {
                             if(res.success) {
-                              var table_str = "DisabilityEvaluation(ตารางความบกพร่อง)"; 
-                              var message_str = ' รหัสความบกพร่อง: '+get_disability_id(row[13].value)
-                                +' เลขที่บัตรประชาชน: '+cid;
+                              var table_str = "DisabilityEvaluation(ตารางประเภทความบกพร่อง)"; 
+                              var message_str = '(ข้อมูลประเภทความบกพร่อง) '+get_disability_id(row[13].value);
                               row.message_list.push({'table_name':table_str, 'message':message_str});
                               d_model.get(SQL, cid,function(result) {
 
@@ -738,13 +718,10 @@ CSVMapping.map4 = function(config, callback) {
                     console.log(res);
                     if(res.success) {
                       var table_str = "ServiceProvisionDetail(ตารางข้อมูลรายละเอียดการให้บริการ)"; 
-                      var message_str = '(ข้อมูลการให้บริการ): ILL101003000000'
-                        +' รหัสบัตรประชาชน: '+cid;
+                      var message_str = '(ข้อมูลการให้บริการ): ILL101003000000';
                       row.message_list.push({'table_name':table_str, 'message':message_str});
                       spd_model.get(SQL, cid, function(result) {
-                          //callback(true,p_model);
-                          //callback(true,sp_model);
-                            //callback(true,d_model);
+
                       });
                     }
                   });
@@ -823,8 +800,8 @@ CSVMapping.map5 = function(config,callback) {
                   p_model.set('cid',cid);
                   p_model.set('title_id',title_id);
                   p_model.set('gender_id',gender_id);
-                  p_model.set('firstname',row[4].value);
-                  p_model.set('lastname',row[5].value);
+                  p_model.set('firstname',row[4].value.replace(/\s+/,''));
+                  p_model.set('lastname',row[5].value.replace(/\s+/,''));
                   p_model.set('liveprovince',province_id);
                   p_model.set('livecity',city_id);
                   p_model.set('livetumbon',tumbon_id);
@@ -835,6 +812,7 @@ CSVMapping.map5 = function(config,callback) {
                   p_model.set('livevillagename',row[14].value);
                   p_model.set('host',host_id);
                   p_model.set('dob',dob.toString());
+                  p_model.set('studentid',row[1].value);
                   row.message_list = [];
       
                   p_model.save(SQL, function(res) {
@@ -854,9 +832,8 @@ CSVMapping.map5 = function(config,callback) {
                         d_model.set('recorderid',now);
                         d_model.save(SQL, function(res) {
                          if(res.success) {
-                          var table_str = "DisabilityEvaluation(ตารางความบกพร่อง)"; 
-                          var message_str = ' รหัสความบกพร่อง: '+get_disability_id(row[11].value)
-                            +' เลขที่บัตรประชาชน: '+cid;
+                          var table_str = "DisabilityEvaluation(ตารางข้อมูลประเภทความบกพร่อง)"; 
+                          var message_str = ' (ข้อมูลประเภทความบกพร่อง) '+get_disability_id(row[11].value);
                           row.message_list.push({'table_name':table_str, 'message':message_str});
                           d_model.get(SQL, cid,function(result) {
                           });
@@ -864,7 +841,7 @@ CSVMapping.map5 = function(config,callback) {
                         }); 
                       });
 
-                      if (row[24].value.replace(/\s+/,'')){
+                      if (row[24].value.replace(/\s+/,'').length != 0){
                         saveFamily(SQL,[row[2].value,ffirstname, flastname,'1'],
                           function(res) {
                             if(res.success) {
@@ -874,7 +851,7 @@ CSVMapping.map5 = function(config,callback) {
                             }
                         });
                       }
-                      if (row[25].value.replace(/\s+/,'')){
+                      if (row[25].value.replace(/\s+/,'').length != 0){
                         saveFamily(SQL,[row[2].value, mfirstname, mlastname,'2'],
                           function(res) {
                             if(res.success) {
@@ -970,7 +947,7 @@ CSVMapping.map6 = function(config,callback) {
             edu_model.save(SQL, function(res) {
               if(res.success) {
                 var table_str = "EducationChild(ตารางข้อมูลการศึกษา)"; 
-                var message_str = ' รหัสระดับการศึกษา: '+get_education_id(row[5].value);
+                var message_str = ' (ข้อมูลระดับการศึกษา) '+get_education_id(row[5].value);
                 row.message_list.push({'table_name':table_str, 'message':message_str});
                 edu_model.get(SQL, row[12].value, function(res) {
                   console.log(p_model);
@@ -979,7 +956,7 @@ CSVMapping.map6 = function(config,callback) {
             });
           });
           
-          if (row[25].value.replace(/\s+/,'')){
+          if (row[25].value.replace(/\s+/,'').length != 0){
             saveFamily(SQL,[cid,ffirstname, flastname,'1'],
               function(res) {
                 if(res.success) {
@@ -989,7 +966,7 @@ CSVMapping.map6 = function(config,callback) {
                 }
             });
           }
-          if (row[26].value.replace(/\s+/,'')){
+          if (row[26].value.replace(/\s+/,'').length != 0){
             saveFamily(SQL,[cid,mfirstname, mlastname,'2'],
               function(res) {
                 if(res.success) {
@@ -1083,7 +1060,7 @@ CSVMapping.map7 = function(config,callback) {
             edu_model.save(SQL, function(res) {
               if(res.success) {
                 var table_str = "EducationChild(ตารางข้อมูลการศึกษา)"; 
-                var message_str = ' รหัสระดับการศึกษา: '+get_education_id(row[5].value);
+                var message_str = ' (ข้อมูลระดับการศึกษา) '+get_education_id(row[5].value);
                 row.message_list.push({'table_name':table_str, 'message':message_str});
                 edu_model.get(SQL, cid ,function(result) {
                   console.log(result);
@@ -1093,17 +1070,13 @@ CSVMapping.map7 = function(config,callback) {
                   sp_model.set('hostid',host_id);
                   sp_model.set('cid',cid);
                   sp_model.set('caseno','1');
-                  //sp_model.set('psdatetime','2');
                   sp_model.save(SQL, function(res) {
                     if(res.success) {
                       var table_str = "ServiceProvision(ตารางการบริการ)"; 
-                      var message_str = ' Host: '+host_id
-                        +' เลขที่บัตรประชาชน: '+cid;
+                      var message_str = ' (ข้อมูลHost) '+host_id;
                       row.message_list.push({'table_name':table_str, 'message':message_str});
                       sp_model.get(SQL, cid,function(result) {
-                        //callback(true,edu_model);
-                        //callback(true,t_model);
-                        //callback(true,sp_model);
+
                       });
                     }
                   });
@@ -1250,6 +1223,10 @@ CSVMapping.map10 = function(config,callback) {
       p_model.set('host',host_id);
       row.message_list = [];
 
+      var log_f = function(res) {
+        console.log(res);
+      };
+
       p_model.save(SQL, function(res) {
         if(res.success) {
           var table_str = "Person(ตารางข้อมูลผู้ด้อยโอกาส)"; 
@@ -1269,9 +1246,7 @@ CSVMapping.map10 = function(config,callback) {
             t_model.save(SQL, function(res) {
              if(res.success) {
               var table_str = "TempHNModel"; 
-              var message_str = ' HN: '+row[1].value
-               +' Host: '+host_id
-               +' เลขที่บัตรประชาชน: '+cid;
+              var message_str = ' (ข้อมูลHN) '+row[1].value+' Host: '+host_id;
               row.message_list.push({'table_name':table_str, 'message':message_str});
               t_model.get(SQL, cid, function(result) {
                var sp_model = new ServiceProvisionModel();
@@ -1283,8 +1258,7 @@ CSVMapping.map10 = function(config,callback) {
                sp_model.save(SQL, function(res) {
                 if(res.success) {
                  var table_str = "ServiceProvision(ตารางการบริการ)"; 
-                 var message_str = ' Host: '+host_id
-                   +' เลขที่บัตรประชาชน: '+cid;
+                 var message_str = ' (ข้อมูลการบริการ) Host '+host_id;
                  row.message_list.push({'table_name':table_str, 'message':message_str});
                  sp_model.get(SQL, cid,function(result) {
                    
@@ -1297,18 +1271,21 @@ CSVMapping.map10 = function(config,callback) {
                    dis_model.save(SQL, function(res) {
                      if(res.success) {
                        var table_str = "DiagnosisEvaluation"; 
-                       var message_str = ' discode: '+discode+' เลขที่บัตรประชาชน: '+cid;
+                       var message_str = ' DisCode: '+discode;
                        row.message_list.push({'table_name':table_str, 'message':message_str});
                        dis_model.get(SQL, cid,function(result) {
                          console.log(result);
-                         callback(true,t_model);
-                         callback(true,sp_model);
-                         callback(true,dis_model);
                        });
                      }
                    });
                   }else{
                     console.log('Not found '+ discode_result + ' CID('+cid+')');
+                    GeneralAttributesModel.push(SQL,cid,
+                         'ICD10', row[5].value,log_f);
+                    var table_str = "GeneralAttributes"; 
+                    var message_str = ' ชื่อคอลัมน์:ICD10 value:'+row[5].value;
+                    row.message_list.push({'table_name':table_str, 'message':message_str});
+                    
                   }
                  });
                 }
@@ -1348,10 +1325,11 @@ CSVMapping.map13 = function(config,callback) {
       var host_id = '10719';
       var actcode_id = '?';
       var material_result = get_material_id(row[22].value);
-      
+      var found_actcode = false; 
       for(var idx=0;idx<material_list.rows.length;idx++) {
         if(material_result == material_list.rows[idx].cols[0].value) {
           actcode_id = material_list.rows[idx].cols[5].value;
+          found_actcode = true;
         }
       }
       
@@ -1382,9 +1360,7 @@ CSVMapping.map13 = function(config,callback) {
             t_model.save(SQL, function(res) {
               if(res.success) {
                 var table_str = "TempHNModel"; 
-                var message_str = ' HN: '+row[9].value
-                  +' Host: '+host_id
-                  +' เลขที่บัตรประชาชน: '+cid;
+                var message_str = ' (ข้อมูลHN) '+row[9].value+' Host: '+host_id;
                 row.message_list.push({'table_name':table_str, 'message':message_str});
                 t_model.get(SQL, cid, function(result) {
                   var e_model = new ExistingWelfareModel();
@@ -1394,11 +1370,11 @@ CSVMapping.map13 = function(config,callback) {
                   e_model.save(SQL, function(res) {
                     if(res.success) {
                       var table_str = "ExistingWelfare(ตารางข้อมูลสิทธิ์)"; 
-                      var message_str = ' (ข้อมูลสิทธิ์) 0100' 
-                        +' เลขทีบัตรประชาชน: '+cid;
+                      var message_str = ' (ข้อมูลสิทธิ์) 0100'; 
                       row.message_list.push({'table_name':table_str, 'message':message_str});
                       e_model.get(SQL, cid, function(result) {
-                       
+                       if(found_actcode) {
+                        console.log('Found Material '+material_result+' '+actcode_id +' CID('+cid+') ');
                         var disburse_model = new Temp_disburseModel();
                         disburse_model.json = {cols:[]};
                         console.log(get_material_id(row[22].value));
@@ -1426,8 +1402,7 @@ CSVMapping.map13 = function(config,callback) {
                               spd_model.save(SQL, function(res) {
                                 if(res.success) {
                                   var table_str = "ServiceProvisionDetail(ตารางข้อมูลกิจกรรม)"; 
-                                  var message_str = '(ข้อมูลกิจกรรม)'+actcode_id
-                                    +' รหัสบัตรประชาชน: '+cid;
+                                  var message_str = '(ข้อมูลกิจกรรม)'+actcode_id;
                                   row.message_list.push({'table_name':table_str, 'message':message_str});
                                   spd_model.get(SQL, cid, 
                                     function(result) {
@@ -1438,7 +1413,9 @@ CSVMapping.map13 = function(config,callback) {
                             });
                           }
                         });
-                      
+                       } else {
+                         console.log('Not found '+ discode_result + ' CID('+cid+')');
+                       } 
                       });
                     }
                   });
@@ -1517,9 +1494,7 @@ CSVMapping.map12 = function(config,callback) {
             t_model.save(SQL, function(res) {
               if(res.success) {
                 var table_str = "TempHNModel"; 
-                var message_str = ' HN: '+row[10].value
-                   +' Host: '+host_id
-                   +' เลขที่บัตรประชาชน: '+cid;
+                var message_str = ' (ข้อมูลHN) '+row[10].value+' Host: '+host_id;
                 row.message_list.push({'table_name':table_str, 'message':message_str});
                 t_model.get(SQL, cid, function(result) {
                   var e_model = new ExistingWelfareModel();
@@ -1529,8 +1504,7 @@ CSVMapping.map12 = function(config,callback) {
                   e_model.save(SQL, function(res) {
                     if(res.success) {
                       var table_str = "ExistingWelfare(ตารางข้อมูลสิทธิ์)"; 
-                      var message_str = ' (ข้อมูลสิทธิ์) 0100' 
-                        +' เลขทีบัตรประชาชน: '+cid;
+                      var message_str = ' (ข้อมูลสิทธิ์) 0100'; 
                       row.message_list.push({'table_name':table_str, 'message':message_str});
                       e_model.get(SQL, cid, function(result) {
                        
@@ -1546,7 +1520,7 @@ CSVMapping.map12 = function(config,callback) {
                           if(res.success) {
                             var table_str = "Temp_disburse(ตารางข้อมูลการเบิกอุปกรณ์)";
                             var message_str = ' (ข้อมูลการเบิกอุปกรณ์) '+get_material_id(row[23].value)
-                              +'จำนวน: '+row[24].value +' ราคา:'+row[25].value;
+                              +' จำนวน: '+row[24].value +' ราคา:'+row[25].value;
                             row.message_list.push({'table_name':table_str, 'message':message_str});
                             disburse_model.get(SQL, cid, function(result) {
                              if(found_actcode) {
@@ -1560,8 +1534,7 @@ CSVMapping.map12 = function(config,callback) {
                               spd_model.save(SQL, function(res) {
                                 if(res.success) {
                                   var table_str = "ServiceProvisionDetail(ตารางข้อมูลกิจกรรม)"; 
-                                  var message_str = '(ข้อมูลกิจกรรม)'+actcode_id
-                                    +' รหัสบัตรประชาชน: '+cid;
+                                  var message_str = '(ข้อมูลกิจกรรม)'+actcode_id;
                                   row.message_list.push({'table_name':table_str, 'message':message_str});
                                   spd_model.get(SQL, cid, 
                                     function(result) {
@@ -1661,8 +1634,7 @@ CSVMapping.map14 = function(config,callback) {
                      sp_model.save(SQL, function(res) {
                       if(res.success) {
                        var table_str = "ServiceProvision(ตารางการบริการ)"; 
-                       var message_str = ' Host: '+host_id
-                         +' เลขที่บัตรประชาชน: '+cid;
+                       var message_str = ' (ข้อมูลการบริการ) Host: '+host_id;
                        row.message_list.push({'table_name':table_str, 'message':message_str});
                        sp_model.get(SQL, cid,function(result) {
                         var edu_model = new EducationChildModel();
@@ -1672,14 +1644,11 @@ CSVMapping.map14 = function(config,callback) {
                         edu_model.save(SQL, function(res) {
                          if(res.success) {
                           var table_str = "EducationChild(ตารางข้อมูลการศึกษา)"; 
-                          var message_str = ' รหัสระดับการศึกษา: '+get_education_id(row[4].value)
-                            +' เลขที่บัตรประชาชน: '+cid;
+                          var message_str = ' (ข้อมูลระดับการศึกษา) '+get_education_id(row[4].value);
                           row.message_list.push({'table_name':table_str, 'message':message_str});
                           edu_model.get(SQL, cid, function(result) {
-                           console.log(result);
-                           //callback(true,t_model);
-                           //callback(true,sp_model);
-                           //callback(true,edu_model);
+                           //console.log(result);
+
                           });
                          }
                         });
@@ -1816,8 +1785,7 @@ CSVMapping.map15 = function(config,callback) {
                   sp_model.save(SQL, function(res) {
                     if(res.success) {
                       var table_str = "ServiceProvision(ตารางการบริการ)"; 
-                      var message_str = ' Host: '+host_id
-                        +' เลขที่บัตรประชาชน: '+cid;
+                      var message_str = ' (ข้อมูลการบริการ) Host: '+host_id;
                       row.message_list.push({'table_name':table_str, 'message':message_str});
                      sp_model.get(SQL, cid,function(result) {
                      });
@@ -1831,7 +1799,7 @@ CSVMapping.map15 = function(config,callback) {
                 saveFamily(SQL,[cid,ofirstname, olastname,'1'],function(res) {
                   if(res.success) {
                     var table_str = "Family(ตารางผู้ดูแล)"; 
-                    var message_str = '(อื่นๆ) '+ ofirstname+ ' '+olastname;
+                    var message_str = '(ข้อมูลผู้ดูแล) '+ ofirstname+ ' '+olastname;
                     row.message_list.push({'table_name':table_str, 'message':message_str});
                   }
                 });
