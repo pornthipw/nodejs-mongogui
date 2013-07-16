@@ -58,15 +58,15 @@ function get_insurance_id(insurancecard_name) {
 }
 
 function get_education_id(education_name) {
-  var id_1_list = ['ป.1','ป.2','ป.3'];
+  var id_1_list = ['ป.1','ป.2','ป.3','ป 1','ป. 1'];
   var id_2_list = ['ป.4','ป.5','ป.6'];
-  var id_3_list = ['ม.1','ม.2','ม.3','มัธยมศึกษาตอนต้น'];
-  var id_4_list = ['ม.4','ม.5','ม.6','มัธยมศึกษาตอนปลาย หรือ ปวช.'];
-  var id_5_list = ['ระดับปริญญาตรี'];
+  var id_3_list = ['ม.1','ม.2','ม.3','มัธยมศึกษาตอนต้น','มัธยม'];
+  var id_4_list = ['ม.4','ม.5','ม.6','มัธยมศึกษาตอนปลาย หรือ ปวช.','อาชีวศึกษา'];
+  var id_5_list = ['ระดับปริญญาตรี','อุดมศึกษา','ป ตรี','กำลังศึกษา ปตรี'];
   var id_6_list = ['ปวส.'];
-  var id_7_list = ['ประถมศึกษา'];
+  var id_7_list = ['ประถมศึกษา','ประถม'];
   var id_8_list = ['ไม่ได้ศึกษา'];
-  var id_9_list = ['อบ.1','อนุบาล 1'];
+  var id_9_list = ['อบ.1','อนุบาล 1','อบ.2','อนุบาล'];
   var id_10_list = ['เตรียมอนุบาล'];
   if(id_1_list.indexOf(education_name)!=-1) {
     return '04';
@@ -191,6 +191,48 @@ function get_material_id(material_name) {
   }
   return undefined;
 }
+
+function get_occupation_id(occupation_name) {
+  var id_1_list = ['ก่อสร้าง','เก็บของเก่า','เก็บของเก่าขาย',
+     'ขับมอเตอร์ไซต์รับจ้าง','ขับรถตุ๊กๆ','ขับรถทัวร์','ขับรถรับจ้าง',
+     'ขายไส้กรอก','เข็นของ บขส 2','ค้าขาย','ค้าขายอิสระ',
+     'หาของเก่า เก็บขยะขาย','ลูกจ้างกรมทางหลวง','ลูกจ้าง',
+     'ลิเก','ลงป้าย','รับจ้างทั่วไป','รับจ้าง','รับจ้างเย็บผ้า',
+     'รับจ้างก่อสร้าง','รับจ้่าง','ธุรกิจส่วนตัว','ช่าง','ค้าบาย'
+    ];
+  var id_2_list = ['เกษตรกรรม','เลี้ยงม้า','ทำนา','ทำสวน'];
+  var id_3_list = ['ขอทาน','นักบวข','บวชเป็นพระ','เสียชีวิต','เสียชีวิตแล้ว','จ๊อกกี้'];
+  var id_4_list = ['ข้าราชการบำนาญ','รับราชการ','รับราชการบำนาญ','ทหาร'];
+  var id_5_list = ['ว่างงาน','ไม่มี','แม่บ้าน'];
+  var id_6_list = ['รัฐวิสาหกิจ','พนักงานรัฐวิสาหกิจ'];
+  var id_7_list = ['รปภ','รักษาความปลอดภัย','ร.ป.ภ','พนักงานโรงงาน',
+     'พนักงานบริษัท','พนักงาน'
+   ];
+  if(id_1_list.indexOf(occupation_name)!=-1) {
+    return '3';
+    //รับจ้าง / ค้าขาย / ธุรกิจส่วนตัว
+  }
+  if(id_2_list.indexOf(occupation_name)!=-1) {
+    return '2';
+    //เกษตรกร (ทำไร่,นา,สวน / เลี้ยงสัตว์ / ประมง)
+  }
+  if(id_3_list.indexOf(occupation_name)!=-1) {
+    return '8';
+    //อื่นๆ
+  }
+  if(id_4_list.indexOf(occupation_name)!=-1) {
+    return '4';
+    //ข้าราชการ / พนักงานรัฐ
+  }
+  if(id_5_list.indexOf(occupation_name)!=-1) {
+    return '1';
+    //ไม่มีอาชีพ / ว่างงาน
+  }
+  if(id_6_list.indexOf(occupation_name)!=-1) {
+    return '5';
+    //พนักงานรัฐวิสาหกิจ
+  }
+}
 /*
 function isValidThaiID(str) {
  //var pattern = /^(\d{13})?$/;
@@ -232,6 +274,21 @@ function saveFamily(SQL,list,callback) {
  f_model.set('livepostcode',list[7]);
  f_model.save(SQL,callback);
 }
+
+
+function saveFamily1(SQL,list,callback) {
+ var f_model = new FamilyModel();
+ f_model.json = {cols:[]};
+ f_model.set('fmembercid',list[4]);
+ f_model.set('cid',list[0]);
+ f_model.set('firstname',list[1]);
+ f_model.set('lastname',list[2]);
+ f_model.set('carerstatus',list[3]);
+ f_model.set('occupation',list[5]);
+ f_model.set('educationlevel',list[6]);
+ f_model.save(SQL,callback);
+}
+
 
 function saveDisabilityEvaluation(SQL,list,callback) {
  var d_model = new DisabilityEvaluationModel();
@@ -2003,6 +2060,195 @@ CSVMapping.map15 = function(config,callback) {
 };
 
 
+CSVMapping.map16 = function(config,callback) { 
+ var SQL = config.sql;
+  OccupationModel.list(SQL, function(occupation_list) {
+  ProvinceModel.list(SQL, function(province_list) {
+  angular.forEach(config.csv.list, function(row) {
+    var cid=row[3].value.replace(/-/g,'');
+    var fid=row[46].value.replace(/-/g,'');
+    var mid=row[58].value.replace(/-/g,'');
+    var oid=row[71].value.replace(/-/g,'');
+ //   var cid='C'+md5(row[1].value.replace(/-/g,'')).substring(0,12);
+    var p_model = new PersonModel();
+    p_model.json = {cols:[]};
+
+    var gender_result = row[2].value;
+    if (gender_result == 'ชาย') {
+      var gender_id = 'M';  
+    } else {
+      var gender_id = 'F';  
+    } 
+    var province_id = '?';
+    var focc_id = '?';
+    var mocc_id = '?';
+    var oocc_id = '?';
+    var city_id = '?';
+    var tumbon_id = '?';
+    row[1].value = row[1].value.replace(/\s+/,' ');
+    var result = row[1].value.split(" ");
+    var firstname = result[0];
+    var lastname = result[1];
+
+    row[43].value = row[43].value.replace(/\s+/,' ');
+    var fresult = row[43].value.split(" ");
+    console.log("---->");  
+    console.log(fresult);
+    var ffirstname = fresult[0];
+    var flastname = fresult[1];
+    
+    row[55].value = row[55].value.replace(/\s+/,' ');
+    var mresult = row[55].value.split(" ");
+    console.log("---->");  
+    console.log(mresult);
+    var mfirstname = mresult[0];
+    var mlastname = mresult[1];
+
+    row[68].value = row[68].value.replace(/\s+/,' ');
+    var oresult = row[68].value.split(" ");
+    console.log("---->");  
+    console.log(oresult);
+    var ofirstname = oresult[0];
+    var olastname = oresult[1];
+
+    var focc_result = get_occupation_id(row[45].value);
+    var mocc_result = get_occupation_id(row[57].value);
+    var oocc_result = get_occupation_id(row[70].value);
+    var city = row[15].value+row[16].value; 
+      
+    var found_focc = false;
+    for(var idx=0;idx<occupation_list.rows.length;idx++) {
+      if(focc_result == occupation_list.rows[idx].cols[0].value) {
+        focc_id = occupation_list.rows[idx].cols[0].value;
+        found_focc = true;
+      }
+    }
+    var found_mocc = false;
+    for(var idx=0;idx<occupation_list.rows.length;idx++) {
+      if(mocc_result == occupation_list.rows[idx].cols[0].value) {
+        mocc_id = occupation_list.rows[idx].cols[0].value;
+        found_mocc = true;
+      }
+    }
+    var found_oocc = false;
+    for(var idx=0;idx<occupation_list.rows.length;idx++) {
+      if(oocc_result == occupation_list.rows[idx].cols[0].value) {
+        oocc_id = occupation_list.rows[idx].cols[0].value;
+        found_oocc = true;
+      }
+    }
+
+    for(var idx_1=0;idx_1<province_list.rows.length;idx_1++) {
+      if(row[16].value  == province_list.rows[idx_1].cols[1].value) {
+        province_id = province_list.rows[idx_1].cols[0].value;
+        ProvinceModel.get_cities(SQL, province_id, function(cities) {
+          var found_city = false;
+          for (var idx_2=0;idx_2<cities.rows.length;idx_2++) {
+            if (cities.rows[idx_2].cols[1].value == city) {
+              city_id = cities.rows[idx_2].cols[0].value; 
+              found_city = true;
+            }
+          }
+
+          if(found_city) {
+            console.log('Found City '+city+' '+city_id +' CID('+cid+') ');
+            ProvinceModel.get_tumbons(SQL, city_id, function(tumbons) {
+              for (var idx_3=0;idx_3<tumbons.rows.length;idx_3++) {
+                if (tumbons.rows[idx_3].cols[1].value == row[14].value) {
+                  tumbon_id = tumbons.rows[idx_3].cols[0].value; 
+                  console.log(tumbon_id);
+                }
+              }
+
+              p_model.set('cid',cid);
+              p_model.set('firstname',firstname);
+              p_model.set('lastname',lastname);
+              p_model.set('dob',row[5].value);
+              p_model.set('nation',row[21].value);
+              p_model.set('race',row[20].value);
+              p_model.set('religion',row[22].value);
+              p_model.set('livehousenumber',row[9].value);
+              p_model.set('livemoonumber',row[10].value);
+              p_model.set('livevillagename',row[11].value);
+              p_model.set('livealley',row[12].value);
+              p_model.set('livestreetname',row[13].value);
+              p_model.set('liveprovince',province_id);
+              p_model.set('livepostcode',row[17].value);
+              p_model.set('livecity',city_id);
+              p_model.set('livetumbon',tumbon_id);
+              row.message_list = [];
+              p_model.save(SQL, function(res) {
+               console.log('saved cid '+cid);
+               console.log(res);
+               if(res.success) {
+                var table_str = "Person(ตารางข้อมูลผู้ด้อยโอกาส)"; 
+                var message_str = 'เลขที่บัตรประชาชน: '+cid
+                    +' ชื่อ-สกุล: '+firstname+' '+lastname;
+                row.message_list.push({'table_name':table_str, 'message':message_str});
+                p_model.get(SQL, cid, function(result) {
+                  var edu_model = new EducationChildModel();
+                  edu_model.json = {cols:[]};
+                  edu_model.set('educationstatusid',get_education_id(row[28].value));
+                  edu_model.set('cid',cid);
+                  edu_model.set('schoolname',row[30].value);
+                  edu_model.set('class',row[29].value);
+                  edu_model.save(SQL, function(res) {
+                    if(res.success) {
+                      var table_str = "EducationChild(ตารางข้อมูลการศึกษา)"; 
+                      var message_str = '(ข้อมูลระดับการศึกษา) '+get_education_id(row[28].value);
+                      row.message_list.push({'table_name':table_str, 'message':message_str});
+                      edu_model.get(SQL, cid, function(res) {
+
+                      });
+                    }
+                  });
+                });
+               }
+              });
+
+              if(row[43].value.replace(/\s+/,'').length != 0) {
+                  saveFamily1(SQL,[cid,ffirstname, flastname,'1',fid,focc_id,get_education_id(row[49].value)],function(res) {
+                    if(res.success) {
+                      console.log('Found Occupation '+focc_result+' '+focc_id +' CID('+cid+') ');
+                      var table_str = "Family(ตารางผู้ดูแล)"; 
+                      var message_str = '(ข้อมูลบิดา) '+ ffirstname+ ' '+flastname;
+                      row.message_list.push({'table_name':table_str, 'message':message_str});
+                    }
+                  });
+              }
+              if(row[55].value.replace(/\s+/,'').length != 0) {
+                  saveFamily1(SQL,[cid,mfirstname, mlastname,'2',mid,mocc_id,get_education_id(row[61].value)],function(res) {
+                    if(res.success) {
+                      var table_str = "Family(ตารางผู้ดูแล)"; 
+                      var message_str = '(ข้อมูลมารดา) '+ mfirstname+ ' '+mlastname;
+                      row.message_list.push({'table_name':table_str, 'message':message_str});
+                    }
+                  });
+              }
+              if(row[68].value.replace(/\s+/,'').length != 0) {
+                  saveFamily1(SQL,[cid,ofirstname, olastname,'13',oid,oocc_id,get_education_id(row[74].value)],function(res) {
+                    if(res.success) {
+                      var table_str = "Family(ตารางผู้ดูแล)"; 
+                      var message_str = '(ข้อมูลผู้ดูแล) '+ ofirstname+ ' '+olastname;
+                      row.message_list.push({'table_name':table_str, 'message':message_str});
+                    }
+                  });
+              }
+            });
+            //});
+          } else {
+            console.log('Not found '+ city + ' CID('+cid+')');
+          }
+        });
+      } 
+    }  
+   });
+  });
+  });
+};
+
+
+
 CSVMapping.schema = [
  // {'name':'พม.- สรุปยอดผู้รับเบี้ยพิการ', 'function':CSVMapping.map1},
  // {'name':'กระทรวงสาธารณสุข - กายอุปกรณ์ ศรีสังวาลย์', 'function':CSVMapping.map2 },
@@ -2087,5 +2333,9 @@ CSVMapping.schema = [
   {
    'name':'อบต.สบป่อง', 
    'function':CSVMapping.map15 
+  },
+  {
+   'name':'case manager - แยกตำบล', 
+   'function':CSVMapping.map16 
   }
 ];

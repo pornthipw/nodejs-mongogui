@@ -14,11 +14,14 @@ function PersonModel() {
       case 'lastname': index = 3; break;
       case 'dob': index = 4; break;
       case 'gender_id': index = 5; break;
+      case 'nation': index = 7; break;
+      case 'race': index = 8; break;
       case 'religion': index = 9; break;
       case 'livehousenumber': index = 13; break;
       case 'livemoonumber': index = 14; break;
       case 'livevillagename': index = 15; break;
       case 'livealley': index = 16; break;
+      case 'livestreetname': index = 17; break;
       case 'livetumbon': index = 18; break;
       case 'livecity': index = 19; break;
       case 'liveprovince': index = 20; break;
@@ -58,11 +61,14 @@ function PersonModel() {
       {'name':'lastname', 'type':'VarChar', 'value':self.json.cols[3].value},
       {'name':'dob', 'type':'VarChar', 'value':self.json.cols[4].value},
       {'name':'gender', 'type':'VarChar', 'value':self.json.cols[5].value},
+      {'name':'nation', 'type':'VarChar', 'value':self.json.cols[7].value},
+      {'name':'race', 'type':'VarChar', 'value':self.json.cols[8].value},
       {'name':'religion', 'type':'VarChar', 'value':self.json.cols[9].value},
       {'name':'livehousenumber', 'type':'VarChar', 'value':self.json.cols[13].value},
       {'name':'livemoonumber', 'type':'VarChar', 'value':self.json.cols[14].value},
       {'name':'livevillagename', 'type':'VarChar', 'value':self.json.cols[15].value},
       {'name':'livealley', 'type':'VarChar', 'value':self.json.cols[16].value},
+      {'name':'livestreetname', 'type':'VarChar', 'value':self.json.cols[17].value},
       {'name':'livetumbon', 'type':'VarChar', 'value':self.json.cols[18].value},
       {'name':'livecity', 'type':'VarChar', 'value':self.json.cols[19].value},
       {'name':'liveprovince', 'type':'VarChar', 'value':self.json.cols[20].value},
@@ -123,11 +129,14 @@ function PersonModel() {
       +" LastName,"
       +" DOB,"
       +" Gender,"
+      +" Nation,"
+      +" Race,"
       +" Religion,"
       +" LiveHouseNumber,"
       +" LiveMooNumber,"
       +" LiveVillageName,"
       +" LiveAlley,"
+      +" LiveStreetName,"
       +" LiveTumbon,"
       +" LiveCity,"
       +" LiveProvince,"
@@ -142,11 +151,14 @@ function PersonModel() {
       +"  @lastname," 
       +"  @dob," 
       +"  @gender," 
+      +"  @nation," 
+      +"  @race," 
       +"  @religion," 
       +"  @livehousenumber,"
       +"  @livemoonumber,"
       +"  @livevillagename,"
       +"  @livealley,"
+      +"  @livestreetname,"
       +"  @livetumbon,"
       +"  @livecity,"
       +"  @liveprovince,"
@@ -168,11 +180,14 @@ function PersonModel() {
       +" LastName = @lastname,"
       +" DOB = @dob,"
       +" Gender = @gender,"
+      +" Nation = @nation,"
+      +" Race = @race,"
       +" Religion = @religion,"
       +" LiveHouseNumber = @livehousenumber,"
       +" LiveMooNumber = @livemoonumber,"
       +" LiveVillageName = @livevillagename,"
       +" LiveAlley = @livealley,"
+      +" LiveStreetName = @livestreetname,"
       +" LiveTumbon = @livetumbon,"
       +" LiveCity = @livecity,"
       +" LiveProvince = @liveprovince,"
@@ -1142,7 +1157,7 @@ function OccupationModel() {
 OccupationModel.list = function(SQL,callback) {
   console.log(SQL);
   var query_str = JSON.stringify({
-   sql:'select * from Occpation' 
+   sql:'select * from Occupation' 
   });
   SQL.query({'query':query_str},callback);
 };
@@ -1284,6 +1299,8 @@ function EducationChildModel() {
     switch(colName) {
       case 'cid': index = 0; break;
       case 'educationstatusid': index = 1; break;
+      case 'schoolname': index = 2; break;
+      case 'class': index = 3; break;
       default:
         console.log('Not found '+colName);
         index=-1;
@@ -1309,7 +1326,9 @@ function EducationChildModel() {
 
     var params = [
       {'name':'cid', 'type':'VarChar', 'value':self.json.cols[0].value},
-      {'name':'educationstatusid', 'type':'VarChar', 'value':self.json.cols[1].value}
+      {'name':'educationstatusid', 'type':'VarChar', 'value':self.json.cols[1].value},
+      {'name':'schoolname', 'type':'VarChar', 'value':self.json.cols[2].value},
+      {'name':'class', 'type':'VarChar', 'value':self.json.cols[3].value}
     ];
     return params;
   };
@@ -1358,10 +1377,14 @@ function EducationChildModel() {
   this.insert = function(SQL, callback) {
     var query = "INSERT INTO EducationChild" 
       +" (CID,"
-      +" EducationStatusID)"
+      +" EducationStatusID,"
+      +" SchoolName,"
+      +" Class)"
       +" VALUES " 
       +" (@cid," 
-      +"  @educationstatusid)";
+      +"  @educationstatusid"
+      +"  @schoolname"
+      +"  @class)";
     console.log(query);
     var params = self.assign_params();
     SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
@@ -1373,7 +1396,9 @@ function EducationChildModel() {
 
   this.update = function(SQL, callback) {
     var query = "UPDATE EducationChild SET"
-      +" EducationStatusID=@educationstatusid "
+      +" EducationStatusID=@educationstatusid, "
+      +" SchoolName=@schoolname, "
+      +" Class=@class "
       +" WHERE " 
       +" CID = @cid";
     var params = self.assign_params();
