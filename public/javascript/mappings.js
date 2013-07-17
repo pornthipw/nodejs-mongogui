@@ -6,6 +6,17 @@ function md5_test() {
  console.log('G_'+v);
 }
 
+function remove_title(name) {
+ var str_order = ['เด็กชาย','เด็กหญิง','นาย','นางสาว','นาง'];
+ var dot_name = name.split('.');
+ if(dot_name.length > 1) {
+  
+ } else {
+   
+ }
+  
+}
+
 function get_insurance_id(insurancecard_name) {
   var id_1_list = ['บัตรทอง  12-59 ปี นอกเขต',
     'บัตรทอง 12-59 ปีในเขต',
@@ -247,7 +258,8 @@ function isValidThaiID(str) {
  //return pattern.test(str);
   
   var pattern = /^(\d{13})?$/;
-  m = str.replace(/\s/,'');
+  m = str.replace(/\s+/g,'');
+  console.log('isValidThaiID '+str+' '+m);
   if(m.length==0) {
     return false;
   }  else {
@@ -457,6 +469,10 @@ CSVMapping.map2 = function(config,callback) {
   
   ProvinceModel.list(SQL, function(province_list) {
   angular.forEach(config.csv.list, function(row) {
+    row[2].value =  row[2].value.replace(/\s+/g,'');
+    console.log("-->");
+    console.log(row[2].value);
+    //var cid=row[2].value.replace(/-/g,'');
     if(isValidThaiID(row[2].value)) {
       var p_model = new PersonModel();
       p_model.json = {cols:[]};
@@ -464,25 +480,33 @@ CSVMapping.map2 = function(config,callback) {
       var city_id = '?';
       var tumbon_id = '?';
       var host_id = '99999999';
-            row[1].value = row[1].value.replace(/\s+/,' ');
-            var result = row[1].value.split(" ");
-            var firstname = result[0];
-            var lastname = result[1];
-            row[7].value = row[7].value.replace(/\s+/,' ');
-            var fresult = row[7].value.split(" ");
-            var ffirstname = fresult[0];
-            var flastname = fresult[1];
-            row[8].value = row[8].value.replace(/\s+/,' ');
-            var mresult = row[8].value.split(" ");
-            var mfirstname = mresult[0];
-            var mlastname = mresult[1];
-            var result_livenumber = row[3].value.split(" ");
-            var livehousenumber = result_livenumber[0];
-            var r2 = result_livenumber[1];
-            var r3 = result_livenumber[2];
-            var r4 = result_livenumber[3];
-            var tumbon=r4.replace(/ต./g,'');
+      row[1].value = row[1].value.replace(/\s+/,' ');
+      var result = row[1].value.split(" ");
+      var firstname = result[0];
+      var lastname = result[1];
+      row[7].value = row[7].value.replace(/\s+/,' ');
+      var fresult = row[7].value.split(" ");
+      var ffirstname = fresult[0];
+      var flastname = fresult[1];
+      row[8].value = row[8].value.replace(/\s+/,' ');
+      var mresult = row[8].value.split(" ");
+      var mfirstname = mresult[0];
+      var mlastname = mresult[1];
+      var result_livenumber = row[3].value.split(" ");
+            
+      var livehousenumber = result_livenumber[0];
+      var r2 = result_livenumber[1];
+      var r3 = result_livenumber[2];
+      var tumbon='';
+            if(result_livenumber[3]) {
+              var r4 = result_livenumber[3];
+              tumbon=r4.replace(/ต./g,'');
+            }
             var livemoonumber = r2+" "+r3;
+            row.message_list = [];
+            row.message_list.push({'table_name':'Parse', 
+               'message':'Moo '+livemoonumber+' Tumbon '+tumbon});
+          
       // ตรวจสอบคอลัมน์เด็กด้อยโอกาส และ replace
        
       for(var idx=0;idx<province_list.rows.length;idx++) {
@@ -509,7 +533,6 @@ CSVMapping.map2 = function(config,callback) {
                   p_model.set('livehousenumber',livehousenumber);
                   p_model.set('livemoonumber',livemoonumber);
                   p_model.set('host',host_id);
-                  row.message_list = [];
                   //p_model.set('livevillagename',);
       
                   p_model.save(SQL, function(res) {
@@ -817,7 +840,8 @@ CSVMapping.map5 = function(config,callback) {
   TitleModel.list(SQL, function(title_list) {
   ProvinceModel.list(SQL, function(province_list) {
   angular.forEach(config.csv.list, function(row) {
-    var cid=row[2].value.replace(/ /g,'');
+    var cid =  row[2].value.replace(/\s+/g,'');
+    //var cid=row[2].value.replace(/ /g,'');
     if(isValidThaiID(cid)) {
       var p_model = new PersonModel();
       p_model.json = {cols:[]};

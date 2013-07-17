@@ -1382,8 +1382,8 @@ function EducationChildModel() {
       +" Class)"
       +" VALUES " 
       +" (@cid," 
-      +"  @educationstatusid"
-      +"  @schoolname"
+      +"  @educationstatusid,"
+      +"  @schoolname,"
       +"  @class)";
     console.log(query);
     var params = self.assign_params();
@@ -1527,7 +1527,7 @@ function WelfareVSPersonModel() {
       +"  @welfareid)";
     //eonsole.log(query);
     var params = self.assign_params();
-    SQL.get({'query':JSON.stringify({'sql':query, 'params':params})}, 
+    SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 
       function(res) {
       console.log(res);
       callback(res);
