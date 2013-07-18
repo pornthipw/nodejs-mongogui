@@ -941,7 +941,7 @@ CSVMapping.map5 = function(config,callback) {
                       });
 
                       if (row[24].value.replace(/\s+/,'').length != 0){
-                        saveFamily(SQL,[row[2].value,ffirstname, flastname,'1'],
+                        saveFamily(SQL,[cid,ffirstname, flastname,'1'],
                           function(res) {
                             if(res.success) {
                               var table_str = "Family(ตารางผู้ดูแล)"; 
@@ -951,7 +951,7 @@ CSVMapping.map5 = function(config,callback) {
                         });
                       }
                       if (row[25].value.replace(/\s+/,'').length != 0){
-                        saveFamily(SQL,[row[2].value, mfirstname, mlastname,'2'],
+                        saveFamily(SQL,[cid, mfirstname, mlastname,'2'],
                           function(res) {
                             if(res.success) {
                               var table_str = "Family"; 
