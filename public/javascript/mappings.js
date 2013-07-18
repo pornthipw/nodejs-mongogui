@@ -505,7 +505,7 @@ CSVMapping.map2 = function(config,callback) {
             var livemoonumber = r2+" "+r3;
             row.message_list = [];
             row.message_list.push({'table_name':'Parse', 
-               'message':'HouseNumber'+livehoursenumber+'Moo '+livemoonumber+' Tumbon '+tumbon});
+               'message':'HouseNumber'+livehousenumber+'Moo '+livemoonumber+' Tumbon '+tumbon});
           
       // ตรวจสอบคอลัมน์เด็กด้อยโอกาส และ replace
        
