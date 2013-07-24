@@ -973,10 +973,10 @@ function FamilyModel() {
       case 'livehousenumber': index = 17; break;
       case 'livemoonumber': index = 18; break;
       case 'livevillagename': index = 19; break;
-      case 'livetumbon': index = 22; break;
-      case 'livecity': index = 23; break;
-      case 'liveprovince': index = 24; break;
-      case 'livepostcode': index = 25; break;
+      case 'livetumbon': index = 23; break;
+      case 'livecity': index = 24; break;
+      case 'liveprovince': index = 25; break;
+      case 'livepostcode': index = 26; break;
       case 'carerstatus': index = 42; break;
       case 'datetimeupdate': index = 43; break;
       default:
@@ -1015,10 +1015,10 @@ function FamilyModel() {
     {'name':'livehousenumber', 'type':'VarChar', 'value':self.json.cols[17].value},
     {'name':'livemoonumber', 'type':'VarChar', 'value':self.json.cols[18].value},
     {'name':'livevillagename', 'type':'VarChar', 'value':self.json.cols[19].value},
-    {'name':'livetumbon', 'type':'VarChar', 'value':self.json.cols[20].value},
-    {'name':'livecity', 'type':'VarChar', 'value':self.json.cols[21].value},
-    {'name':'liveprovince', 'type':'VarChar', 'value':self.json.cols[22].value},
-    {'name':'livepostcode', 'type':'VarChar', 'value':self.json.cols[23].value},
+    {'name':'livetumbon', 'type':'VarChar', 'value':self.json.cols[23].value},
+    {'name':'livecity', 'type':'VarChar', 'value':self.json.cols[24].value},
+    {'name':'liveprovince', 'type':'VarChar', 'value':self.json.cols[25].value},
+    {'name':'livepostcode', 'type':'VarChar', 'value':self.json.cols[26].value},
     {'name':'carerstatus', 'type':'VarChar', 'value':self.json.cols[42].value},
     {'name':'datetimeupdate', 'type':'VarChar', 'value':self.json.cols[43].value}
   ];

@@ -121,21 +121,14 @@ function CsvUploadController($scope,Csv, SQL) {
 
   $scope.test = function() {
     var f = $scope.type['function'];
+    for(var i=0;i<$scope.data.csv.length;i++) {
+      $scope.data.csv[i].message_list = [];
+    }
     new f({
       'csv':{'info':'','list':$scope.data.csv},
       'sql':SQL
     }, function(success, model) {  
-      
-
-      //console.log(success);
-      //console.log(model);
-      /*if(success) {
-        $scope.success_list.push(model);
-      } else {
-        $scope.fail_list.push(model);
-      }
-      */
-    }); 
+    });
   };      
 
   $('iframe#upload_target').load(function() {

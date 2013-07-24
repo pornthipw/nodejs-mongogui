@@ -259,14 +259,26 @@ function isValidThaiID(str) {
   
   var pattern = /^(\d{13})?$/;
   m = str.replace(/\s+/g,'');
-  console.log('isValidThaiID '+str+' '+m);
+  //console.log('isValidThaiID '+str+' '+m);
   if(m.length==0) {
     return false;
   }  else {
-    console.log(m+' '+pattern.test(m));
+    //console.log(m+' '+pattern.test(m));
     return pattern.test(m);
   }
   
+}
+
+function isReplaceSpace(str) {
+
+  var pattern = /^(\w)?$/;
+  m = str.replace(/&nbsp;+/g,'');
+  if(m.length==0) {
+    return false;
+  }  else {
+    //console.log(m+' '+pattern.test(m));
+    return pattern.test(m);
+  }
 }
 
 // saveFamily(SQL, ['123',`'ph','sk','1'],function 
@@ -274,16 +286,40 @@ function saveFamily(SQL,list,callback) {
  var f_model = new FamilyModel();
  f_model.json = {cols:[]};
  var v = md5(list[1]+' '+list[2]+' '+list[0]);
+ console.log(list);
  
+                  /*console.log("province-"+province_id);
+                  console.log("housenumber-"+row[16].value);
+                  console.log("moo-"+row[18].value);
+                  console.log("postcode-"+row[23].value);
+                  console.log("city-"+city_id);
+                  console.log("tumbon-"+tumbon_id);
+                  console.log("villagename-"+row[14].value);
+                  */
  f_model.set('fmembercid','F'+v.substring(0,12));
  f_model.set('cid',list[0]);
  f_model.set('firstname',list[1]);
  f_model.set('lastname',list[2]);
  f_model.set('carerstatus',list[3]);
+ console.log(list[4]);
  f_model.set('liveprovince',list[4]);
- f_model.set('livehousenumber',list[5]);
- f_model.set('livemoonumber',list[6]);
+
+ if(list[5]) {
+   f_model.set('livehousenumber',list[5].replace(/(&nbsp;)/g,''));
+ } else {
+   f_model.set('livehousenumber',list[5]);
+ }
+
+ if(list[6]) {
+   f_model.set('livemoonumber',list[6].replace(/(&nbsp;)/g,''));
+ } else {
+   f_model.set('livemoonumber',list[6]);
+ }
+
  f_model.set('livepostcode',list[7]);
+ f_model.set('livecity',list[8]);
+ f_model.set('livetumbon',list[9]);
+ f_model.set('livevillagename',list[10]);
  f_model.save(SQL,callback);
 }
 
@@ -812,7 +848,7 @@ CSVMapping.map4 = function(config, callback) {
                   spd_model.set('cid',cid);
                   spd_model.set('caseno','1');
                   spd_model.save(SQL, function(res) {
-                    console.log(res);
+                    //console.log(res);
                     if(res.success) {
                       var table_str = "ServiceProvisionDetail(ตารางข้อมูลรายละเอียดการให้บริการ)"; 
                       var message_str = '(ข้อมูลการให้บริการ): ILL101003000000';
@@ -853,9 +889,10 @@ CSVMapping.map5 = function(config,callback) {
       console.log(day_month[1]);
       console.log(day_month[0]);
       var year = parseInt(row[9].value)-543;
-      var dob = day_month[1]+'/'+day_month[0]+'/'+year.toString();
+      var dob = day_month[0]+'/'+day_month[1]+'/'+year.toString();
       console.log(dob);
       //console.log(lastname);
+      /*
       row[24].value = row[24].value.replace(/\s+/,' ');
       var fresult = row[24].value.split(" ");
       var ffirstname = fresult[0];
@@ -864,6 +901,7 @@ CSVMapping.map5 = function(config,callback) {
       var mresult = row[25].value.split(" ");
       var mfirstname = mresult[0];
       var mlastname = mresult[1];
+      */
             
       var gender_result = row[6].value;
       if (gender_result == 'ชาย') {
@@ -898,8 +936,12 @@ CSVMapping.map5 = function(config,callback) {
                   p_model.set('cid',cid);
                   p_model.set('title_id',title_id);
                   p_model.set('gender_id',gender_id);
-                  p_model.set('firstname',row[4].value.replace(/\s+/,''));
-                  p_model.set('lastname',row[5].value.replace(/\s+/,''));
+                  //p_model.set('firstname',row[4].value.replace(/\s+/,''));
+                  //p_model.set('lastname',row[5].value.replace(/\s+/,''));
+                  p_model.set('firstname',row[4].value.replace(/&nbsp;+/g,''));
+                  p_model.set('lastname',row[5].value.replace(/&nbsp;+/g,''));
+                  //p_model.set('firstname',isReplaceSpace(row[4].value));
+                  //p_model.set('lastname',isReplaceSpace(row[5].value));
                   p_model.set('liveprovince',province_id);
                   p_model.set('livecity',city_id);
                   p_model.set('livetumbon',tumbon_id);
@@ -910,7 +952,7 @@ CSVMapping.map5 = function(config,callback) {
                   p_model.set('livevillagename',row[14].value);
                   p_model.set('host',host_id);
                   p_model.set('dob',dob.toString());
-                  p_model.set('studentid',row[1].value);
+                  p_model.set('daterecord',row[1].value);
                   row.message_list = [];
       
                   p_model.save(SQL, function(res) {
@@ -939,17 +981,34 @@ CSVMapping.map5 = function(config,callback) {
                          }
                         }); 
                       });
-
+/*
+                  p_model.set('liveprovince',province_id);
+                  p_model.set('livecity',city_id);
+                  p_model.set('livetumbon',tumbon_id);
+                  p_model.set('livehousenumber',row[16].value);
+                  p_model.set('livemoonumber',row[18].value);
+                  //p_model.set('liveallery',row[17].value);
+                  p_model.set('livepostcode',row[23].value);
+                  p_model.set('livevillagename',row[14].value);
+*/
+                  console.log("province-"+province_id);
+                  console.log("housenumber-"+row[16].value);
+                  console.log("moo-"+row[18].value);
+                  console.log("postcode-"+row[23].value);
+                  console.log("city-"+city_id);
+                  console.log("tumbon-"+tumbon_id);
+                  console.log("villagename-"+row[14].value);
                       if (row[24].value.replace(/\s+/,'').length != 0){
-                        saveFamily(SQL,[cid,ffirstname, flastname,'1'],
+                        saveFamily(SQL,[cid,row[24].value, row[25].value,'1',province_id,row[16].value,row[18].value,row[23].value,city_id,tumbon_id,row[14].value],
                           function(res) {
                             if(res.success) {
                               var table_str = "Family(ตารางผู้ดูแล)"; 
-                              var message_str = '(บิดา) '+ ffirstname+ ' '+flastname;
+                              var message_str = '(ผู้ดูแล) '+ row[24].value+ ' '+row[25].value;
                               row.message_list.push({'table_name':table_str, 'message':message_str});
                             }
                         });
                       }
+                      /*
                       if (row[25].value.replace(/\s+/,'').length != 0){
                         saveFamily(SQL,[cid, mfirstname, mlastname,'2'],
                           function(res) {
@@ -960,6 +1019,7 @@ CSVMapping.map5 = function(config,callback) {
                             }
                         });
                       }
+                      */
                     }
                   });
                 });
@@ -998,6 +1058,13 @@ CSVMapping.map6 = function(config,callback) {
       var mresult = row[26].value.split(" ");
       var mfirstname = mresult[0];
       var mlastname = mresult[1];
+      var day_month = row[8].value.split("-");
+      console.log(day_month[0]);
+      console.log(day_month[1]);
+      console.log(day_month[2]);
+      var year = parseInt(day_month[2])-543;
+      var dob = day_month[1]+'/'+day_month[0]+'/'+year.toString();
+      console.log(dob);
       /*row[27].value = row[27].value.replace(/\s+/,' ');
       var oresult = row[27].value.split(" ");
       var ofirstname = oresult[0];
@@ -1028,6 +1095,7 @@ CSVMapping.map6 = function(config,callback) {
       p_model.set('livemoonumber',row[13].value);
       p_model.set('livepostcode',row[17].value);
       p_model.set('host',host_id);
+      p_model.set('dob',dob);
       //p_model.set('studentif',col[1].value);
       row.message_list = [];
       //p_model.set('host',host_id);
@@ -1118,6 +1186,32 @@ CSVMapping.map7 = function(config,callback) {
       var mresult = row[12].value.split(" ");
       var mfirstname = mresult[0];
       var mlastname = mresult[1];
+      //if(row[10].value.replace(/\s+/,'').length != 0) {
+      //var day_result = row[8].value.replace(/-/g,'/')
+      //console.log(row[8].value);
+      
+      if(row[8].value.indexOf('-').length != 0) {
+        console.log("1");
+        var day_result = row[8].value.replace(/-/g,'/')
+        var day_month = day_result.split("/");
+        console.log(day_month[0]);
+        console.log(day_month[1]);
+        console.log(day_month[2]);
+        var year = parseInt(day_month[2])-543;
+        var dob = day_month[1]+'/'+day_month[0]+'/'+year.toString();
+        console.log(dob);
+      } else {
+        console.log("2");
+        var day_month = row[8].value.split("/");
+        console.log(day_month[0]);
+        console.log(day_month[1]);
+        console.log(day_month[2]);
+        var year = parseInt(day_month[2])-543;
+        var dob = day_month[0]+'/'+day_month[1]+'/'+year.toString();
+        console.log(dob);
+
+
+      }
       var gender_result = row[7].value;
       if (gender_result == 'ช') {
         var gender_id = 'M';  
@@ -1139,6 +1233,7 @@ CSVMapping.map7 = function(config,callback) {
       p_model.set('lastname',row[4].value);
       p_model.set('liveprovince','58');
       p_model.set('host',host_id);
+      p_model.set('dob',dob.toString());
       //p_model.set('dob',col[8].value);
       //p_model.set('studentif',col[1].value);
 
@@ -1184,7 +1279,7 @@ CSVMapping.map7 = function(config,callback) {
             });
           });
 
-          if (row[9].value.replace(/\s+/,'')){
+          if(row[9].value.replace(/\s+/,'').length != 0) {
             saveFamily(SQL,[cid,ffirstname, flastname,'1'],
               function(res) {
                 if(res.success) {
@@ -1194,7 +1289,7 @@ CSVMapping.map7 = function(config,callback) {
                 }
             });
           }
-          if (row[10].value.replace(/\s+/,'')){
+          if(row[10].value.replace(/\s+/,'').length != 0) {
             saveFamily(SQL,[cid,mfirstname, mlastname,'2'],
               function(res) {
                 if(res.success) {
@@ -1217,7 +1312,7 @@ CSVMapping.map7 = function(config,callback) {
 };
 
 
-CSVMapping.map8 = function(config,callback) { 
+CSVMapping.map18 = function(config,callback) { 
  var SQL = config.sql;
   
   angular.forEach(config.csv.list, function(row) {
@@ -1254,7 +1349,7 @@ CSVMapping.map8 = function(config,callback) {
 };
 
 
-CSVMapping.map9 = function(config,callback) { 
+CSVMapping.map19 = function(config,callback) { 
  var SQL = config.sql;
   
   angular.forEach(config.csv.list, function(row) {
@@ -1291,7 +1386,7 @@ CSVMapping.map9 = function(config,callback) {
 };
 
 
-CSVMapping.map10 = function(config,callback) { 
+CSVMapping.map8 = function(config,callback) { 
  var SQL = config.sql;
   
  DiseaseDataModel.list(SQL,function(dis_list) {
@@ -1406,7 +1501,7 @@ CSVMapping.map10 = function(config,callback) {
 };
 
 //กายอุปกรณ์ศรีสังวาลย์
-CSVMapping.map13 = function(config,callback) { 
+CSVMapping.map10 = function(config,callback) { 
   var SQL = config.sql;
   MaterialModel.list(SQL, function(material_list) {
   angular.forEach(config.csv.list, function(row) {
@@ -1620,7 +1715,7 @@ CSVMapping.map13 = function(config,callback) {
 }
 
 //กายอุปกรณ์แม่ลาน้อย
-CSVMapping.map12 = function(config,callback) { 
+CSVMapping.map9 = function(config,callback) { 
   var SQL = config.sql;
   MaterialModel.list(SQL, function(material_list) {
   angular.forEach(config.csv.list, function(row) {
@@ -2084,7 +2179,7 @@ CSVMapping.map15 = function(config,callback) {
 };
 
 
-CSVMapping.map16 = function(config,callback) { 
+CSVMapping.map11 = function(config,callback) { 
  var SQL = config.sql;
   OccupationModel.list(SQL, function(occupation_list) {
   ProvinceModel.list(SQL, function(province_list) {
@@ -2109,6 +2204,13 @@ CSVMapping.map16 = function(config,callback) {
     var oocc_id = '?';
     var city_id = '?';
     var tumbon_id = '?';
+    var day_month = row[5].value.split("/");
+    console.log(day_month[0]);
+    console.log(day_month[1]);
+    console.log(day_month[2]);
+    var year = parseInt(day_month[2])-543;
+    var dob = day_month[1]+'/'+day_month[0]+'/'+year.toString();
+    console.log(dob);
     row[1].value = row[1].value.replace(/\s+/,' ');
     var result = row[1].value.split(" ");
     var firstname = result[0];
@@ -2187,7 +2289,7 @@ CSVMapping.map16 = function(config,callback) {
               p_model.set('cid',cid);
               p_model.set('firstname',firstname);
               p_model.set('lastname',lastname);
-              p_model.set('dob',row[5].value);
+              //p_model.set('dob',row[5].value);
               p_model.set('nation',row[21].value);
               p_model.set('race',row[20].value);
               p_model.set('religion',row[22].value);
@@ -2200,6 +2302,7 @@ CSVMapping.map16 = function(config,callback) {
               p_model.set('livepostcode',row[17].value);
               p_model.set('livecity',city_id);
               p_model.set('livetumbon',tumbon_id);
+              p_model.set('dob',dob);
               row.message_list = [];
               p_model.save(SQL, function(res) {
                console.log('saved cid '+cid);
@@ -2325,31 +2428,32 @@ CSVMapping.schema = [
   /*
   {
    'name':'กระทรวงสาธารณสุข - รพ.สตสำโรงใต้- วัคซีน 0-1ปี ', 
-   'function':CSVMapping.map8 
+   'function':CSVMapping.map18 
   },
   {
    'name':'กระทรวงสาธารณสุข - รพ.สตสำโรงใต้- วัคซีน 4-5ปี ', 
-   'function':CSVMapping.map9 
+   'function':CSVMapping.map19 
   },
   */
   {
    'name':'กระทรวงสาธารณสุข - รพ.สตถ้ำลอด- งานค่ารักษาเลข678', 
-   'function':CSVMapping.map10 
+   'function':CSVMapping.map8 
   },
   /*
   {
    ' name':'สาธารณสุข_รพ.สตถ้ำลอด_exportข้อมูลตรวจ' , 
-   'function':CSVMapping.map11 
+   'function':CSVMapping.map20 
   },
   */
   {
    'name':'กระทรวงสาธารณสุข - กายอุปกรณ์- กายอุปกรณ์ แม่ลาน้อย ', 
-   'function':CSVMapping.map12 
+   'function':CSVMapping.map9 
   },
   {
    'name':'กระทรวงสาธารณสุข - กายอุปกรณ์- กายอุปกรณ์ ศรีสังวาลย์ ', 
-   'function':CSVMapping.map13 
+   'function':CSVMapping.map10 
   },
+  /*
   {
    'name':'อบต.แม่นาเติง', 
    'function':CSVMapping.map14 
@@ -2358,8 +2462,9 @@ CSVMapping.schema = [
    'name':'อบต.สบป่อง', 
    'function':CSVMapping.map15 
   },
+  */
   {
    'name':'case manager - แยกตำบล', 
-   'function':CSVMapping.map16 
+   'function':CSVMapping.map11 
   }
 ];
