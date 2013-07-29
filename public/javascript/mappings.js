@@ -2,7 +2,7 @@ function CSVMapping() {
 };
 
 function md5_test() {
- var v = md5('พงศ์พันธ์ กิจสนาโยธิน');
+ var v = md5('ชื่อ นามสกุล');
  console.log('G_'+v);
 }
 
@@ -367,6 +367,10 @@ CSVMapping.map1 = function(config, callback) {
             var mresult = row[25].value.split(" ");
             var mfirstname = mresult[0];
             var mlastname = mresult[1];
+            row[26].value = row[26].value.replace(/\s+/,' ');
+            var oresult = row[26].value.split(" ");
+            var ofirstname = oresult[0];
+            var olastname = oresult[1];
             var gender_result = row[8].value;
             if (gender_result == 'ชาย') {
               var gender_id = 'M';  
@@ -448,6 +452,7 @@ CSVMapping.map1 = function(config, callback) {
                                         var table_str = "ServiceProvision(ตารางการบริการ)"; 
                                         var message_str = '(ข้อมูลการบริการ) Host: '+host_id;
                                         row.message_list.push({'table_name':table_str, 'message':message_str});
+                                        row.status="success";
                                         sp_model.get(SQL, row[12].value,function(res) {
                                           //callback(true,t_model);
                                           //callback(true,e_model);
@@ -467,7 +472,7 @@ CSVMapping.map1 = function(config, callback) {
                   });
                 });
                 
-                if (row[24].value.replace(/\s+/,'')){
+                if(row[24].value.replace(/\s+/,'').length != 0) {
                   saveFamily(SQL,[row[12].value,ffirstname, flastname,'1'],
                     function(res) {
                       if(res.success) {
@@ -477,7 +482,7 @@ CSVMapping.map1 = function(config, callback) {
                       }
                   });
                 }
-                if (row[25].value.replace(/\s+/,'')){
+                if(row[25].value.replace(/\s+/,'').length != 0) {
                   saveFamily(SQL,[row[12].value, mfirstname, mlastname,'2'],
                     function(res) {
                       if(res.success) {
@@ -487,12 +492,24 @@ CSVMapping.map1 = function(config, callback) {
                       }
                   });
                 }
+                if(row[26].value.replace(/\s+/,'').length != 0) {
+                  saveFamily(SQL,[row[12].value, ofirstname, olastname,'13'],
+                    function(res) {
+                      if(res.success) {
+                        var table_str = "Family"; 
+                        var message_str = ' (คู่สมรส) '+ofirstname+' '+ olastname;  
+                        row.message_list.push({'table_name':table_str, 'message':message_str});
+                      }
+                  });
+                }
               }
             }); 
             
           } else {
+            row.status = "warning";
           
             console.log('Invalid CID '+row[12].value);
+            row.message = 'Invalid CID '+row[12].value;
             callback(false,row);
           }
         });
@@ -627,7 +644,7 @@ CSVMapping.map2 = function(config,callback) {
                         });
                       });
 
-                      if (row[7].value.replace(/\s+/,'')){
+                      if(row[7].value.replace(/\s+/,'').length != 0) {
                         saveFamily(SQL,[row[2].value,ffirstname, flastname,'1'],
                           function(res) {
                             if(res.success) {
@@ -637,7 +654,7 @@ CSVMapping.map2 = function(config,callback) {
                             }
                         });
                       }
-                      if (row[8].value.replace(/\s+/,'')){
+                      if(row[8].value.replace(/\s+/,'').length != 0) {
                         saveFamily(SQL,[row[2].value, mfirstname, mlastname,'2'],
                           function(res) {
                             if(res.success) {
@@ -2374,7 +2391,25 @@ CSVMapping.map11 = function(config,callback) {
   });
 };
 
-
+//function get_displayname() {
+  var map_def = [
+     {csv_id:2,display:"HN",schema:"Temp_HN.HN"},
+     {csv_id:3,display:"หมู่ที่",schema:"Person.LiveMooNumber"},
+     {csv_id:4,display:"บ้านเลขที่",schema:"Person.LiveHouseNumber"},
+     {csv_id:5,display:"คำนำหน้า",schema:"Person.TitleID"},
+     {csv_id:6,display:"ชื่อ",schema:"Person.FirstName"},
+     {csv_id:7,display:"นามสกุล",schema:"Person.LastName"},
+     {csv_id:8,display:"เพศ",schema:"Person.Gender"},
+     {csv_id:11,display:"วันเกิด",schema:"Person.DOB"},
+     {csv_id:12,display:"บัตรประชาชน",schema:"Person.CID"},
+     {csv_id:14,display:"ข้อมูลสิทธิ์",schema:"ExistingWelfare.InsuranceCardID"},
+     {csv_id:18,display:"ระดับการศึกษา",schema:"EducationChild.EducationLevelID"},
+     {csv_id:22,display:"ศาสนา",schema:"Person.Riligion"},
+     {csv_id:24,display:"บิดา",schema:"Family.FirstName,Family.LastName,Family.CarerStatus"},
+     {csv_id:25,display:"มารดา",schema:"Family.FirstName,Family.LastName,Family.CarerStatus"},
+     {csv_id:26,display:"คู่สมรส",schema:"Family.FirstName,Family.LastName,Family.CarerStatus"}
+  ];
+//}
 
 CSVMapping.schema = [
  // {'name':'พม.- สรุปยอดผู้รับเบี้ยพิการ', 'function':CSVMapping.map1},
@@ -2388,7 +2423,9 @@ CSVMapping.schema = [
       ' สำหรับข้อมูลใน colume ที่ 6 ,7,8 และ 22 ที่เก๊บข้อมูล ชื่อ ,นามสกุล,เพศ และศาสนา ' +
       ' จะบันทึกลงในคอลัมน์ Person.FirstName ,Person.LastName Person.Gender ' +
       ' และPerson.Religion'+
-      ' '
+      ' ',
+   //'display':get_displayname
+   'meta_definition':map_def
   },
   {
    'name':'กระทรวงศึกษาธิการ - โรงเรียนราชประชา 44 ปางมะผ้า - สศศ.1', 

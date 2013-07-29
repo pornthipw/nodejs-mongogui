@@ -119,6 +119,28 @@ function CsvUploadController($scope,Csv, SQL) {
   $scope.success_list = [];
   $scope.fail_list = [];
 
+  $scope.display_meta = function() {
+    angular.forEach($scope.data.csv, function(row) {
+      angular.forEach(row, function(col) {
+        col['hide']=false;
+        col['meta']=undefined;
+      });
+    });
+    var meta_list = $scope.type['meta_definition'];
+    if(!meta_list) return;
+    angular.forEach($scope.data.csv, function(row) {
+      angular.forEach(row, function(col) {
+        col['hide']=true;
+      });
+    });
+    angular.forEach(meta_list, function(meta) {
+      angular.forEach($scope.data.csv, function(row) {
+        row[meta.csv_id]['hide']=false;
+        row[meta.csv_id]['meta']=meta.display;
+      });
+    });
+  }
+
   $scope.test = function() {
     var f = $scope.type['function'];
     for(var i=0;i<$scope.data.csv.length;i++) {
