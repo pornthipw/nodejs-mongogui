@@ -1674,13 +1674,13 @@ function ServiceProvisionDetailModel() {
   this.update = function(SQL, callback) {
     var query = "UPDATE ServiceProvisionDetails SET"
       +" PSNumber=@psnumber, "
-      +" ACTCode=@actcode "
-      +" CaseNo=@caseno "
+      +" ACTCode=@actcode, "
+      +" CaseNo=@caseno, "
       +" CID=@cid "
       +" WHERE " 
-      +" CID = @cid"
-      +" ACTCode=@actcode"
-      +" CaseNo=@caseno"
+      +" CID = @cid,"
+      +" ACTCode=@actcode,"
+      +" CaseNo=@caseno,"
       +" PSNumber=@psnumber";
     var params = self.assign_params();
     SQL.save({'query':JSON.stringify({'sql':query, 'params':params})}, 

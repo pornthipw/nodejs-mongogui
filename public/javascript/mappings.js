@@ -17,6 +17,58 @@ function remove_title(name) {
   
 }
 
+function get_month_id(month_name) {
+  var id_1_list = ['ม.ค.'];
+  var id_2_list = ['ก.พ.'];
+  var id_3_list = ['มี.ค.'];
+  var id_4_list = ['เม.ย.'];
+  var id_5_list = ['พ.ค.'];
+  var id_6_list = ['มิ.ย.'];
+  var id_7_list = ['ก.ค.'];
+  var id_8_list = ['ส.ค.'];
+  var id_9_list = ['ก.ย.'];
+  var id_10_list = ['ต.ค.'];
+  var id_11_list = ['พ.ย.'];
+  var id_12_list = ['ธ.ค.'];
+  if(id_1_list.indexOf(month_name)!=-1) {
+    return '01';
+  }
+  if(id_2_list.indexOf(month_name)!=-1) {
+    return '02';
+  }
+  if(id_3_list.indexOf(month_name)!=-1) {
+    return '03';
+  }
+  if(id_4_list.indexOf(month_name)!=-1) {
+    return '04';
+  }
+  if(id_5_list.indexOf(month_name)!=-1) {
+    return '05';
+  }
+  if(id_6_list.indexOf(month_name)!=-1) {
+    return '06';
+  }
+  if(id_7_list.indexOf(month_name)!=-1) {
+    return '07';
+  }
+  if(id_8_list.indexOf(month_name)!=-1) {
+    return '08';
+  }
+  if(id_9_list.indexOf(month_name)!=-1) {
+    return '09';
+  }
+  if(id_10_list.indexOf(month_name)!=-1) {
+    return '10';
+  }
+  if(id_11_list.indexOf(month_name)!=-1) {
+    return '11';
+  }
+  if(id_12_list.indexOf(month_name)!=-1) {
+    return '12';
+  }
+  return undefined;
+  
+}
 function get_insurance_id(insurancecard_name) {
   var id_1_list = ['บัตรทอง  12-59 ปี นอกเขต',
     'บัตรทอง 12-59 ปีในเขต',
@@ -846,7 +898,21 @@ CSVMapping.map4 = function(config, callback) {
             p_model.set('lastname',row[3].value);
             p_model.set('livehousenumber',row[5].value);
             p_model.set('livemoonumber',row[6].value);
-            p_model.set('dob',row[8].value+'/'+row[9].value+'/'+row[10].value);
+	    oow[e].value = row[8].value.replace(/-/g,'');
+
+            row[9].value = row[9].value.replace(/-/g,'');
+            console.log("---------->"+row[8].value.replace(/\s+/g,'')+"<----");
+            console.log("---------->"+row[9].value.replace(/\s+/g,'')+"<----");
+            var year = parseInt(row[10].value)-543;
+            //var dob = row[9].value+'/'+row[8].value+'/'+year.toString();
+            if(row[8].value.replace(/\s+/g,'').lenght !=0){
+              if(row[9].value.replace(/\s+/g,'').length != 0 ) {
+                var month = get_month_id(row[9].value.replace(/\s+/g,''));
+                var dob = month+'/'+row[8].value.replace(/\s+/g,'')+'/'+year.toString();
+                p_model.set('dob',dob.toString());
+              }
+            }
+            
             p_model.set('host',host_id);
             row.message_list = [];
            // p_model.set('mariagestatus',row[23].value);
@@ -880,7 +946,10 @@ CSVMapping.map4 = function(config, callback) {
             }); 
                      
           } else {
+            row.status = "warning";
+          
             console.log('Invalid CID '+cid);
+            row.message = 'Invalid CID '+cid;
             callback(false,row);
           }
         });
@@ -2410,6 +2479,17 @@ CSVMapping.map11 = function(config,callback) {
      {csv_id:26,display:"คู่สมรส",schema:"Family.FirstName,Family.LastName,Family.CarerStatus"}
   ];
 //}
+  var map_def4 = [
+     {csv_id:1,display:"คำนำหน้าชื่อ",schema:"Person.Title"},
+     {csv_id:2,display:"ชื่อ",schema:"Person.FirstName"},
+     {csv_id:3,display:"นามสกุล",schema:"Person.LastName"},
+     {csv_id:4,display:"บัตรประชาชน",schema:"Person.CID"},
+     {csv_id:5,display:"บ้านเลขที่",schema:"Person.LiveHouseNumber"},
+     {csv_id:6,display:"หมู่ที่",schema:"Person.LiveMooNumber"},
+     {csv_id:8,display:"วัน",schema:"Person.DOB"},
+     {csv_id:9,display:"เดือน",schema:"Person.DOB"},
+     {csv_id:10,display:"ปีเกิด",schema:"Person.DOB"}
+  ];
 
 CSVMapping.schema = [
  // {'name':'พม.- สรุปยอดผู้รับเบี้ยพิการ', 'function':CSVMapping.map1},
@@ -2448,7 +2528,8 @@ CSVMapping.schema = [
   },
   {
    'name':'กระทรวงพัฒนาสังคมฯ - สรุปยอดผู้รับเบี้ยยังชีพ - สรุปยอดผู้รับเบี้ยผู้สูงอายุ', 
-   'function':CSVMapping.map4 
+   'function':CSVMapping.map4, 
+   'meta_definition':map_def4
   },
   {
    'name':'กระทรวงพัฒนาสังคมฯ - ทะเบียนคนพิการ จังหวัดแม่ฮ่องสอน', 
