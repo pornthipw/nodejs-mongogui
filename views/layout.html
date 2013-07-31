@@ -2,9 +2,12 @@
 <html ng-app="mongogui">
 <head>
   <title>{{title}}</title>  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <base href="{{ baseHref }}">
   
-  <link href="bootstrap/css/bootstrap.css" rel="stylesheet"> 
+  <link href="bootstrap/css/bootstrap.css" rel="stylesheet" media="screen"> 
+<!-- Custom styles for this template -->
+  <link href="bootstrap/css/starter-template.css" rel="stylesheet">
   <link href="javascript/vendor/codemirror/codemirror.css" rel="stylesheet"> 
   <!-- link rel="stylesheet/less" href="bootstrap/less/bootstrap.less" media="all" / -->
   <style type="text/css">
@@ -42,6 +45,7 @@
 </head>
 
 <body >   
+  <!--
   <div class="navbar navbar-inverse navbar-fixed-top" ng-controller="UserCtrl">
     <div class="navbar-inner">
       <div class="container"> 
@@ -81,5 +85,49 @@
     <div class="span12" ng-view>      
     </div>  
   </div>
+  -->
+  <div class="navbar navbar-inverse navbar-fixed-top" ng-controller="UserCtrl">
+    <div class="container">
+      <button type="button" 
+        class="navbar-toggle" 
+        data-toggle="collapse" 
+        data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" 
+        href="">CSV Input</a>
+      <div class="nav-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li ><a href="#/">Home</a></li>
+          <li><a href="#/list">ข้อมูล CSV input file</a></li>
+          <li><a href="#/role" ng-show="user.user && user.user.role=='admin'">Role Manager</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+      <div class="nav-collapse collapse">
+        <ul class="nav pull-right" ng-hide="user.user">
+          <li>
+            <a href="auth/openid?openid_identifier=https://www.google.com/accounts/o8/id">
+              Login with Google ID
+            </a>
+          </li>
+        </ul>
+        <ul class="nav pull-right" ng-show="user.user">
+          <li>
+            <a href="#" ng-click="logout()">Logout</a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="container-fluid">    
+    <div class="starter-template">
+      <div class="span12" ng-view></div>  
+    </div>
+  </div><!-- /.container -->
+
 </body>
 </html>
