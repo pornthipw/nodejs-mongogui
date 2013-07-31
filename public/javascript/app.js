@@ -54,6 +54,11 @@ app.config(function($routeProvider) {
     templateUrl:'static/csv/upload.html'
   });
 
+  $routeProvider.when('/list', {
+    controller:CsvListController, 
+    templateUrl:'static/csv/list.html'
+  });
+
   $routeProvider.when('/role', {
     controller:RoleController, 
     templateUrl:'static/role_manager.html'
@@ -112,6 +117,10 @@ function RoleController($scope, Role, User, Logout, Admin) {
   
 }
 
+
+function CsvListController($scope,Csv, SQL) {  
+  //console.log("test");
+}
 
 function CsvUploadController($scope,Csv, SQL) {  
   $scope.saved_doc = 0;
