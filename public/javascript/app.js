@@ -176,6 +176,19 @@ function CsvUploadController($scope,Csv, SQL) {
       $scope.message = data.message;
     }
   });
+
+  $scope.filter_text = function(row) {
+     var text='';
+     angular.forEach(row, function(col) {
+       text+=col.value+',';
+     });
+     text = text.substring(0,text.length-1);
+     if(text.length > 200) {
+       return (text.substring(0,200)+"..");
+     } else {
+       return text;
+     }
+  }
    
   $scope.setFile = function(element) {
     $scope.$apply(function() {

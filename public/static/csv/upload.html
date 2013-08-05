@@ -1,23 +1,50 @@
-  <div class="row">
+<div class="row">
   <div class="col-lg-12">
-<div class="bs-docs-section">
-<div class="bs-callout bs-callout-info">
-      <h4>ขั้นตอน &amp; วิธีการใช้งาน</h4>
-      <!--<p>ระบบ <code>.btn-group</code>, you'll have to 
-       specify the option <code>container: 'body'</code> to 
-       avoid unwanted side effects (such as the element growing 
-       wider and/or losing its rounded corners when the tooltip 
-       or popover is triggered).</p>
-      -->
+    <div class="bs-callout bs-callout-info">
+        <h4>ขั้นตอน &amp; วิธีการใช้งาน</h4>
+        <p>
+          <h5>
+            ระบบ CSV File Importer เป็นระบบที่ใช้สำหรับ
+            การนำเข้าข้อมูลลงฐานข้อมูล โดยรองรับสำหรับ 
+            input file ที่เป็น csv เท่านั้น ซึ่งมีกระบวนการทำงานดังต่อไปนี้
+          </h5>
+        </p>
+        <p>
+          <h5>
+            <ol>
+              <li>
+                คลิกเลือก csv ไฟล์ ที่ต้องการนำเข้า 
+                โดยคลิกที่ปุ่ม<code>&lt;ChooseFile&gt;</code> 
+                เพื่อเลือกไฟล์ csv ที่ต้องการซึ่งจะปรากฎหน้าต่าง Open 
+                ทำการ Browse หาไฟล์ที่เป็นนามสกุล .csv คลิก Open
+              </li>
+              <li>
+                หากเลือกไฟล์สำเร็จจะปรากฎชื่อไฟล์ด้านล่าง จากนั้นคลิกเลือก
+                ปุ่ม <code>&lt; input CSV file &gt;</code>
+                เพื่อนำเข้าไฟล์ที่ต้องการ ซึ่งจะปรากฎรายการฟังก์ชั่นการทำงานภายใน 
+                Dropdown List ด้านขวา 
+              </li>          
+              <li>
+                คลิกเลือกฟังก์ชั่นการทำงานที่เหมาะสมกับประเภทของไฟล์ที่นำเข้ามา 
+                คลิกปุ่ม <code>&lt;Run&gt;</code>
+              </li>
+              <li>
+                กรณีที่เลือกถูกต้องระบบจะแสดงผลของรายการทำสามารถนำเข้าฐานข้อมูลได้สำเร็จ
+              </li>
+            </ol>
+          </h5>
+        </p>
     </div>
-    </div>
-</div>
+  </div>
 </div>
 <div class="row">
-  <div class="col-lg-6 well">
+  <div class="col-lg-12">
+  <div class="col-lg-6">
     <div class="row">
       <div class="col-lg-12">
-        <form class="form-inline pull-left"
+        <div class="panel panel-info">
+          <div class="panel-heading"><strong>Select Input CSV File</strong></div>
+          <form class="form-inline pull-left"
           id="file_upload_form"
           method="post" 
           enctype="multipart/form-data"
@@ -41,6 +68,43 @@
             </div>
           </div>
         </form>
+
+      <!--
+        <form class="form-inline pull-left"
+          id="file_upload_form"
+          method="post" 
+          enctype="multipart/form-data"
+          action="csv/upload"
+          target="upload_target" 
+          class="form-horizontal">
+          <div class="row"> 
+              <a class="btn btn-primary"  
+               href="javascript:;">
+               <i class="icon-plus icon-white"></i>
+               Select File 
+              <input type="file" name="file"
+style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;'
+                size="100"
+                id="file"
+                onchange="angular.element(this).scope().setFile(this)"/>
+              </a>
+              <button type="submit"
+                ng-disabled="theFile==null"
+                class="btn btn-primary start">
+                <i class="icon-upload icon-white"></i> Input CSV file
+              </button>
+            </div>
+          </div>
+          <div class="row">
+            <p class="help-block">กรุณาเลือก CSV ไฟล์ ที่ต้องการนำเข้าฐานข้อมูล.</p>
+            <p class="label label-info" id="upload-file-info" ng-show="theFile">
+              {{theFile.name}}
+            </p>
+          </div>
+        </form>
+        -->
+        <br><br><br><br>
+        </div>
       </div>
     </div>
     <div class="row">
@@ -57,13 +121,12 @@
       </div>
     </div>
   </div>
-  <div class="col-lg-1"></div>
-  <div class="col-lg-5 well" ng-show = "data.csv">
+  <div class="col-lg-6 well" ng-show = "data.csv">
     <div class="row" ng-show="theFile">
       <div class="col-lg-10">
         <div class="input-append">
           <select ng-model="type" class="col-lg-6 form-control" 
-            ng-change="display_meta()"
+            ng-change="display_meta()" placeholder="เลือกฟังก์ชั่นสำหรับ map ข้อมูล"
             ng-options="a.name for a in mapping_schema">
           </select>
         </div>
@@ -85,6 +148,7 @@
       </div>
     </div>
   </div>
+  </div>
 </div>
 
 <div class="row">
@@ -93,7 +157,7 @@
     <div class="row">
       <table class="table table-condensed">
         <tr ng-repeat="row in data.csv" ng-class="row.status">
-          <td>
+          <td style="overflow:hidden;">
             <div ng-show="row.message">
               <span class="label label-{{row.status}}">
                 {{row.message}}
@@ -109,7 +173,6 @@
               </span>
             </span>
             <table class="table table-striped" ng-show="row.message_list[0]">
-              <!--<caption>.....</caption>-->
               <thead>
                 <tr>
                   <th> Table Name </th>

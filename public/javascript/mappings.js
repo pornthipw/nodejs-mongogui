@@ -898,11 +898,9 @@ CSVMapping.map4 = function(config, callback) {
             p_model.set('lastname',row[3].value);
             p_model.set('livehousenumber',row[5].value);
             p_model.set('livemoonumber',row[6].value);
-	    oow[e].value = row[8].value.replace(/-/g,'');
+	    row[8].value = row[8].value.replace(/-/g,'');
 
             row[9].value = row[9].value.replace(/-/g,'');
-            console.log("---------->"+row[8].value.replace(/\s+/g,'')+"<----");
-            console.log("---------->"+row[9].value.replace(/\s+/g,'')+"<----");
             var year = parseInt(row[10].value)-543;
             //var dob = row[9].value+'/'+row[8].value+'/'+year.toString();
             if(row[8].value.replace(/\s+/g,'').lenght !=0){
@@ -936,6 +934,7 @@ CSVMapping.map4 = function(config, callback) {
                       var table_str = "ServiceProvisionDetail(ตารางข้อมูลรายละเอียดการให้บริการ)"; 
                       var message_str = '(ข้อมูลการให้บริการ): ILL101003000000';
                       row.message_list.push({'table_name':table_str, 'message':message_str});
+                      row.status="success";
                       spd_model.get(SQL, cid, function(result) {
 
                       });
